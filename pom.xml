@@ -8,11 +8,11 @@
 		<version>2.2.0.BUILD-SNAPSHOT</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.xmplify</groupId>
-	<artifactId>starter_kit_springboot_singledb</artifactId>
+	<groupId>com.36LpSamaj</groupId>
+	<artifactId>Backend-Application</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>starter_kit_springboot_singledb</name>
+	<name>Backend-Application</name>
 	<description>Starter KIT</description>
 
 	<properties>
