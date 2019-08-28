@@ -9,19 +9,13 @@ import org.springframework.stereotype.Repository;
 import com.xmplify.starter_kit_springboot_singledb.model.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-
-	Optional<User> findByUsernameOrMobileno(String username, String mobileno);
-
-	Optional<User> findByUsername(String username);
-
-	Boolean existsByUsername(String username);
+public interface UserRepository extends JpaRepository<User, String> {
 
 	Optional<User> findByEmail(String email);
 	
 	Optional<User> findByMobileno(String mobileno);
 
-	List<User> findByIdIn(List<Long> userIds);
+	List<User> findByIdIn(List<String> userIds);
 
 	Boolean existsByEmail(String email);
 	

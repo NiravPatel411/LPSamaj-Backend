@@ -4,31 +4,48 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xmplify.starter_kit_springboot_singledb.model.Role;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.NaturalId;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
 public class SignUpRequest {
-    @NotBlank
-    @Size(min = 4, max = 40)
-    private String name;
 
-    @NotBlank
-    @Size(min = 3, max = 15)
-    private String username;
+    private String firstName;
 
-    @NotBlank
-    @Size(max = 40)
-    @Email
+    private String lastName;
+
+    private String surname;
+
+    private String profilePic;
+
+    private String villageId;
+
     private String email;
 
-    @NotBlank
-    @Size(min = 6, max = 20)
+    private String gender;
+
+    private Date birthDate;
+
+    private String bloodGroup;
+
+    private String maritualStatus;
+
+    private String currentAddress;
+
+    private String permenentAddress;
+
     private String password;
-    
-    @NotBlank
-    @Size(min = 6, max = 20)
+
     private String mobileno;
+
+    private List<String> roleType;
     
 }

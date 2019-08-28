@@ -24,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             throws UsernameNotFoundException {
     	
         // Let people login with either username or email
-        User user = userRepository.findByUsernameOrMobileno(usernameOrMobileno, usernameOrMobileno)
+        User user = userRepository.findByMobileno(usernameOrMobileno)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found with username or email : " + usernameOrMobileno)
         );
@@ -33,7 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Transactional
-    public UserDetails loadUserById(Long id) {
+    public UserDetails loadUserById(String id) {
         User user = userRepository.findById(id).orElseThrow(
             () -> new ResourceNotFoundException("User", "id", id)
         );

@@ -12,11 +12,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xmplify.starter_kit_springboot_singledb.model.User;
 
 public class UserPrincipal implements UserDetails {
-    private Long id;
+    private String id;
 
-    private String name;
+    private String firstName;
 
-    private String username;
+    private String lastName;
 
     @JsonIgnore
     private String email;
@@ -29,10 +29,10 @@ public class UserPrincipal implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrincipal(Long id, String name, String username, String email, String password,String mobileno, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(String id, String firstName, String lastName, String email, String password,String mobileno, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
-        this.name = name;
-        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.mobileno = mobileno;
@@ -46,8 +46,8 @@ public class UserPrincipal implements UserDetails {
 
         return new UserPrincipal(
                 user.getId(),
-                user.getName(),
-                user.getUsername(),
+                user.getFirstName(),
+                user.getLastName(),
                 user.getEmail(),
                 user.getPassword(),
                 user.getMobileno(),
@@ -55,12 +55,12 @@ public class UserPrincipal implements UserDetails {
         );
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
     public String getName() {
-        return name;
+        return firstName;
     }
 
     public String getEmail() {
@@ -69,7 +69,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return lastName;
     }
 
     @Override

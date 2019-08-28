@@ -13,7 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>Backend-Application</name>
-	<description>Starter KIT</description>
+	<description>Samaj Application</description>
 
 	<properties>
 		<java.version>1.8</java.version>

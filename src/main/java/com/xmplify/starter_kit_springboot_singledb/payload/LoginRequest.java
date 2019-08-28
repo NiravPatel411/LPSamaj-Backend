@@ -8,9 +8,15 @@ import lombok.Setter;
 @Setter
 @Getter
 public class LoginRequest {
-    @NotBlank
+    @NotBlank(message = "usernameOrMobileno can not be blank")
     private String usernameOrMobileno;
 
-    @NotBlank
+    @NotBlank(message = "password can not be blank")
     private String password;
+
+    @NotBlank(message = "signInAs can not be blank")
+    private String signInAs;
+
+    private String role;
+
 }

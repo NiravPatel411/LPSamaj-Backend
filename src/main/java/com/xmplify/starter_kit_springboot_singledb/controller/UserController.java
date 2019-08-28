@@ -15,11 +15,8 @@ public class UserController {
     UserService userService;
 
 
-    @PostMapping("/list")
+    @PostMapping("/")
     public ResponseEntity<?> listUser() {
-    	
-    	
-
         return ResponseEntity.ok(userService.findAll());
     }
 }

@@ -1,8 +1,12 @@
 package com.xmplify.starter_kit_springboot_singledb.security;
 import java.util.Date;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xmplify.starter_kit_springboot_singledb.payload.JwtCustomPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -32,28 +36,32 @@ public class JwtTokenProvider {
     @Value("${secureInitVector}")
     private String initVector;
 
-    public String generateToken(Authentication authentication) {
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    public String generateToken(Authentication authentication, String signInAs) throws JsonProcessingException {
 
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
+        JwtCustomPayload jwtCustomPayload = new JwtCustomPayload(userPrincipal.getId(), signInAs);
         return EncrypterDecrypter.encrypt(key, initVector, Jwts.builder()
-                .setSubject(Long.toString(userPrincipal.getId()))
+                .setSubject(objectMapper.writeValueAsString(jwtCustomPayload))
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact());
     }
 
-    public Long getUserIdFromJWT(String token) {
+    public String getUserIdFromJWT(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
 
-        return Long.parseLong(claims.getSubject());
+        return claims.getSubject();
     }
 
     public boolean validateToken(String authToken) {
