@@ -17,6 +17,4 @@ public class LoginRequest {
     @NotBlank(message = "signInAs can not be blank")
     private String signInAs;
 
-    private String role;
-
 }

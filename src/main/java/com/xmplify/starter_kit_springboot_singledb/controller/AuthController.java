@@ -1,13 +1,13 @@
 package com.xmplify.starter_kit_springboot_singledb.controller;
 import java.net.URI;
 import java.util.*;
+import java.util.stream.Stream;
 
 import javax.validation.Valid;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
-import com.xmplify.starter_kit_springboot_singledb.model.Admin;
-import com.xmplify.starter_kit_springboot_singledb.model.AdminRole;
+import com.xmplify.starter_kit_springboot_singledb.model.*;
 import com.xmplify.starter_kit_springboot_singledb.payload.*;
 import com.xmplify.starter_kit_springboot_singledb.repository.AdminRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.AdminRoleRepository;
@@ -20,14 +20,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.xmplify.starter_kit_springboot_singledb.model.Role;
-import com.xmplify.starter_kit_springboot_singledb.model.User;
 import com.xmplify.starter_kit_springboot_singledb.repository.RoleRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.UserRepository;
 import com.xmplify.starter_kit_springboot_singledb.security.JwtTokenProvider;
@@ -66,20 +61,41 @@ public class AuthController {
                 )
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals(loginRequest.getRole()))) {
-            String jwt = tokenProvider.generateToken(authentication, loginRequest.getRole());
-            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-            Map<String, Object> returnUserObject = new HashMap<>();
-            if (loginRequest.getSignInAs().equalsIgnoreCase(GlobalConstants.ROLE_NORMAL)) {
+        String jwt = tokenProvider.generateToken(authentication, loginRequest.getSignInAs());
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        Map<String, Object> returnUserObject = new HashMap<>();
+        List<Admin> admins = adminRepository.isExistsAdminByPerson(userPrincipal.getId());
+        if(Objects.nonNull(admins) && (! "NORMAL".equalsIgnoreCase(loginRequest.getSignInAs()))){
+            if(admins.stream().anyMatch(a -> a.getAdminRole().getName().equalsIgnoreCase(loginRequest.getSignInAs()))){
                 returnUserObject.put("userDetail", UserDto.create(userRepository.findById(userPrincipal.getId()).get(), loginRequest.getSignInAs()));
-            }else if(loginRequest.getSignInAs().equalsIgnoreCase(GlobalConstants.ROLE_ADMIN)){
-                returnUserObject.put("userDetail", UserDto.create(adminRepository.findById(userPrincipal.getId()).get(), loginRequest.getRole()));
+                AuthAdmin authAdmin = new AuthAdmin();
+                Admin admin = null;
+                for(Admin ad : admins){
+                    if(ad.getAdminRole().getName().equalsIgnoreCase(loginRequest.getSignInAs())){
+                        admin = ad;
+                        break;
+                    }
+                }
+                if(Objects.isNull(admin)){
+                    return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "NOT ACCESS with "+loginRequest.getSignInAs()+" role",null), HttpStatus.OK);
+                }
+                authAdmin.setAdminId(admin.getId());
+                authAdmin.setAdminName(admin.getName());
+                authAdmin.setPersonId(admin.getPerson().getId());
+                authAdmin.setAdminType(loginRequest.getSignInAs());
+                returnUserObject.put("adminDetail",authAdmin);
+            }else {
+                return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "NOT ACCESS with "+loginRequest.getSignInAs()+" role",null), HttpStatus.OK);
             }
-            returnUserObject.put("tokenDetail",new JwtAuthenticationResponse(jwt));
-            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "LOGIN_SUCCESS", returnUserObject), HttpStatus.OK);
-        }else {
-            return new ResponseEntity(new ApiResponse(HttpStatus.UNAUTHORIZED.value(), true, "UNAUTHORIZED_ACCESS_WITH_ROLE", null), HttpStatus.UNAUTHORIZED);
+        } else {
+            if("NORMAL".equalsIgnoreCase(loginRequest.getSignInAs())) {
+                returnUserObject.put("userDetail", UserDto.create(userRepository.findById(userPrincipal.getId()).get(), loginRequest.getSignInAs()));
+            }else {
+                return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "NOT ACCESS with "+loginRequest.getSignInAs()+" role",null), HttpStatus.OK);
+            }
         }
+        returnUserObject.put("tokenDetail",new JwtAuthenticationResponse(jwt));
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "LOGIN_SUCCESS", returnUserObject), HttpStatus.OK);
     }
 
     @PostMapping("/signup")
@@ -91,22 +107,11 @@ public class AuthController {
         }
 
         // Creating user's account
-        User user = new User(
-                signUpRequest.getFirstName(),
-                signUpRequest.getLastName(),
-                signUpRequest.getSurname(),
-                signUpRequest.getProfilePic(),
-                signUpRequest.getVillageId(),
-                signUpRequest.getEmail(),
-                signUpRequest.getGender(),
-                signUpRequest.getBirthDate(),
-                signUpRequest.getBloodGroup(),
-                signUpRequest.getMaritualStatus(),
-                signUpRequest.getCurrentAddress(),
-                signUpRequest.getPermenentAddress(),
-                signUpRequest.getPassword(),
-                signUpRequest.getMobileno());
-
+        User user = new User();
+        user.setFirstName(signUpRequest.getFirstName());
+        user.setLastName(signUpRequest.getLastName());
+        user.setMobileno(signUpRequest.getMobileno());
+        user.setPassword(signUpRequest.getPassword());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         List<Role> userRole = roleRepository.findByNameIn(signUpRequest.getRoleType());
         Set<Role> userRoleSet = new HashSet<Role>(userRole);
@@ -121,5 +126,34 @@ public class AuthController {
         return ResponseEntity.created(location).body(new ApiResponse(HttpStatus.OK.value(),true, "User registered successfully",null));
     }
 
+    @PostMapping("/addRole")
+    public ResponseEntity<?> addRole(@RequestBody List<String> role){
+        List<Role> roles = new ArrayList<>();
+        role.stream().forEach((name) -> {
+            Role obj = new Role();
+            obj.setName(name);
+            obj.setDisplayName(name);
+            roles.add(obj);
+        });
+        Object ret = roleRepository.saveAll(roles);
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", ret), HttpStatus.OK);
+    }
 
+    @PostMapping("/addAdminRole")
+    public ResponseEntity<?> addAdminRole(@RequestBody List<String> role){
+        List<AdminRole> roles = new ArrayList<>();
+        role.stream().forEach((name) -> {
+            AdminRole obj = new AdminRole();
+            obj.setName(name);
+            obj.setDisplayName(name);
+            roles.add(obj);
+        });
+        Object ret = adminRoleRepository.saveAll(roles);
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", ret), HttpStatus.OK);
+    }
+
+    @GetMapping("/adminTypes")
+    public ResponseEntity<?> getAllAdminTypes(){
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", adminRoleRepository.findAll()), HttpStatus.OK);
+    }
 }

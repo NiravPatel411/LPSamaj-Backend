@@ -1,9 +1,11 @@
 package com.xmplify.starter_kit_springboot_singledb.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -23,6 +25,8 @@ public class Village {
     @Size(max = 15)
     private String name;
 
-    @Size(max = 15)
-    private String pin;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "district_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private District district;
 }

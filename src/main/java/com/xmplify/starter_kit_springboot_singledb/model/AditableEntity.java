@@ -11,6 +11,7 @@ import javax.persistence.EntityListeners;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
@@ -18,18 +19,18 @@ import java.time.LocalDateTime;
 public class AditableEntity implements Serializable{
 
      @CreatedDate
-     private LocalDateTime createdDate;
+     private Timestamp createdDate;
 
      @LastModifiedDate
-     private LocalDateTime lastModifiedDate;
+     private Timestamp lastModifiedDate;
 
      @ManyToOne
      @CreatedBy
-     private User createdBy;
+     private Admin createdBy;
 
      @ManyToOne
      @LastModifiedBy
-     private User lastModifiedBy;
+     private Admin lastModifiedBy;
 
      private int isDeleted = 0;
 
@@ -51,35 +52,35 @@ public class AditableEntity implements Serializable{
         this.isDeleted = isDeleted;
     }
 
-    public LocalDateTime getCreatedDate() {
+    public Timestamp getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(LocalDateTime createdDate) {
+    public void setCreatedDate(Timestamp createdDate) {
         this.createdDate = createdDate;
     }
 
-    public LocalDateTime getLastModifiedDate() {
+    public Timestamp getLastModifiedDate() {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
+    public void setLastModifiedDate(Timestamp lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    public User getCreatedBy() {
+    public Admin getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(User createdBy) {
+    public void setCreatedBy(Admin createdBy) {
         this.createdBy = createdBy;
     }
 
-    public User getLastModifiedBy() {
+    public Admin getLastModifiedBy() {
         return lastModifiedBy;
     }
 
-    public void setLastModifiedBy(User lastModifiedBy) {
+    public void setLastModifiedBy(Admin lastModifiedBy) {
         this.lastModifiedBy = lastModifiedBy;
     }
 }

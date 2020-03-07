@@ -47,5 +47,7 @@ public class SignUpRequest {
     private String mobileno;
 
     private List<String> roleType;
+
+    private String adminId;
     
 }

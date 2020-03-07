@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.xmplify.starter_kit_springboot_singledb.model.Admin;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,6 +44,14 @@ public class UserPrincipal implements UserDetails {
         List<GrantedAuthority> authorities = user.getRoles().stream().map(role ->
                 new SimpleGrantedAuthority(role.getName())
         ).collect(Collectors.toList());
+
+        Admin admin = user.getAdmin();
+      //  List<GrantedAuthority> authorities = admin.stream().map((adm) -> adm.getAdminRoles().stream().forEach((role) -> new SimpleGrantedAuthority((role.getName()))));
+//        if(Objects.nonNull(admin)){
+//            authorities = admin.getAdminRoles().stream().map(role ->
+//                    new SimpleGrantedAuthority(role.getName())
+//            ).collect(Collectors.toList());
+//        }
 
         return new UserPrincipal(
                 user.getId(),

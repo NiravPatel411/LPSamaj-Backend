@@ -16,6 +16,6 @@ public class AddAdminRequest {
         @NotBlank
         private String personId;
 
-        private List<String> roleType;
+        private String roleId;
 
 }

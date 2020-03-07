@@ -17,5 +17,7 @@ public interface RoleRepository extends JpaRepository<Role, String> {
 
     List<Role> findByNameIn(List<String> roleName);
 
+    Optional<Role> findByNameContainingIgnoreCase(String name);
+
    // Optional<Set<Role>> findByName(Iterable<String> roleName);
 }

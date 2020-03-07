@@ -1,4 +1,5 @@
 package com.xmplify.starter_kit_springboot_singledb.security;
+import java.io.IOException;
 import java.util.Date;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -55,13 +56,14 @@ public class JwtTokenProvider {
                 .compact());
     }
 
-    public String getUserIdFromJWT(String token) {
+    public String getUserIdFromJWT(String token) throws IOException {
         Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
 
-        return claims.getSubject();
+        JwtCustomPayload jwtCustomPayload = objectMapper.readValue(claims.getSubject() , JwtCustomPayload.class);
+        return jwtCustomPayload.getUserId();
     }
 
     public boolean validateToken(String authToken) {

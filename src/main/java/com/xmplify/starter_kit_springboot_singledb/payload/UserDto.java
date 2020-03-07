@@ -60,15 +60,15 @@ public class UserDto {
 		return userDto;
 	}
 
-	public static UserDto create(Admin admin, String roleType) {
-		System.out.println("user"+admin);
-		List<GrantedAuthority> authorities = admin.getAdminRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
-
-		UserDto userDto = new UserDto();
-
-		userDto = userDto.builder().id(admin.getId()).name(admin.getName()).person(admin.getPerson_id()).signInAs(roleType).build();
-		return userDto;
-	}
+//	public static UserDto create(Admin admin, String roleType) {
+//		System.out.println("user"+admin);
+//		List<GrantedAuthority> authorities = admin.getAdminRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+//
+//		UserDto userDto = new UserDto();
+//
+//		userDto = userDto.builder().id(admin.getId()).name(admin.getName()).person(admin.getPerson()).signInAs(roleType).build();
+//		return userDto;
+//	}
 
 
 }
