@@ -80,5 +80,4 @@ public class PersonDetailDTO {
     private int isDeleted;
 
     private String status;
-
 }

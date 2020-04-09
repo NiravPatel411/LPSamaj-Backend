@@ -23,4 +23,5 @@ public class UpdateUserDTO {
     @NotNull (message = "address can not be null")
     @Valid
     private List<UpdateAddressFromUserDTO> address;
+
 }

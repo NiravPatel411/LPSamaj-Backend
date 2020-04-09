@@ -15,7 +15,6 @@ import java.util.Date;
 @AllArgsConstructor
 public class UpdatePersonDetailDTO {
 
-    @NotNull(message = "person Id can not be null or empty")
     private String personId;
 
     @NotNull(message = "firstName can not be null or empty")
@@ -61,10 +60,12 @@ public class UpdatePersonDetailDTO {
 
     private String mobileLocalId;
 
+    @NotNull(message = "createdDate can not be null")
     private Timestamp createdDate;
 
     private Timestamp updatedDate;
 
+    @NotNull(message = "createdBy can not be null")
     private String createdBy;
 
     private String updatedBy;

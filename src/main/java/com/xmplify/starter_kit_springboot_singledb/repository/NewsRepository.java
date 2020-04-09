@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface NewsRepository extends JpaRepository<News, String> {
 
-    @Query("SELECT n FROM News n where n.newsType.id = :newsTypeId")
+    @Query("SELECT n FROM News n where n.newsType.id = :newsTypeId order by n.createdDate desc ")
     public List<News> findByNewsTypeId(String newsTypeId);
 
     @Query("SELECT n FROM News n where n.adminId.id = :adminId")

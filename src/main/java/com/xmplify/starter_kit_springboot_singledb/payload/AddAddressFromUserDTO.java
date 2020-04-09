@@ -47,4 +47,5 @@ public class AddAddressFromUserDTO {
     private int isDeleted;
 
     private String status;
+
 }

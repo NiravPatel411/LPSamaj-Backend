@@ -19,4 +19,6 @@ public class GlobalConstants {
 
     public static final String NEWS_TYPE = "News";
     public static final String FILE_DOWNLOAD_HTTP_HEADER = "attachment; filename=\"%s\"";
+
+    public static final String SYNC_STATUS = "1";
 }
