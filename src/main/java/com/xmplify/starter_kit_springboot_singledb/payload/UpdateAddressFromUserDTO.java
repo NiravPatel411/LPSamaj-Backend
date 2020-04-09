@@ -15,8 +15,6 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class UpdateAddressFromUserDTO {
 
-    @NotNull(message = "addressId can not be null")
-    @NotEmpty(message = "addressId can not be empty")
     private String addressId;
 
     @NotNull(message = "addressType can not be null")

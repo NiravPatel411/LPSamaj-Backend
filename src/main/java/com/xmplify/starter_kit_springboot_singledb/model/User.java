@@ -9,6 +9,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.LazyCollection;
@@ -61,11 +62,12 @@ public class User extends AditableEntity {
 
     private String gender;
 
+    @JsonFormat(pattern="yyyy-MM-dd")
     private Date birthDate;
 
     private String bloodGroup;
 
-    private String maritualStatus;
+    private String maritalStatus;
 
     @JsonIgnore
     @Size(max = 100)
@@ -114,7 +116,7 @@ public class User extends AditableEntity {
         this.mobileno = mobileno;
     }
 
-    public User( @Size(max = 15) String firstName, @Size(max = 15) String lastName, @Size(max = 15) String surname, String profilePic, @Size(max = 40) @Email String email, String gender, Date birthDate, String bloodGroup, String maritualStatus, @Size(max = 100) String password, @Size(max = 15) String mobileno) {
+    public User( @Size(max = 15) String firstName, @Size(max = 15) String lastName, @Size(max = 15) String surname, String profilePic, @Size(max = 40) @Email String email, String gender, Date birthDate, String bloodGroup, String maritalStatus, @Size(max = 100) String password, @Size(max = 15) String mobileno) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.surname = surname;
@@ -123,7 +125,7 @@ public class User extends AditableEntity {
         this.gender = gender;
         this.birthDate = birthDate;
         this.bloodGroup = bloodGroup;
-        this.maritualStatus = maritualStatus;
+        this.maritalStatus = maritalStatus;
         this.password = password;
         this.mobileno = mobileno;
     }

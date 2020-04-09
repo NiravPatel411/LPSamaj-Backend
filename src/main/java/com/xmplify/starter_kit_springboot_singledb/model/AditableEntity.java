@@ -1,5 +1,6 @@
 package com.xmplify.starter_kit_springboot_singledb.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -19,9 +20,11 @@ import java.time.LocalDateTime;
 public class AditableEntity implements Serializable{
 
      @CreatedDate
+     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
      private Timestamp createdDate;
 
      @LastModifiedDate
+     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
      private Timestamp lastModifiedDate;
 
      @ManyToOne

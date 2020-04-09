@@ -1,5 +1,6 @@
 package com.xmplify.starter_kit_springboot_singledb.controller;
 
+import com.xmplify.starter_kit_springboot_singledb.UserMapper;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.model.*;
 import com.xmplify.starter_kit_springboot_singledb.payload.*;
@@ -66,6 +67,9 @@ public class PersonController {
     @Autowired
     AddressRepository addressRepository;
 
+    @Autowired
+    UserMapper userMapper;
+
     @GetMapping("/")
     public ResponseEntity<?> listUser(final Pageable pageable) {
         Page<User> users = userRepository.findAll(pageable);
@@ -79,7 +83,10 @@ public class PersonController {
             listPersonBasicDetail.setLastName(user.getLastName());
             listPersonBasicDetail.setMobileno(user.getMobileno());
             listPersonBasicDetail.setPersonId(user.getId());
-            listPersonBasicDetail.setProfilePic(user.getProfilePic());
+            //listPersonBasicDetail.setProfilePic(user.getProfilePic());
+
+            //todo : remove temp string in setProfilePic
+            listPersonBasicDetail.setProfilePic("");
             listPersonBasicDetail.setSurname(user.getSurname());
             listPersonBasicDetail.setCreatedDate(user.getCreatedDate());
             listPersonBasicDetail.setUpdatedDate(user.getLastModifiedDate());
@@ -148,7 +155,7 @@ public class PersonController {
     }
 
     @PostMapping(value = "/add")
-    public ResponseEntity<?> registerUser(@Valid @ModelAttribute AddPersonDTO addPersonDTO, BindingResult result) {
+    public ResponseEntity<?> registerUser(@Valid @ModelAttribute UpdateUserDTO updateUserDTO, BindingResult result) {
 
         if (result.hasErrors()) {
             List<String> errors = new ArrayList<>();
@@ -171,191 +178,208 @@ public class PersonController {
             return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Validation error", errors), HttpStatus.BAD_REQUEST);
         }
         List<String> addressErrors = new ArrayList<>();
-        addPersonDTO.getAddress().forEach((address) -> {
-            if (coutryRepository.findById(address.getCountryId()).isPresent()) {
-                addressErrors.add("Can not found country with " + address.getCountryId() + " Id");
-            }
-        });
+        if (updateUserDTO.getPersonDetail().getPersonId() != null && userRepository.existsById(updateUserDTO.getPersonDetail().getPersonId())) {
+            ResponseEntity<?> responseEntity = this.updateUser(updateUserDTO,result);
+            return responseEntity;
+        } else {
+            AddPersonDTO addPersonDTO = userMapper.updateUserDTOToAddUserDTO(updateUserDTO);
 
-        if (Objects.isNull(addressErrors)) {
-            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not found country", addressErrors), HttpStatus.BAD_REQUEST);
-        }
+            addPersonDTO.getAddress().forEach((address) -> {
+                if (coutryRepository.findById(address.getCountryId()).isPresent()) {
+                    addressErrors.add("Can not found country with " + address.getCountryId() + " Id");
+                }
+            });
 
-        List<String> districtErrors = new ArrayList<>();
-        addPersonDTO.getAddress().forEach((address) -> {
-            if (districtRepository.findById(address.getDistrictId()).isPresent()) {
-                districtErrors.add("Can not found District with " + address.getDistrictId() + "Id");
-            }
-        });
-
-        if (Objects.isNull(districtErrors)) {
-            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not found districts", districtErrors), HttpStatus.BAD_REQUEST);
-        }
-
-        Optional<Admin> admin = adminRepository.findById(addPersonDTO.getPersonDetail().getAdminId());
-        if (!admin.isPresent()) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not found Admin", null), HttpStatus.BAD_REQUEST);
-        }
-
-        Optional<Village> village = villageRepository.findById(addPersonDTO.getPersonDetail().getVillageId());
-        if (!village.isPresent()) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not found Village", null), HttpStatus.BAD_REQUEST);
-        }
-
-        if (userRepository.existsByMobileno(addPersonDTO.getPersonDetail().getMobileno())) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Mobileno already in use!", null),
-                    HttpStatus.BAD_REQUEST);
-        }
-
-        if (userRepository.existsByEmail(addPersonDTO.getPersonDetail().getEmail())) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Email already in use!", null),
-                    HttpStatus.BAD_REQUEST);
-        }
-
-        Optional<Admin> userCreated = adminRepository.findById(addPersonDTO.getPersonDetail().getCreatedBy());
-        if (!userCreated.isPresent()) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid User Id in Created By", null),
-                    HttpStatus.BAD_REQUEST);
-        }
-
-        Optional<Admin> userUpdated = adminRepository.findById(addPersonDTO.getPersonDetail().getUpdatedBy());
-        if (!userCreated.isPresent()) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid User Id in Updated By", null),
-                    HttpStatus.BAD_REQUEST);
-        }
-
-        User user = new User();
-        Optional<Role> userRole = roleRepository.findByNameContainingIgnoreCase(GlobalConstants.ROLE_NORMAL);
-        if (!userRole.isPresent()) {
-            Role role = new Role();
-            role.setDisplayName(GlobalConstants.ROLE_NORMAL);
-            role.setName(GlobalConstants.ROLE_NORMAL);
-            roleRepository.save(role);
-        }
-        /***************************************************************************************************************
-         MultipartFile file = addPersonDTO.getPersonDetail().getProfilePic();
-         if(file.isEmpty()){
-         return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "File can not be empty", null),
-         HttpStatus.BAD_REQUEST);
-         }
-
-         try{
-         byte[] bytes = file.getBytes();
-         Path path = Paths.get(GlobalConstants.UPLOAD_IMAGE + addPersonDTO.getPersonDetail().getFirstName());
-         Files.write(path,bytes);
-         // byte[] bytes1 = file.getBytes();
-         } catch(IOException e){
-         e.printStackTrace();
-         }
-         ****************************************************************************************************************/
-        Set<Role> userRoleSet = new HashSet<Role>();
-        userRoleSet.add(userRole.get());
-        user.setRoles(userRoleSet);
-        user.setAdmin(admin.get());
-        user.setPassword(addPersonDTO.getPersonDetail().getPassword());
-        user.setBirthDate(addPersonDTO.getPersonDetail().getBirthDate());
-        user.setEmail(addPersonDTO.getPersonDetail().getEmail());
-        user.setFirstName(addPersonDTO.getPersonDetail().getFirstName());
-        user.setGender(addPersonDTO.getPersonDetail().getGender());
-        user.setLastName(addPersonDTO.getPersonDetail().getLastName());
-        user.setMaritualStatus(addPersonDTO.getPersonDetail().getMaritualStatus());
-        user.setMobileno(addPersonDTO.getPersonDetail().getMobileno());
-
-        user.setCreatedBy(userCreated.get());
-        user.setCreatedDate(addPersonDTO.getPersonDetail().getCreatedDate());
-        user.setLastModifiedDate(addPersonDTO.getPersonDetail().getUpdatedDate());
-        user.setLastModifiedBy(userUpdated.get());
-        user.setStatus(addPersonDTO.getPersonDetail().getStatus());
-        user.setIsDeleted(addPersonDTO.getPersonDetail().getIsDeleted());
-        // user.setProfilePic(addPersonDTO.getPersonDetail().getProfilePic());
-        user.setSurname(addPersonDTO.getPersonDetail().getSurname());
-        user.setVillage(village.get());
-
-        User userRes = userRepository.save(user);
-
-        userRes.setMobileLocalId(addPersonDTO.getPersonDetail().getMobileLocalId());
-
-        GetPersonDetail getPersonDetail = new GetPersonDetail();
-        getPersonDetail.setAdminId(admin.get().getId());
-        getPersonDetail.setAdminName(admin.get().getName());
-        getPersonDetail.setBirthDate(addPersonDTO.getPersonDetail().getBirthDate());
-        getPersonDetail.setEmail(addPersonDTO.getPersonDetail().getEmail());
-        getPersonDetail.setFirstName(addPersonDTO.getPersonDetail().getFirstName());
-        getPersonDetail.setGender(addPersonDTO.getPersonDetail().getGender());
-        getPersonDetail.setLastName(addPersonDTO.getPersonDetail().getLastName());
-        getPersonDetail.setMaritualStatus(addPersonDTO.getPersonDetail().getMaritualStatus());
-        getPersonDetail.setMobileno(addPersonDTO.getPersonDetail().getMobileno());
-
-        getPersonDetail.setCreatedBy(userCreated.get().getId());
-        getPersonDetail.setCreatedDate(addPersonDTO.getPersonDetail().getCreatedDate());
-        getPersonDetail.setUpdatedDate(addPersonDTO.getPersonDetail().getUpdatedDate());
-        getPersonDetail.setUpdatedBy(userUpdated.get().getId());
-        getPersonDetail.setStatus(addPersonDTO.getPersonDetail().getStatus());
-        getPersonDetail.setIsDeleted(addPersonDTO.getPersonDetail().getIsDeleted());
-        // user.setProfilePic(addPersonDTO.getPersonDetail().getProfilePic());
-        getPersonDetail.setSurname(addPersonDTO.getPersonDetail().getSurname());
-        getPersonDetail.setVillageName(village.get().getName());
-
-        Optional<User> person = userRepository.findById(userRes.getId());
-        if (!person.isPresent()) {
-            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Some thing went wrong", null), HttpStatus.BAD_REQUEST);
-        }
-
-        List<Address> addressList = new ArrayList<>();
-        List<GetAddressDetail> getAddressDetail = new ArrayList<>();
-
-        for (AddAddressFromUserDTO address : addPersonDTO.getAddress()) {
-            Address addressObj = new Address();
-            GetAddressDetail getAddress = new GetAddressDetail();
-            Optional<Admin> createdBy = adminRepository.findById(address.getCreatedBy());
-            if (!createdBy.isPresent()) {
-                return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "createdBy does not exist in User", null), HttpStatus.BAD_REQUEST);
+            if (Objects.isNull(addressErrors)) {
+                return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not found country", addressErrors), HttpStatus.BAD_REQUEST);
             }
 
-            Optional<Admin> updatedBy = adminRepository.findById(address.getUpdatedBy());
-            if (!updatedBy.isPresent()) {
-                return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "updatedBy does not exist in User", null), HttpStatus.BAD_REQUEST);
+            List<String> districtErrors = new ArrayList<>();
+            addPersonDTO.getAddress().forEach((address) -> {
+                if (districtRepository.findById(address.getDistrictId()).isPresent()) {
+                    districtErrors.add("Can not found District with " + address.getDistrictId() + "Id");
+                }
+            });
+
+            if (Objects.isNull(districtErrors)) {
+                return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not found districts", districtErrors), HttpStatus.BAD_REQUEST);
             }
-            addressObj.setAddressText(address.getAddressText());
-            addressObj.setAddressType(address.getAddressType());
-            addressObj.setCountry(coutryRepository.findById(address.getCountryId()).get());
-            addressObj.setDistrict(districtRepository.findById(address.getDistrictId()).get());
-            addressObj.setPersonId(person.get());
-            addressObj.setMobileLocalId(address.getMobileLocalId());
-            addressObj.setCreatedBy(createdBy.get());
-            addressObj.setCreatedDate(address.getCreatedDate());
-            addressObj.setLastModifiedBy(updatedBy.get());
-            addressObj.setLastModifiedDate(address.getUpdatedDate());
-            addressObj.setStatus(address.getStatus());
-            addressObj.setIsDeleted(address.getIsDeleted());
-            Address savedAddress = addressRepository.save(addressObj);
-            addressList.add(savedAddress);
 
-            getAddress.setId(savedAddress.getId());
-            getAddress.setAddressText(address.getAddressText());
-            getAddress.setAddressType(address.getAddressType());
-            Optional<Country> country = coutryRepository.findById(address.getCountryId());
-            getAddress.setCountry( country.isPresent() ? country.get().getName() : null );
-            getAddress.setCountryId( country.isPresent() ? country.get().getId() : null );
-            Optional<District> district = districtRepository.findById(address.getDistrictId());
-            getAddress.setDistrict(district.isPresent() ? district.get().getName() : null);
-            getAddress.setDistrictId(district.isPresent() ? district.get().getId() : null);
-            getAddress.setPersonId(person.get().getId());
-            getAddress.setMobileLocalId(address.getMobileLocalId());
-            getAddress.setCreatedBy(createdBy.get().getId());
-            getAddress.setCreatedDate(address.getCreatedDate());
-            getAddress.setUpdatedBy(updatedBy.get().getId());
-            getAddress.setUpdatedDate(address.getUpdatedDate());
-            getAddress.setStatus(address.getStatus());
-            getAddress.setIsDeleted(address.getIsDeleted());
+            Optional<Admin> admin = adminRepository.findById(addPersonDTO.getPersonDetail().getAdminId());
+            if (!admin.isPresent()) {
+                return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not found Admin", null), HttpStatus.BAD_REQUEST);
+            }
 
-            getAddressDetail.add(getAddress);
+            Optional<Village> village = villageRepository.findById(addPersonDTO.getPersonDetail().getVillageId());
+            if (!village.isPresent()) {
+                return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not found Village", null), HttpStatus.BAD_REQUEST);
+            }
+
+            if (userRepository.existsByMobileno(addPersonDTO.getPersonDetail().getMobileno())) {
+                return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Mobileno already in use!", null),
+                        HttpStatus.BAD_REQUEST);
+            }
+
+            if (userRepository.existsByEmail(addPersonDTO.getPersonDetail().getEmail())) {
+                return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Email already in use!", null),
+                        HttpStatus.BAD_REQUEST);
+            }
+            Optional<Admin> userCreated = null;
+            if(addPersonDTO.getPersonDetail().getCreatedBy() != null) {
+                userCreated = adminRepository.findById(addPersonDTO.getPersonDetail().getCreatedBy());
+                if (userCreated == null || !userCreated.isPresent()) {
+                    return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid User Id in Created By", null),
+                            HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Created By can not be null", null),
+                        HttpStatus.BAD_REQUEST);
+            }
+            Optional<Admin> userUpdated = null;
+            if(addPersonDTO.getPersonDetail().getUpdatedBy() != null) {
+                userUpdated = adminRepository.findById(addPersonDTO.getPersonDetail().getUpdatedBy());
+                if (userUpdated == null || !userCreated.isPresent()) {
+                    return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid User Id in Updated By", null),
+                            HttpStatus.BAD_REQUEST);
+                }
+            } else {
+
+            }
+
+            User user = new User();
+            Optional<Role> userRole = roleRepository.findByNameContainingIgnoreCase(GlobalConstants.ROLE_NORMAL);
+            if (!userRole.isPresent()) {
+                Role role = new Role();
+                role.setDisplayName(GlobalConstants.ROLE_NORMAL);
+                role.setName(GlobalConstants.ROLE_NORMAL);
+                roleRepository.save(role);
+            }
+            /***************************************************************************************************************
+             * todo : Put below code while adding profile pic
+             MultipartFile file = addPersonDTO.getPersonDetail().getProfilePic();
+             if(file.isEmpty()){
+             return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "File can not be empty", null),
+             HttpStatus.BAD_REQUEST);
+             }
+
+             try{
+             byte[] bytes = file.getBytes();
+             Path path = Paths.get(GlobalConstants.UPLOAD_IMAGE + addPersonDTO.getPersonDetail().getFirstName());
+             Files.write(path,bytes);
+             // byte[] bytes1 = file.getBytes();
+             } catch(IOException e){
+             e.printStackTrace();
+             }
+             ****************************************************************************************************************/
+            Set<Role> userRoleSet = new HashSet<Role>();
+            userRoleSet.add(userRole.get());
+            user.setRoles(userRoleSet);
+            user.setAdmin(admin.get());
+            user.setPassword(addPersonDTO.getPersonDetail().getPassword());
+            user.setBirthDate(addPersonDTO.getPersonDetail().getBirthDate());
+            user.setEmail(addPersonDTO.getPersonDetail().getEmail());
+            user.setFirstName(addPersonDTO.getPersonDetail().getFirstName());
+            user.setGender(addPersonDTO.getPersonDetail().getGender());
+            user.setLastName(addPersonDTO.getPersonDetail().getLastName());
+            user.setMaritalStatus(addPersonDTO.getPersonDetail().getMaritualStatus());
+            user.setMobileno(addPersonDTO.getPersonDetail().getMobileno());
+
+            user.setCreatedBy(userCreated.get());
+            user.setCreatedDate(addPersonDTO.getPersonDetail().getCreatedDate());
+            user.setLastModifiedDate(addPersonDTO.getPersonDetail().getUpdatedDate());
+            user.setLastModifiedBy(userUpdated.isPresent() ? userUpdated.get() : null);
+            user.setStatus(addPersonDTO.getPersonDetail().getStatus());
+            user.setIsDeleted(addPersonDTO.getPersonDetail().getIsDeleted());
+            // user.setProfilePic(addPersonDTO.getPersonDetail().getProfilePic());
+            user.setSurname(addPersonDTO.getPersonDetail().getSurname());
+            user.setVillage(village.get());
+
+            User userRes = userRepository.save(user);
+
+            userRes.setMobileLocalId(addPersonDTO.getPersonDetail().getMobileLocalId());
+
+            GetPersonDetail getPersonDetail = new GetPersonDetail();
+            getPersonDetail.setAdminId(admin.get().getId());
+            getPersonDetail.setAdminName(admin.get().getName());
+            getPersonDetail.setBirthDate(addPersonDTO.getPersonDetail().getBirthDate());
+            getPersonDetail.setEmail(addPersonDTO.getPersonDetail().getEmail());
+            getPersonDetail.setFirstName(addPersonDTO.getPersonDetail().getFirstName());
+            getPersonDetail.setGender(addPersonDTO.getPersonDetail().getGender());
+            getPersonDetail.setLastName(addPersonDTO.getPersonDetail().getLastName());
+            getPersonDetail.setMaritualStatus(addPersonDTO.getPersonDetail().getMaritualStatus());
+            getPersonDetail.setMobileno(addPersonDTO.getPersonDetail().getMobileno());
+
+            getPersonDetail.setCreatedBy(userCreated.get().getId());
+            getPersonDetail.setCreatedDate(addPersonDTO.getPersonDetail().getCreatedDate());
+            getPersonDetail.setUpdatedDate(addPersonDTO.getPersonDetail().getUpdatedDate());
+           getPersonDetail.setUpdatedBy(userUpdated.isPresent() ? userUpdated.get().getId() : "");
+            getPersonDetail.setStatus(addPersonDTO.getPersonDetail().getStatus());
+            getPersonDetail.setIsDeleted(addPersonDTO.getPersonDetail().getIsDeleted());
+            // user.setProfilePic(addPersonDTO.getPersonDetail().getProfilePic());
+            getPersonDetail.setSurname(addPersonDTO.getPersonDetail().getSurname());
+            getPersonDetail.setVillageName(village.get().getName());
+
+            Optional<User> person = userRepository.findById(userRes.getId());
+            if (!person.isPresent()) {
+                return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Some thing went wrong", null), HttpStatus.BAD_REQUEST);
+            }
+
+            List<Address> addressList = new ArrayList<>();
+            List<GetAddressDetail> getAddressDetail = new ArrayList<>();
+
+            for (AddAddressFromUserDTO address : addPersonDTO.getAddress()) {
+                Address addressObj = new Address();
+                GetAddressDetail getAddress = new GetAddressDetail();
+//                Optional<Admin> createdBy = adminRepository.findById(address.getCreatedBy());
+//                if (!createdBy.isPresent()) {
+//                    return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "createdBy does not exist in User", null), HttpStatus.BAD_REQUEST);
+//                }
+//
+//                Optional<Admin> updatedBy = adminRepository.findById(address.getUpdatedBy());
+//                if (!updatedBy.isPresent()) {
+//                    return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "updatedBy does not exist in User", null), HttpStatus.BAD_REQUEST);
+//                }
+                addressObj.setAddressText(address.getAddressText());
+                addressObj.setAddressType(address.getAddressType());
+                addressObj.setCountry(coutryRepository.findById(address.getCountryId()).get());
+                addressObj.setDistrict(districtRepository.findById(address.getDistrictId()).get());
+                addressObj.setPersonId(person.get());
+                addressObj.setMobileLocalId(address.getMobileLocalId());
+                addressObj.setCreatedBy(admin.get());
+                addressObj.setCreatedDate(address.getCreatedDate());
+                addressObj.setLastModifiedBy(admin.get());
+                addressObj.setLastModifiedDate(address.getUpdatedDate());
+                addressObj.setStatus(address.getStatus());
+                addressObj.setIsDeleted(address.getIsDeleted());
+                Address savedAddress = addressRepository.save(addressObj);
+                addressList.add(savedAddress);
+
+                getAddress.setId(savedAddress.getId());
+                getAddress.setAddressText(address.getAddressText());
+                getAddress.setAddressType(address.getAddressType());
+                Optional<Country> country = coutryRepository.findById(address.getCountryId());
+                getAddress.setCountry(country.isPresent() ? country.get().getName() : null);
+                getAddress.setCountryId(country.isPresent() ? country.get().getId() : null);
+                Optional<District> district = districtRepository.findById(address.getDistrictId());
+                getAddress.setDistrict(district.isPresent() ? district.get().getName() : null);
+                getAddress.setDistrictId(district.isPresent() ? district.get().getId() : null);
+                getAddress.setPersonId(person.get().getId());
+                getAddress.setMobileLocalId(address.getMobileLocalId());
+                getAddress.setCreatedBy(admin.get().getId());
+                getAddress.setCreatedDate(address.getCreatedDate());
+                getAddress.setUpdatedBy(admin.get().getId());
+                getAddress.setUpdatedDate(address.getUpdatedDate());
+                getAddress.setStatus(address.getStatus());
+                getAddress.setIsDeleted(address.getIsDeleted());
+
+                getAddressDetail.add(getAddress);
+            }
+            HashMap<String, Object> userRet = new HashMap<>();
+            userRet.put(GlobalConstants.BASIC_DETAIL, getPersonDetail);
+            userRet.put(GlobalConstants.ADDRESS, getAddressDetail);
+
+            return new ResponseEntity(new ApiResponse(HttpStatus.CREATED.value(), true, "User created", userRet), HttpStatus.CREATED);
         }
-        HashMap<String, Object> userRet = new HashMap<>();
-        userRet.put(GlobalConstants.BASIC_DETAIL, getPersonDetail);
-        userRet.put(GlobalConstants.ADDRESS, getAddressDetail);
-
-        return new ResponseEntity(new ApiResponse(HttpStatus.CREATED.value(), true, "User created", userRet), HttpStatus.CREATED);
     }
 
     @PutMapping("/update")
@@ -438,7 +462,7 @@ public class PersonController {
             getPersonDetail.setFirstName(updatedUser.get().getFirstName());
             getPersonDetail.setGender(updatedUser.get().getGender());
             getPersonDetail.setLastName(updatedUser.get().getLastName());
-            getPersonDetail.setMaritualStatus(updatedUser.get().getMaritualStatus());
+            getPersonDetail.setMaritualStatus(updatedUser.get().getMaritalStatus());
             getPersonDetail.setMobileno(updatedUser.get().getMobileno());
 
             getPersonDetail.setCreatedBy(updatedUser.get().getCreatedBy().getId());
@@ -540,7 +564,7 @@ public class PersonController {
         person.setFirstName(personDetail.getFirstName());
         person.setGender(personDetail.getGender());
         person.setLastName(personDetail.getLastName());
-        person.setMaritualStatus(personDetail.getMaritualStatus());
+        person.setMaritalStatus(personDetail.getMaritualStatus());
         person.setMobileno(personDetail.getMobileno());
         person.setProfilePic(personDetail.getProfilePic());
         person.setSurname(personDetail.getSurname());
@@ -673,20 +697,23 @@ public class PersonController {
                     personalDetail.setFirstName(user.getFirstName());
                     personalDetail.setGender(user.getGender());
                     personalDetail.setLastName(user.getLastName());
-                    personalDetail.setMaritualStatus(user.getMaritualStatus());
+                    personalDetail.setMaritalStatus(user.getMaritalStatus());
                     personalDetail.setCreatedAt(user.getMobileno());
                     personalDetail.setPersonId(user.getId());
-                    personalDetail.setProfilePic(user.getProfilePic());
+
+                    //todo : remove temp string in setProfilePic
+                    personalDetail.setProfilePic("");
                     personalDetail.setSurname(user.getSurname());
                     personalDetail.setVillageId(user.getVillageId());
+                    personalDetail.setIsSync(GlobalConstants.SYNC_STATUS);
 
                     personalDetail.setIsDelete(String.valueOf(user.getIsDeleted()));
-                    personalDetail.setDeletedBy(String.valueOf(user.getLastModifiedBy() != null ? user.getLastModifiedBy().getId() : null));
-                    personalDetail.setDeletedAt(String.valueOf(user.getLastModifiedDate()));
+                    personalDetail.setDeletedAt("");
+                    personalDetail.setCreatedBy("");
                     personalDetail.setStatus(String.valueOf(user.getStatus()));
                     personalDetail.setUpdatedAt(String.valueOf(user.getLastModifiedDate()));
-                    personalDetail.setUpdatedBy(String.valueOf(user.getLastModifiedBy() != null ? user.getLastModifiedBy().getId() : null));
-                    personalDetail.setCreatedBy(String.valueOf(user.getCreatedBy() != null ? user.getCreatedBy().getId() : null));
+                    personalDetail.setUpdatedBy(String.valueOf(user.getLastModifiedBy() != null ? user.getLastModifiedBy().getId() : ""));
+                    personalDetail.setCreatedBy(String.valueOf(user.getCreatedBy() != null ? user.getCreatedBy().getId() : ""));
                     personalDetail.setCreatedAt(String.valueOf(user.getCreatedDate()));
                     personalDetails.add(personalDetail);
 
@@ -702,14 +729,13 @@ public class PersonController {
                         addressDetail.setPersonId(add.getPersonId().getId());
 
                         addressDetail.setIsDelete(String.valueOf(add.getIsDeleted()));
-                        addressDetail.setDeletedBy(String.valueOf(add.getLastModifiedBy()));
-                        addressDetail.setDeletedAt(String.valueOf(add.getLastModifiedDate()));
 
                         addressDetail.setUpdatedAt(String.valueOf(add.getLastModifiedDate()));
                         addressDetail.setUpdatedBy(String.valueOf(add.getLastModifiedBy()));
 
                         addressDetail.setCreatedBy(String.valueOf(add.getCreatedBy() != null ? add.getCreatedBy().getId() : null));
                         addressDetail.setCreatedAt(String.valueOf(add.getCreatedDate()));
+                        addressDetail.setIsSync(GlobalConstants.SYNC_STATUS);
                         addressDetails.add(addressDetail);
                     });
                 });

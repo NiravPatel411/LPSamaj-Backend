@@ -36,7 +36,7 @@ public class PersonalDetail {
 
     private String bloodGroup;
 
-    private String maritualStatus;
+    private String maritalStatus;
 
     private String contactNo;
 
