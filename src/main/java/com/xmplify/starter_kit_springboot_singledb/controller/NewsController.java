@@ -12,14 +12,12 @@ import com.xmplify.starter_kit_springboot_singledb.repository.MediaRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.NewsRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.NewsTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -29,7 +27,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -55,10 +52,10 @@ public class NewsController {
     MediaRepository mediaRepository;
 
     @GetMapping("/")
-    public ResponseEntity<?> getAllNews(){
+    public ResponseEntity<?> getAllNews() {
         List<News> newsList = newsRepository.findAll();
         List<AllNews> allNewsList = new ArrayList<>();
-        for(News news : newsList){
+        for (News news : newsList) {
             AllNews allNews = new AllNews();
             allNews.setId(news.getId());
             allNews.setAdminId(news.getAdminId().getId());
@@ -70,13 +67,13 @@ public class NewsController {
             allNews.setAdminLastName(news.getAdminId().getPerson().getLastName());
             allNews.setAdminSurname(news.getAdminId().getPerson().getSurname());
 
-            allNews.setCreatedAt(news.getCreatedDate() != null ? news.getCreatedDate().toString():null);
-            allNews.setUpdatedAt(news.getLastModifiedDate() != null ? news.getLastModifiedDate().toString():null);
+            allNews.setCreatedAt(news.getCreatedDate() != null ? news.getCreatedDate().toString() : null);
+            allNews.setUpdatedAt(news.getLastModifiedDate() != null ? news.getLastModifiedDate().toString() : null);
             List<Media> mediaList = mediaRepository.findAllByRelatedId(news.getId());
-            if(mediaList != null){
+            if (mediaList != null) {
                 List<AllMedia> allMedia = new ArrayList<>();
 
-                for(Media media : mediaList){
+                for (Media media : mediaList) {
                     AllMedia allMediaObj = new AllMedia();
                     allMediaObj.setId(media.getId());
                     allMediaObj.setMediaType(media.getMediaType());
@@ -95,22 +92,23 @@ public class NewsController {
     }
 
     @GetMapping("/getAllNewsType")
-    public ResponseEntity<?> getAllNewsType(){
-        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", newsTypeRepository.findAll()), HttpStatus.OK);
+    public ResponseEntity<?> getAllNewsType() {
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", newsTypeRepository.findAllByOrOrderByPriority_number()), HttpStatus.OK);
     }
 
     @PostMapping("/addNewsType")
-    public ResponseEntity<?> AddNewsType(@RequestBody AddNewsType addNewsType){
+    public ResponseEntity<?> AddNewsType(@RequestBody AddNewsType addNewsType) {
         NewsType newsType = new NewsType();
         newsType.setType(addNewsType.getName());
+        newsType.setPriority_number(addNewsType.getPriority_number());
 
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", newsTypeRepository.save(newsType)), HttpStatus.OK);
     }
 
     @PostMapping("/updateNewsType")
-    public ResponseEntity<?> AddNewsType(@RequestBody UpdateNewsType updateNewsType){
+    public ResponseEntity<?> AddNewsType(@RequestBody UpdateNewsType updateNewsType) {
         Optional<NewsType> newsType = newsTypeRepository.findById(updateNewsType.getId());
-        if(!newsType.isPresent()){
+        if (!newsType.isPresent()) {
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "News id not found", null), HttpStatus.OK);
         }
         NewsType newsTypeNew = new NewsType();
@@ -121,9 +119,9 @@ public class NewsController {
     }
 
     @DeleteMapping("/deleteNewsType/{typeId}")
-    public ResponseEntity<?> deleteNewsType(@PathVariable String typeId){
+    public ResponseEntity<?> deleteNewsType(@PathVariable String typeId) {
         Optional<NewsType> newsType = newsTypeRepository.findById(typeId);
-        if(!newsType.isPresent()){
+        if (!newsType.isPresent()) {
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "News id not found", null), HttpStatus.OK);
         }
         newsTypeRepository.delete(newsType.get());
@@ -131,18 +129,18 @@ public class NewsController {
     }
 
     @GetMapping("/getNewsType/{typeId}")
-    public ResponseEntity<?> getNewsTypeById(@PathVariable String typeId){
+    public ResponseEntity<?> getNewsTypeById(@PathVariable String typeId) {
         Optional<NewsType> newsType = newsTypeRepository.findById(typeId);
-        if(newsType.isPresent()){
+        if (newsType.isPresent()) {
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "News id not found", null), HttpStatus.OK);
         }
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", newsRepository.findAll()), HttpStatus.OK);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addNews(@ModelAttribute AddNewsRequest newsRequest, BindingResult result, HttpServletRequest request){
+    public ResponseEntity<?> addNews(@ModelAttribute AddNewsRequest newsRequest, BindingResult result, HttpServletRequest request) {
         Media media = new Media();
-        Map<String,Object> retObject = new HashMap<>();
+        Map<String, Object> retObject = new HashMap<>();
         List<String> errors = new ArrayList<>();
         if (result.hasErrors()) {
             for (Object object : result.getAllErrors()) {
@@ -165,11 +163,11 @@ public class NewsController {
             return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Validation error", errors), HttpStatus.BAD_REQUEST);
         }
         Optional<Admin> admin = adminRepository.findById(newsRequest.getAdminId());
-        if(!admin.isPresent()){
+        if (!admin.isPresent()) {
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Can not found admin by adminId", null), HttpStatus.OK);
         }
         Optional<NewsType> newsType = newsTypeRepository.findById(newsRequest.getNewsTypeId());
-        if(!newsType.isPresent()){
+        if (!newsType.isPresent()) {
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Can not found News Type by newsTypeId", null), HttpStatus.OK);
         }
         News news = new News();
@@ -191,38 +189,38 @@ public class NewsController {
         ret.setAdminSurname(newsResult.getAdminId().getPerson().getSurname());
         ret.setAdminLastName(newsResult.getAdminId().getPerson().getLastName());
         ret.setAdminFirstName(newsResult.getAdminId().getPerson().getFirstName());
-        ret.setCreatedAt(newsResult.getCreatedDate() != null ? newsResult.getCreatedDate().toString():null);
-        ret.setUpdatedAt(newsResult.getLastModifiedDate() != null ?newsResult.getLastModifiedDate().toString():null);
-        retObject.put("NewsDetail",newsResult);
+        ret.setCreatedAt(newsResult.getCreatedDate() != null ? newsResult.getCreatedDate().toString() : null);
+        ret.setUpdatedAt(newsResult.getLastModifiedDate() != null ? newsResult.getLastModifiedDate().toString() : null);
+        retObject.put("NewsDetail", newsResult);
         List<AllMedia> allMedia = new ArrayList<>();
-        if(newsRequest.getNewsMedia() != null){
-            for(int i = 0; i<newsRequest.getNewsMedia().length ; i++){
-           // for(AddNewsMedia addNewsMedia : newsRequest.getNewsMedia()){
+        if (newsRequest.getNewsMedia() != null) {
+            for (int i = 0; i < newsRequest.getNewsMedia().length; i++) {
+                // for(AddNewsMedia addNewsMedia : newsRequest.getNewsMedia()){
                 AllMedia retMedia = new AllMedia();
                 AddNewsMedia addNewsMedia = newsRequest.getNewsMedia()[i];
                 MultipartFile file = addNewsMedia.getMedia();
 
-                if(file.isEmpty()){
+                if (file.isEmpty()) {
                     return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "File can not be empty", null),
                             HttpStatus.BAD_REQUEST);
                 }
-                try{
+                try {
                     byte[] bytes = file.getBytes();
                     ServletContext context = request.getServletContext();
                     String fullPath = context.getRealPath(GlobalConstants.UPLOAD_NEWS_MEDIA_FULL_PATH);
                     Path path = Paths.get(fullPath);
-                    if(! Files.exists(path)){
+                    if (!Files.exists(path)) {
                         Files.createDirectories(path);
                     }
-                    Path filePath = Paths.get(path+GlobalConstants.BACK_SLASH+newsResult.getId()+"_"+i+"."+file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]);
-                    Files.write(filePath,bytes);
+                    Path filePath = Paths.get(path + GlobalConstants.BACK_SLASH + newsResult.getId() + "_" + i + "." + file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]);
+                    Files.write(filePath, bytes);
 
                     media.setMediaType(addNewsMedia.getMediaType());
                     media.setRelatedId(newsResult.getId());
                     media.setRelatedType(GlobalConstants.NEWS_TYPE);
 
                     //ServletContext context = request.getServletContext();
-                    media.setStorePath(ServletUriComponentsBuilder.fromCurrentContextPath().path(GlobalConstants.UPLOAD_NEWS_MEDIA_URL_PATH+newsResult.getId()+"_"+i+"."+file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]).toUriString());
+                    media.setStorePath(ServletUriComponentsBuilder.fromCurrentContextPath().path(GlobalConstants.UPLOAD_NEWS_MEDIA_URL_PATH + newsResult.getId() + "_" + i + "." + file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]).toUriString());
 
 
                     Media mediaDb = mediaRepository.save(media);
@@ -234,21 +232,21 @@ public class NewsController {
                     retMedia.setMediaType(mediaDb.getMediaType());
                     allMedia.add(retMedia);
                     // byte[] bytes1 = file.getBytes();
-                } catch(IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                     return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "IO Exception", e.toString()), HttpStatus.OK);
                 }
             }
         }
         ret.setAllMedia(allMedia);
-        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS",ret), HttpStatus.OK);
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", ret), HttpStatus.OK);
         //return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", newsRepository.findAll()), HttpStatus.OK);
     }
 
     @PostMapping("/update")
-    public ResponseEntity<?> updateNews(@ModelAttribute UpdateNewsRequest updateNewsRequest, BindingResult result, HttpServletRequest request){
+    public ResponseEntity<?> updateNews(@ModelAttribute UpdateNewsRequest updateNewsRequest, BindingResult result, HttpServletRequest request) {
         List<String> errors = new ArrayList<>();
-        Map<String,Object> retObject = new HashMap<>();
+        Map<String, Object> retObject = new HashMap<>();
         if (result.hasErrors()) {
             for (Object object : result.getAllErrors()) {
                 if (object instanceof FieldError) {
@@ -270,18 +268,18 @@ public class NewsController {
             return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Validation error", errors), HttpStatus.BAD_REQUEST);
         }
         Optional<Admin> admin = adminRepository.findById(updateNewsRequest.getAdminId());
-        if(!admin.isPresent()){
+        if (!admin.isPresent()) {
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Can not found admin by adminId", null), HttpStatus.OK);
         }
         Optional<NewsType> newsType = newsTypeRepository.findById(updateNewsRequest.getNewsTypeId());
-        if(!newsType.isPresent()){
+        if (!newsType.isPresent()) {
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Can not found News Type by newsTypeId", null), HttpStatus.OK);
         }
 
         Optional<News> news = newsRepository.findById(updateNewsRequest.getNewsId());
         List<AllNews> allNewsList = new ArrayList<>();
         AllNews ret = new AllNews();
-        if(news.isPresent()){
+        if (news.isPresent()) {
             News oldNews = news.get();
             News newNews = new News();
             newNews.setId(oldNews.getId());
@@ -299,20 +297,20 @@ public class NewsController {
             ret.setAdminSurname(newsResult.getAdminId().getPerson().getSurname());
             ret.setAdminLastName(newsResult.getAdminId().getPerson().getLastName());
             ret.setAdminFirstName(newsResult.getAdminId().getPerson().getFirstName());
-            ret.setCreatedAt(newsResult.getCreatedDate() != null ? newsResult.getCreatedDate().toString():null);
-            ret.setUpdatedAt(newsResult.getLastModifiedDate() != null ?newsResult.getLastModifiedDate().toString():null);
+            ret.setCreatedAt(newsResult.getCreatedDate() != null ? newsResult.getCreatedDate().toString() : null);
+            ret.setUpdatedAt(newsResult.getLastModifiedDate() != null ? newsResult.getLastModifiedDate().toString() : null);
         }
         List<AllMedia> allMedia = new ArrayList<>();
 
-        for(int i = 0; i<updateNewsRequest.getNewsMedia().length ; i++){
+        for (int i = 0; i < updateNewsRequest.getNewsMedia().length; i++) {
             UpdateNewsMedia updateNewsMedia = updateNewsRequest.getNewsMedia()[i];
             AllMedia retMedia = new AllMedia();
             Media media = new Media();
-            if(Objects.nonNull(updateNewsMedia.getMediaId())) {
+            if (Objects.nonNull(updateNewsMedia.getMediaId())) {
                 Optional<Media> oldMedia = mediaRepository.findById(updateNewsMedia.getMediaId());
-                if(oldMedia.isPresent()){
+                if (oldMedia.isPresent()) {
                     media.setId(oldMedia.get().getId());
-                    File file = new File(GlobalConstants.UPLOAD_NEWS_MEDIA_FULL_PATH+news.get().getId()+"_"+i+"."+updateNewsMedia.getMedia().getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]);
+                    File file = new File(GlobalConstants.UPLOAD_NEWS_MEDIA_FULL_PATH + news.get().getId() + "_" + i + "." + updateNewsMedia.getMedia().getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]);
                     file.delete();
                 }
             }
@@ -320,19 +318,19 @@ public class NewsController {
 
             MultipartFile file = updateNewsMedia.getMedia();
 
-            if(file.isEmpty()){
+            if (file.isEmpty()) {
                 return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "File can not be empty", null),
                         HttpStatus.BAD_REQUEST);
             }
-            try{
+            try {
                 byte[] bytes = file.getBytes();
 
                 Path path = Paths.get(GlobalConstants.UPLOAD_NEWS_MEDIA_FULL_PATH);
-                if(! Files.exists(path)){
+                if (!Files.exists(path)) {
                     Files.createDirectories(path);
                 }
-                Path filePath = Paths.get(GlobalConstants.UPLOAD_NEWS_MEDIA_FULL_PATH+news.get().getId()+"_"+i+"."+file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]);
-                Files.write(filePath,bytes);
+                Path filePath = Paths.get(GlobalConstants.UPLOAD_NEWS_MEDIA_FULL_PATH + news.get().getId() + "_" + i + "." + file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]);
+                Files.write(filePath, bytes);
 
                 media.setMediaType(updateNewsMedia.getMediaType());
                 media.setRelatedId(news.get().getId());
@@ -340,7 +338,7 @@ public class NewsController {
                 media.setRelatedType(GlobalConstants.NEWS_TYPE);
 
                 ServletContext context = request.getServletContext();
-                media.setStorePath(ServletUriComponentsBuilder.fromCurrentContextPath().path(GlobalConstants.UPLOAD_NEWS_MEDIA_URL_PATH+news.get().getId()+"_"+i+"."+file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]).toUriString());
+                media.setStorePath(ServletUriComponentsBuilder.fromCurrentContextPath().path(GlobalConstants.UPLOAD_NEWS_MEDIA_URL_PATH + news.get().getId() + "_" + i + "." + file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]).toUriString());
                 Media mediaDb = mediaRepository.save(media);
                 retMedia.setRelatedType(mediaDb.getRelatedType());
                 retMedia.setIdDeleted(mediaDb.getIdDeleted());
@@ -349,27 +347,26 @@ public class NewsController {
                 retMedia.setStorePath(mediaDb.getStorePath());
                 retMedia.setMediaType(mediaDb.getMediaType());
                 allMedia.add(retMedia);
-            } catch(IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
                 return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "IO Exception", e.toString()), HttpStatus.OK);
             }
         }
         ret.setAllMedia(allMedia);
-        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS",ret), HttpStatus.OK);
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", ret), HttpStatus.OK);
     }
 
     @GetMapping("download/{fileName}")
-    public ResponseEntity<?> getMediaByUrl(@PathVariable String fileName, HttpServletRequest request){
-        Path filePath = Paths.get(GlobalConstants.UPLOAD_NEWS_MEDIA_FULL_PATH+fileName);
+    public ResponseEntity<?> getMediaByUrl(@PathVariable String fileName, HttpServletRequest request) {
+        Path filePath = Paths.get(GlobalConstants.UPLOAD_NEWS_MEDIA_FULL_PATH + fileName);
         String contentType = null;
         Resource resource = null;
         try {
             resource = new UrlResource(filePath.toUri());
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-        }catch (MalformedURLException ex) {
+        } catch (MalformedURLException ex) {
             ex.printStackTrace();
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
@@ -377,20 +374,21 @@ public class NewsController {
                         String.format(GlobalConstants.FILE_DOWNLOAD_HTTP_HEADER, resource.getFilename()))
                 .body(resource);
     }
+
     @GetMapping("/byNewsTypeId/{newsTypeId}")
-    public ResponseEntity<?> getAllNewsByNewsTypeId(@PathVariable String newsTypeId){
+    public ResponseEntity<?> getAllNewsByNewsTypeId(@PathVariable String newsTypeId) {
         List<AllNews> allNewsList = new ArrayList<>();
         Optional<NewsType> newsType = newsTypeRepository.findById(newsTypeId);
-        if(!newsType.isPresent()){
+        if (!newsType.isPresent()) {
             return new ResponseEntity(new ApiResponse(HttpStatus.NOT_FOUND.value(), false, "Invalid id. News type not found", null), HttpStatus.OK);
         }
 
         List<News> newsList = newsRepository.findByNewsTypeId(newsType.get().getId());
-        if(newsList == null){
+        if (newsList == null) {
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", allNewsList), HttpStatus.OK);
         }
 
-        for(News news : newsList){
+        for (News news : newsList) {
             AllNews allNews = new AllNews();
             allNews.setId(news.getId());
             allNews.setAdminId(news.getAdminId().getId());
@@ -402,13 +400,13 @@ public class NewsController {
             allNews.setAdminLastName(news.getAdminId().getPerson().getLastName());
             allNews.setAdminSurname(news.getAdminId().getPerson().getSurname());
 
-            allNews.setCreatedAt(news.getCreatedDate() != null ? news.getCreatedDate().toString():null);
-            allNews.setUpdatedAt(news.getLastModifiedDate() != null ? news.getLastModifiedDate().toString():null);
+            allNews.setCreatedAt(news.getCreatedDate() != null ? news.getCreatedDate().toString() : null);
+            allNews.setUpdatedAt(news.getLastModifiedDate() != null ? news.getLastModifiedDate().toString() : null);
             List<Media> mediaList = mediaRepository.findAllByRelatedId(news.getId());
-            if(mediaList != null){
+            if (mediaList != null) {
                 List<AllMedia> allMedia = new ArrayList<>();
 
-                for(Media media : mediaList){
+                for (Media media : mediaList) {
                     AllMedia allMediaObj = new AllMedia();
                     allMediaObj.setId(media.getId());
                     allMediaObj.setMediaType(media.getMediaType());
@@ -427,18 +425,18 @@ public class NewsController {
     }
 
     @GetMapping("/byAdminId/{adminId}")
-    public ResponseEntity<?> getAllNewsByAdminId(@PathVariable String adminId){
+    public ResponseEntity<?> getAllNewsByAdminId(@PathVariable String adminId) {
         List<AllNews> allNewsList = new ArrayList<>();
         Optional<Admin> admin = adminRepository.findById(adminId);
-        if(!admin.isPresent()){
+        if (!admin.isPresent()) {
             return new ResponseEntity(new ApiResponse(HttpStatus.NOT_FOUND.value(), false, "Invalid id. Admin not found", null), HttpStatus.OK);
         }
 
         List<News> newsList = newsRepository.getByAdminId(adminId);
-        if(newsList == null){
+        if (newsList == null) {
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "SUCCESS", allNewsList), HttpStatus.OK);
         }
-        for(News news : newsList){
+        for (News news : newsList) {
             AllNews allNews = new AllNews();
             allNews.setId(news.getId());
             allNews.setAdminId(news.getAdminId().getId());
@@ -450,13 +448,13 @@ public class NewsController {
             allNews.setAdminLastName(news.getAdminId().getPerson().getLastName());
             allNews.setAdminSurname(news.getAdminId().getPerson().getSurname());
 
-            allNews.setCreatedAt(news.getCreatedDate() != null ? news.getCreatedDate().toString():null);
-            allNews.setUpdatedAt(news.getLastModifiedDate() != null ? news.getLastModifiedDate().toString():null);
+            allNews.setCreatedAt(news.getCreatedDate() != null ? news.getCreatedDate().toString() : null);
+            allNews.setUpdatedAt(news.getLastModifiedDate() != null ? news.getLastModifiedDate().toString() : null);
             List<Media> mediaList = mediaRepository.findAllByRelatedId(news.getId());
-            if(mediaList != null){
+            if (mediaList != null) {
                 List<AllMedia> allMedia = new ArrayList<>();
 
-                for(Media media : mediaList){
+                for (Media media : mediaList) {
                     AllMedia allMediaObj = new AllMedia();
                     allMediaObj.setId(media.getId());
                     allMediaObj.setMediaType(media.getMediaType());
