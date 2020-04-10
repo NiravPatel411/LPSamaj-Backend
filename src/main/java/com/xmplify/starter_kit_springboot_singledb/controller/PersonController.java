@@ -6,7 +6,6 @@ import com.xmplify.starter_kit_springboot_singledb.model.*;
 import com.xmplify.starter_kit_springboot_singledb.payload.*;
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,21 +18,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 @RestController
@@ -283,6 +273,7 @@ public class PersonController {
             user.setLastName(addPersonDTO.getPersonDetail().getLastName());
             user.setMaritalStatus(addPersonDTO.getPersonDetail().getMaritualStatus());
             user.setMobileno(addPersonDTO.getPersonDetail().getMobileno());
+            user.setBloodGroup(addPersonDTO.getPersonDetail().getBloodGroup());
 
             user.setCreatedBy(userCreated.get());
             user.setCreatedDate(addPersonDTO.getPersonDetail().getCreatedDate());
@@ -693,6 +684,7 @@ public class PersonController {
                     PersonalDetail personalDetail = new PersonalDetail();
                     personalDetail.setBirthDate(user.getBirthDate());
                     personalDetail.setBloodGroup(user.getBloodGroup());
+                    personalDetail.setContactNo(user.getMobileno());
                     personalDetail.setEmail(user.getEmail());
                     personalDetail.setFirstName(user.getFirstName());
                     personalDetail.setGender(user.getGender());

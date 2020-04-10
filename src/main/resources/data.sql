@@ -35,5 +35,5 @@
   insert into admin (admin_role_id, name, person_id, id) values (2, 'Chirag', 1, 2);
 
 -- News
-  insert into news_type (type, id) values ('Image', 1);
-insert into news_type (type, id) values ('Video', 2);
+  insert into news_type (type, id,priority_number) values ('Image', 1,10);
+insert into news_type (type, id,priority_number) values ('Video', 2,20);
