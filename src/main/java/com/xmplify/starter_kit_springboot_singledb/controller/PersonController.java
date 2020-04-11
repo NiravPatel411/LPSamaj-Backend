@@ -78,10 +78,10 @@ public class PersonController {
             //todo : remove temp string in setProfilePic
             listPersonBasicDetail.setProfilePic("");
             listPersonBasicDetail.setSurname(user.getSurname());
-            listPersonBasicDetail.setCreatedDate(user.getCreatedDate());
-            listPersonBasicDetail.setUpdatedDate(user.getLastModifiedDate());
+            listPersonBasicDetail.setCreatedDate(user.getCreatedAt());
+            listPersonBasicDetail.setUpdatedDate(user.getUpdatedAt());
             listPersonBasicDetail.setCreatedBy(user.getCreatedBy() != null ? user.getCreatedBy().getId() : null);
-            listPersonBasicDetail.setUpdatedBy(user.getLastModifiedBy() != null ? user.getLastModifiedBy().getId() : null);
+            listPersonBasicDetail.setUpdatedBy(user.getUpdatedBy() != null ? user.getUpdatedBy().getId() : null);
             listPersonBasicDetail.setIsDeleted(user.getIsDeleted());
             listPersonBasicDetail.setStatus(user.getStatus());
             if (user.getVillage() != null) {
@@ -116,10 +116,10 @@ public class PersonController {
             listPersonBasicDetail.setPersonId(user.getId());
             listPersonBasicDetail.setProfilePic(user.getProfilePic());
             listPersonBasicDetail.setSurname(user.getSurname());
-            listPersonBasicDetail.setCreatedDate(user.getCreatedDate());
-            listPersonBasicDetail.setUpdatedDate(user.getLastModifiedDate());
+            listPersonBasicDetail.setCreatedDate(user.getCreatedAt());
+            listPersonBasicDetail.setUpdatedDate(user.getUpdatedAt());
             listPersonBasicDetail.setCreatedBy(user.getCreatedBy() != null ? user.getCreatedBy().getId() : null);
-            listPersonBasicDetail.setUpdatedBy(user.getLastModifiedBy().getId());
+            listPersonBasicDetail.setUpdatedBy(user.getUpdatedBy().getId());
             listPersonBasicDetail.setIsDeleted(user.getIsDeleted());
             listPersonBasicDetail.setStatus(user.getStatus());
             if (user.getVillage() != null) {
@@ -276,9 +276,9 @@ public class PersonController {
             user.setBloodGroup(addPersonDTO.getPersonDetail().getBloodGroup());
 
             user.setCreatedBy(userCreated.get());
-            user.setCreatedDate(addPersonDTO.getPersonDetail().getCreatedDate());
-            user.setLastModifiedDate(addPersonDTO.getPersonDetail().getUpdatedDate());
-            user.setLastModifiedBy(userUpdated.isPresent() ? userUpdated.get() : null);
+            user.setCreatedAt(addPersonDTO.getPersonDetail().getCreatedDate());
+            user.setUpdatedAt(addPersonDTO.getPersonDetail().getUpdatedDate());
+            user.setUpdatedBy(userUpdated.isPresent() ? userUpdated.get() : null);
             user.setStatus(addPersonDTO.getPersonDetail().getStatus());
             user.setIsDeleted(addPersonDTO.getPersonDetail().getIsDeleted());
             // user.setProfilePic(addPersonDTO.getPersonDetail().getProfilePic());
@@ -337,9 +337,9 @@ public class PersonController {
                 addressObj.setPersonId(person.get());
                 addressObj.setMobileLocalId(address.getMobileLocalId());
                 addressObj.setCreatedBy(admin.get());
-                addressObj.setCreatedDate(address.getCreatedDate());
-                addressObj.setLastModifiedBy(admin.get());
-                addressObj.setLastModifiedDate(address.getUpdatedDate());
+                addressObj.setCreatedAt(address.getCreatedDate());
+                addressObj.setUpdatedBy(admin.get());
+                addressObj.setUpdatedAt(address.getUpdatedDate());
                 addressObj.setStatus(address.getStatus());
                 addressObj.setIsDeleted(address.getIsDeleted());
                 Address savedAddress = addressRepository.save(addressObj);
@@ -457,9 +457,9 @@ public class PersonController {
             getPersonDetail.setMobileno(updatedUser.get().getMobileno());
 
             getPersonDetail.setCreatedBy(updatedUser.get().getCreatedBy().getId());
-            getPersonDetail.setCreatedDate(updatedUser.get().getCreatedDate());
-            getPersonDetail.setUpdatedDate(updatedUser.get().getLastModifiedDate());
-            getPersonDetail.setUpdatedBy(updatedUser.get().getLastModifiedBy().getId());
+            getPersonDetail.setCreatedDate(updatedUser.get().getCreatedAt());
+            getPersonDetail.setUpdatedDate(updatedUser.get().getUpdatedAt());
+            getPersonDetail.setUpdatedBy(updatedUser.get().getUpdatedBy().getId());
             getPersonDetail.setStatus(updatedUser.get().getStatus());
             getPersonDetail.setIsDeleted(updatedUser.get().getIsDeleted());
             // user.setProfilePic(addPersonDTO.getPersonDetail().getProfilePic());
@@ -480,9 +480,9 @@ public class PersonController {
                     getAddress.setPersonId(updatedUser.get().getId());
                     getAddress.setMobileLocalId(address.getMobileLocalId());
                     getAddress.setCreatedBy(address.getCreatedBy().getId());
-                    getAddress.setCreatedDate(address.getCreatedDate());
-                    getAddress.setUpdatedBy(address.getLastModifiedBy().getId());
-                    getAddress.setUpdatedDate(address.getLastModifiedDate());
+                    getAddress.setCreatedDate(address.getCreatedAt());
+                    getAddress.setUpdatedBy(address.getUpdatedBy().getId());
+                    getAddress.setUpdatedDate(address.getUpdatedAt());
                     getAddress.setStatus(address.getStatus());
                     getAddress.setIsDeleted(address.getIsDeleted());
                     addressDetailList.add(getAddress);
@@ -508,9 +508,9 @@ public class PersonController {
         address.setDistrict(districtRepository.findById(updateUserDTO.getDistrictId()).get());
         address.setMobileLocalId(updateUserDTO.getMobileLocalId());
         address.setCreatedBy(createdBy);
-        address.setCreatedDate(updateUserDTO.getCreatedDate());
-        address.setLastModifiedBy(updatedBy);
-        address.setLastModifiedDate(updateUserDTO.getUpdatedDate());
+        address.setCreatedAt(updateUserDTO.getCreatedDate());
+        address.setUpdatedBy(updatedBy);
+        address.setUpdatedAt(updateUserDTO.getUpdatedDate());
         address.setStatus(updateUserDTO.getStatus());
         address.setIsDeleted(updateUserDTO.getIsDeleted());
         addressRepository.save(address);
@@ -563,9 +563,9 @@ public class PersonController {
         person.setMobileLocalId(personDetail.getMobileLocalId());
 
         person.setCreatedBy(userCreated.get());
-        person.setCreatedDate(personDetail.getCreatedDate());
-        person.setLastModifiedDate(personDetail.getUpdatedDate());
-        person.setLastModifiedBy(userUpdated.get());
+        person.setCreatedAt(personDetail.getCreatedDate());
+        person.setUpdatedAt(personDetail.getUpdatedDate());
+        person.setUpdatedBy(userUpdated.get());
         person.setStatus(personDetail.getStatus());
         person.setIsDeleted(personDetail.getIsDeleted());
 
@@ -701,12 +701,13 @@ public class PersonController {
 
                     personalDetail.setIsDelete(String.valueOf(user.getIsDeleted()));
                     personalDetail.setDeletedAt("");
+                    personalDetail.setDeletedBy("");
                     personalDetail.setCreatedBy("");
                     personalDetail.setStatus(String.valueOf(user.getStatus()));
-                    personalDetail.setUpdatedAt(String.valueOf(user.getLastModifiedDate()));
-                    personalDetail.setUpdatedBy(String.valueOf(user.getLastModifiedBy() != null ? user.getLastModifiedBy().getId() : ""));
+                    personalDetail.setUpdatedAt(String.valueOf(user.getUpdatedAt()));
+                    personalDetail.setUpdatedBy(String.valueOf(user.getUpdatedBy() != null ? user.getUpdatedBy().getId() : ""));
                     personalDetail.setCreatedBy(String.valueOf(user.getCreatedBy() != null ? user.getCreatedBy().getId() : ""));
-                    personalDetail.setCreatedAt(String.valueOf(user.getCreatedDate()));
+                    personalDetail.setCreatedAt(String.valueOf(user.getCreatedAt()));
                     personalDetails.add(personalDetail);
 
 
@@ -722,11 +723,11 @@ public class PersonController {
 
                         addressDetail.setIsDelete(String.valueOf(add.getIsDeleted()));
 
-                        addressDetail.setUpdatedAt(String.valueOf(add.getLastModifiedDate()));
-                        addressDetail.setUpdatedBy(String.valueOf(add.getLastModifiedBy()));
+                        addressDetail.setUpdatedAt(String.valueOf(add.getUpdatedAt()));
+                        addressDetail.setUpdatedBy(String.valueOf(add.getUpdatedBy()));
 
                         addressDetail.setCreatedBy(String.valueOf(add.getCreatedBy() != null ? add.getCreatedBy().getId() : null));
-                        addressDetail.setCreatedAt(String.valueOf(add.getCreatedDate()));
+                        addressDetail.setCreatedAt(String.valueOf(add.getCreatedAt()));
                         addressDetail.setIsSync(GlobalConstants.SYNC_STATUS);
                         addressDetails.add(addressDetail);
                     });

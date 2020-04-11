@@ -5,7 +5,6 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.EntityListeners;
@@ -13,7 +12,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 @MappedSuperclass
 @EntityListeners({AuditingEntityListener.class})
@@ -21,11 +19,11 @@ public class AditableEntity implements Serializable{
 
      @CreatedDate
      @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-     private Timestamp createdDate;
+     private Timestamp createdAt;
 
      @LastModifiedDate
      @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-     private Timestamp lastModifiedDate;
+     private Timestamp updatedAt;
 
      @ManyToOne
      @CreatedBy
@@ -33,9 +31,32 @@ public class AditableEntity implements Serializable{
 
      @ManyToOne
      @LastModifiedBy
-     private Admin lastModifiedBy;
+     private Admin updatedBy;
 
-     private int isDeleted = 0;
+    @ManyToOne
+    @LastModifiedBy
+    private Admin deletedBy;
+
+    @LastModifiedDate
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Timestamp deletedAt;
+    private int isDeleted = 0;
+
+    public Admin getDeletedBy() {
+        return deletedBy;
+    }
+
+    public void setDeletedBy(Admin deletedBy) {
+        this.deletedBy = deletedBy;
+    }
+
+    public Timestamp getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(Timestamp deletedAt) {
+        this.deletedAt = deletedAt;
+    }
 
     private String status = "Active";
 
@@ -55,20 +76,20 @@ public class AditableEntity implements Serializable{
         this.isDeleted = isDeleted;
     }
 
-    public Timestamp getCreatedDate() {
-        return createdDate;
+    public Timestamp getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreatedDate(Timestamp createdDate) {
-        this.createdDate = createdDate;
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public Timestamp getLastModifiedDate() {
-        return lastModifiedDate;
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setLastModifiedDate(Timestamp lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public Admin getCreatedBy() {
@@ -79,11 +100,11 @@ public class AditableEntity implements Serializable{
         this.createdBy = createdBy;
     }
 
-    public Admin getLastModifiedBy() {
-        return lastModifiedBy;
+    public Admin getUpdatedBy() {
+        return updatedBy;
     }
 
-    public void setLastModifiedBy(Admin lastModifiedBy) {
-        this.lastModifiedBy = lastModifiedBy;
+    public void setUpdatedBy(Admin updatedBy) {
+        this.updatedBy = updatedBy;
     }
 }

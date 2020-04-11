@@ -1,7 +1,6 @@
 package com.xmplify.starter_kit_springboot_singledb.controller;
 
-import com.xmplify.starter_kit_springboot_singledb.model.Achievement;
-import com.xmplify.starter_kit_springboot_singledb.model.Education;
+import com.xmplify.starter_kit_springboot_singledb.model.PersonEducation;
 import com.xmplify.starter_kit_springboot_singledb.model.User;
 import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
 import com.xmplify.starter_kit_springboot_singledb.payload.EducationDTO;
@@ -27,12 +26,12 @@ public class EducationController {
     UserRepository userRepository;
 
     @GetMapping("/")
-    public List<Education> getAllEducation(){
+    public List<PersonEducation> getAllEducation() {
         return this.educationRepository.findAll();
     }
 
     @GetMapping("/{educationId}")
-    public Optional<Education> getEducationById(@PathVariable String educationId){
+    public Optional<PersonEducation> getEducationById(@PathVariable String educationId) {
         return this.educationRepository.findById(educationId);
     }
 
@@ -40,7 +39,7 @@ public class EducationController {
     public ResponseEntity<?> saveEducation(@RequestBody EducationDTO educationDTO){
         Optional<User> user = userRepository.findById(educationDTO.getPersonId());
         if(user.isPresent()){
-            Education education = new Education();
+            PersonEducation education = new PersonEducation();
             education.setDegreeId(educationDTO.getDegreeId());
             education.setEndDate(educationDTO.getEndDate());
             education.setPerson(user.get());
@@ -58,7 +57,7 @@ public class EducationController {
     public ResponseEntity<?> getEducationByPerson(@PathVariable String personId){
         Optional<User> user = userRepository.findById(personId);
         if(user.isPresent()){
-            Set<Education> Educations = user.get().getEducations();
+            Set<PersonEducation> Educations = user.get().getEducations();
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", Educations), HttpStatus.OK);
         }
         else{

@@ -1,25 +1,20 @@
 package com.xmplify.starter_kit_springboot_singledb.model;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.NaturalId;
+
+import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.NaturalId;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
@@ -85,15 +80,15 @@ public class User extends AditableEntity {
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL, mappedBy = "person")
-    private Set<Achievement> achievements;
+    private Set<PersonAchievement> achievements;
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL, mappedBy = "person")
-    private Set<Education> educations;
+    private Set<PersonEducation> educations;
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL, mappedBy = "person")
-    private Set<Working> workings;
+    private Set<PersonWorking> personWorkings;
 
     @OneToOne
     @JoinColumn(name = "admin_id")

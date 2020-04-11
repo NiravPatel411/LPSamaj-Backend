@@ -1,6 +1,5 @@
 package com.xmplify.starter_kit_springboot_singledb.repository;
 
-import com.xmplify.starter_kit_springboot_singledb.model.Education;
 import com.xmplify.starter_kit_springboot_singledb.model.State;
 import com.xmplify.starter_kit_springboot_singledb.payload.ListStatesResposeDTO;
 import org.springframework.data.jpa.repository.JpaRepository;

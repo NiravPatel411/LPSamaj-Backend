@@ -67,8 +67,8 @@ public class NewsController {
             allNews.setAdminLastName(news.getAdminId().getPerson().getLastName());
             allNews.setAdminSurname(news.getAdminId().getPerson().getSurname());
 
-            allNews.setCreatedAt(news.getCreatedDate() != null ? news.getCreatedDate().toString() : null);
-            allNews.setUpdatedAt(news.getLastModifiedDate() != null ? news.getLastModifiedDate().toString() : null);
+            allNews.setCreatedAt(news.getCreatedAt() != null ? news.getCreatedAt().toString() : null);
+            allNews.setUpdatedAt(news.getUpdatedAt() != null ? news.getUpdatedAt().toString() : null);
             List<Media> mediaList = mediaRepository.findAllByRelatedId(news.getId());
             if (mediaList != null) {
                 List<AllMedia> allMedia = new ArrayList<>();
@@ -189,8 +189,8 @@ public class NewsController {
         ret.setAdminSurname(newsResult.getAdminId().getPerson().getSurname());
         ret.setAdminLastName(newsResult.getAdminId().getPerson().getLastName());
         ret.setAdminFirstName(newsResult.getAdminId().getPerson().getFirstName());
-        ret.setCreatedAt(newsResult.getCreatedDate() != null ? newsResult.getCreatedDate().toString() : null);
-        ret.setUpdatedAt(newsResult.getLastModifiedDate() != null ? newsResult.getLastModifiedDate().toString() : null);
+        ret.setCreatedAt(newsResult.getCreatedAt() != null ? newsResult.getCreatedAt().toString() : null);
+        ret.setUpdatedAt(newsResult.getUpdatedAt() != null ? newsResult.getUpdatedAt().toString() : null);
         retObject.put("NewsDetail", newsResult);
         List<AllMedia> allMedia = new ArrayList<>();
         if (newsRequest.getNewsMedia() != null) {
@@ -297,8 +297,8 @@ public class NewsController {
             ret.setAdminSurname(newsResult.getAdminId().getPerson().getSurname());
             ret.setAdminLastName(newsResult.getAdminId().getPerson().getLastName());
             ret.setAdminFirstName(newsResult.getAdminId().getPerson().getFirstName());
-            ret.setCreatedAt(newsResult.getCreatedDate() != null ? newsResult.getCreatedDate().toString() : null);
-            ret.setUpdatedAt(newsResult.getLastModifiedDate() != null ? newsResult.getLastModifiedDate().toString() : null);
+            ret.setCreatedAt(newsResult.getCreatedAt() != null ? newsResult.getCreatedAt().toString() : null);
+            ret.setUpdatedAt(newsResult.getUpdatedAt() != null ? newsResult.getUpdatedAt().toString() : null);
         }
         List<AllMedia> allMedia = new ArrayList<>();
 
@@ -400,8 +400,8 @@ public class NewsController {
             allNews.setAdminLastName(news.getAdminId().getPerson().getLastName());
             allNews.setAdminSurname(news.getAdminId().getPerson().getSurname());
 
-            allNews.setCreatedAt(news.getCreatedDate() != null ? news.getCreatedDate().toString() : null);
-            allNews.setUpdatedAt(news.getLastModifiedDate() != null ? news.getLastModifiedDate().toString() : null);
+            allNews.setCreatedAt(news.getCreatedAt() != null ? news.getCreatedAt().toString() : null);
+            allNews.setUpdatedAt(news.getUpdatedAt() != null ? news.getUpdatedAt().toString() : null);
             List<Media> mediaList = mediaRepository.findAllByRelatedId(news.getId());
             if (mediaList != null) {
                 List<AllMedia> allMedia = new ArrayList<>();
@@ -448,8 +448,8 @@ public class NewsController {
             allNews.setAdminLastName(news.getAdminId().getPerson().getLastName());
             allNews.setAdminSurname(news.getAdminId().getPerson().getSurname());
 
-            allNews.setCreatedAt(news.getCreatedDate() != null ? news.getCreatedDate().toString() : null);
-            allNews.setUpdatedAt(news.getLastModifiedDate() != null ? news.getLastModifiedDate().toString() : null);
+            allNews.setCreatedAt(news.getCreatedAt() != null ? news.getCreatedAt().toString() : null);
+            allNews.setUpdatedAt(news.getUpdatedAt() != null ? news.getUpdatedAt().toString() : null);
             List<Media> mediaList = mediaRepository.findAllByRelatedId(news.getId());
             if (mediaList != null) {
                 List<AllMedia> allMedia = new ArrayList<>();

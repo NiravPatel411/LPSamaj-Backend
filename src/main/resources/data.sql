@@ -30,7 +30,7 @@
   insert into user_roles (user_id, role_id) values ('1', '1');
   insert into user_roles (user_id, role_id) values ('2', '1');
 
---Admin
+--AdminP
   insert into admin (admin_role_id, name, person_id, id) values (2, 'Nirav', 1, 1);
   insert into admin (admin_role_id, name, person_id, id) values (2, 'Chirag', 1, 2);
 

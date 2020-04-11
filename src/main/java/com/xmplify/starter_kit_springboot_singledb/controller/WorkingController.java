@@ -1,15 +1,11 @@
 package com.xmplify.starter_kit_springboot_singledb.controller;
 
-import com.xmplify.starter_kit_springboot_singledb.model.Education;
+import com.xmplify.starter_kit_springboot_singledb.model.PersonWorking;
 import com.xmplify.starter_kit_springboot_singledb.model.User;
-import com.xmplify.starter_kit_springboot_singledb.model.Working;
 import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
-import com.xmplify.starter_kit_springboot_singledb.payload.EducationDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.WorkingDTO;
-import com.xmplify.starter_kit_springboot_singledb.repository.EducationRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.UserRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.WorkingRepository;
-import org.hibernate.jdbc.Work;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +26,7 @@ public class WorkingController {
     UserRepository userRepository;
 
     @GetMapping("/")
-    public List<Working> getAllWorking(){
+    public List<PersonWorking> getAllWorking() {
         return this.workingRepository.findAll();
     }
 
@@ -43,19 +39,19 @@ public class WorkingController {
     public ResponseEntity<?> saveEducation(@RequestBody WorkingDTO workingDTO){
         Optional<User> user = userRepository.findById(workingDTO.getPersonId());
         if(user.isPresent()){
-           Working working = new Working();
-           working.setAddress(workingDTO.getAddress());
-           working.setClass_type(workingDTO.getClass_type());
-           working.setDescription(workingDTO.getDescription());
-           working.setEndDate(workingDTO.getEndDate());
-           working.setOccuption(workingDTO.getOccuption());
-           working.setOrganizationName(workingDTO.getOrganizationName());
-           working.setPerson(user.get());
-           working.setPosition(workingDTO.getPosition());
-           working.setProofPhoto(workingDTO.getProofPhoto());
-           working.setSector(workingDTO.getSector());
-           working.setStartDate(workingDTO.getStartDate());
-           return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", workingRepository.save(working)), HttpStatus.OK);
+            PersonWorking personWorking = new PersonWorking();
+            personWorking.setAddress(workingDTO.getAddress());
+            personWorking.setClassType(workingDTO.getClass_type());
+            personWorking.setDescription(workingDTO.getDescription());
+            personWorking.setEndDate(workingDTO.getEndDate());
+            personWorking.setOccuption(workingDTO.getOccuption());
+            personWorking.setOrganizationName(workingDTO.getOrganizationName());
+            personWorking.setPerson(user.get());
+            personWorking.setPosition(workingDTO.getPosition());
+            personWorking.setProofPhoto(workingDTO.getProofPhoto());
+            personWorking.setSector(workingDTO.getSector());
+            personWorking.setStartDate(workingDTO.getStartDate());
+            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", workingRepository.save(personWorking)), HttpStatus.OK);
         }
         else{
             return new ResponseEntity(new ApiResponse(HttpStatus.NOT_FOUND.value(), true, "ERROR", null), HttpStatus.NOT_FOUND);
@@ -66,8 +62,8 @@ public class WorkingController {
     public ResponseEntity<?> getEducationByPerson(@PathVariable String personId){
         Optional<User> user = userRepository.findById(personId);
         if(user.isPresent()){
-            Set<Working> workings = user.get().getWorkings();
-            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", workings), HttpStatus.OK);
+            Set<PersonWorking> personWorkings = user.get().getPersonWorkings();
+            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", personWorkings), HttpStatus.OK);
         }
         else{
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "ERROR", null), HttpStatus.OK);

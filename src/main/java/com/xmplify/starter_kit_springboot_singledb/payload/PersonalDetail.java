@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Getter
@@ -39,6 +38,7 @@ public class PersonalDetail {
     private String maritalStatus;
 
     private String contactNo;
+
 
     private String deletedBy;
 

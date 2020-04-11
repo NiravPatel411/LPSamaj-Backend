@@ -7,34 +7,44 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Entity
-@Table(name = "achievements")
+@Table(name = "personWorking")
 @NoArgsConstructor
 @Setter
 @Getter
-public class Achievement {
+public class PersonWorking extends AditableEntity {
 
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String id;
+    private String personWorkingId;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "person_id")
     private User person;
 
-    @Size(max = 15)
-    private String title;
+    private String organizationName;
 
-    @Size(max = 15)
-    private String description;
+    private Date startDate;
 
-    private Date achievementDate;
+    private Date endDate;
+
+    private String position;
 
     private String proofPhoto;
 
+    private String address;
+
+    private String description;
+
+    private String occuption; //
+    private String sector; // private ,Goverment ,Personal business
+    private String classType; // for gov
+    private String workingAddress; // for gov
+    private String businessDescription; // for gov
+    private String startWorkingYear;
+    private String endWorkingYear;
 }
