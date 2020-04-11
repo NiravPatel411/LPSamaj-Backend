@@ -291,6 +291,10 @@ public class NewsController {
             newNews.setAdminId(admin.get());
             newNews.setTitle(updateNewsRequest.getTitle());
             News newsResult = newsRepository.save(newNews);
+
+            // TODO: 11-04-2020 remove this below ids media
+            System.out.println("NewsController :updateNews : " + updateNewsRequest.getDeletedMediaIds());
+
             ret.setAdminId(admin.get().getId());
             ret.setDescription(newsResult.getDescription());
             ret.setNewsTypeId(newsType.get().getId());
