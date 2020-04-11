@@ -8,7 +8,6 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "address")
@@ -48,6 +47,15 @@ public class Address extends AditableEntity {
 
     @Column(name ="district_id",insertable = false,updatable = false)
     private String districtId;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnore
+    @JoinColumn(name = "state_id")
+    private State state;
+
+    @Column(name = "state_id", insertable = false, updatable = false)
+    private String stateId;
 
     @Transient
     private String mobileLocalId;

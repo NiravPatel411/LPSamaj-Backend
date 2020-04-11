@@ -718,6 +718,7 @@ public class PersonController {
                         addressDetail.setType(add.getAddressType());
                         addressDetail.setCountryId(add.getCountryId());
                         addressDetail.setDistrictId(add.getDistrictId());
+                        addressDetail.setStateId(add.getStateId());
                         addressDetail.setPersonId(add.getPersonId().getId());
 
                         addressDetail.setIsDelete(String.valueOf(add.getIsDeleted()));
@@ -736,8 +737,8 @@ public class PersonController {
                     });
                 });
 
-                retObj.put("Personal Detail", personalDetails);
-                retObj.put("Address", addressDetails);
+                retObj.put("personalDetail", personalDetails);
+                retObj.put("address", addressDetails);
                 return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Success", retObj), HttpStatus.OK);
 
             } else {

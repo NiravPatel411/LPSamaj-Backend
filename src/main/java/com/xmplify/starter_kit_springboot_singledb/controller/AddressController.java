@@ -1,16 +1,10 @@
 package com.xmplify.starter_kit_springboot_singledb.controller;
 
-import com.xmplify.starter_kit_springboot_singledb.model.Address;
-import com.xmplify.starter_kit_springboot_singledb.model.Country;
-import com.xmplify.starter_kit_springboot_singledb.model.District;
-import com.xmplify.starter_kit_springboot_singledb.model.User;
+import com.xmplify.starter_kit_springboot_singledb.model.*;
 import com.xmplify.starter_kit_springboot_singledb.payload.AddAddressDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
 import com.xmplify.starter_kit_springboot_singledb.payload.UpdateAddressDTO;
-import com.xmplify.starter_kit_springboot_singledb.repository.AddressRepository;
-import com.xmplify.starter_kit_springboot_singledb.repository.CoutryRepository;
-import com.xmplify.starter_kit_springboot_singledb.repository.DistrictRepository;
-import com.xmplify.starter_kit_springboot_singledb.repository.UserRepository;
+import com.xmplify.starter_kit_springboot_singledb.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +29,9 @@ public class AddressController {
 
     @Autowired
     DistrictRepository districtRepository;
+
+    @Autowired
+    StateRepository stateRepository;
 
     @GetMapping("/")
     public ResponseEntity<?> getAllAddressed(){
@@ -79,11 +76,17 @@ public class AddressController {
             return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(),false,"Can not found District",null),HttpStatus.BAD_REQUEST);
         }
 
+        Optional<State> state = stateRepository.findById(addAddressDTO.getStateId());
+        if (!district.isPresent()) {
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not found District", null), HttpStatus.BAD_REQUEST);
+        }
+
         Address address = new Address();
         address.setAddressText(addAddressDTO.getAddressText());
         address.setAddressType(addAddressDTO.getAddressType());
         address.setCountry(country.get());
         address.setDistrict(district.get());
+        address.setState(state.get());
         address.setPersonId(person.get());
 
         return new ResponseEntity<>(new ApiResponse(HttpStatus.CREATED.value(),true,"SUCCESS",addressRepository.save(address)),HttpStatus.CREATED);
@@ -128,12 +131,19 @@ public class AddressController {
             return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(),false,"Can not found District",addressRepository.findAll()),HttpStatus.BAD_REQUEST);
         }
 
+
+        Optional<State> state = stateRepository.findById(updateAddressDTO.getStateId());
+        if (!district.isPresent()) {
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not found District", null), HttpStatus.BAD_REQUEST);
+        }
+
         Address address = new Address();
         address.setId(updateAddressDTO.getAddressId());
         address.setAddressText(updateAddressDTO.getAddressText());
         address.setAddressType(updateAddressDTO.getAddressType());
         address.setCountry(country.get());
         address.setDistrict(district.get());
+        address.setState(state.get());
         address.setPersonId(person.get());
 
         return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(),true,"Updated",addressRepository.save(address)),HttpStatus.OK);
