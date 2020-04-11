@@ -1,6 +1,6 @@
 package com.xmplify.starter_kit_springboot_singledb.controller;
 
-import com.xmplify.starter_kit_springboot_singledb.model.Achievement;
+import com.xmplify.starter_kit_springboot_singledb.model.PersonAchievement;
 import com.xmplify.starter_kit_springboot_singledb.model.User;
 import com.xmplify.starter_kit_springboot_singledb.payload.AchievementDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -38,7 +37,7 @@ public class AchievementController {
     public ResponseEntity<?> AddEducation(@RequestBody AchievementDTO achievementDTO){
         Optional<User> person = userRepository.findById(achievementDTO.getPersonId());
         if(person.isPresent()){
-            Achievement achievement = new Achievement();
+            PersonAchievement achievement = new PersonAchievement();
             achievement.setAchievementDate(achievementDTO.getAchievementDate());
             achievement.setDescription(achievementDTO.getDescription());
             achievement.setPerson(person.get());
@@ -54,7 +53,7 @@ public class AchievementController {
     public ResponseEntity<?> getEducationByPerson(@PathVariable String personId){
         Optional<User> user = userRepository.findById(personId);
         if(user.isPresent()){
-            Set<Achievement> achievements = user.get().getAchievements();
+            Set<PersonAchievement> achievements = user.get().getAchievements();
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", achievements), HttpStatus.OK);
         }
         else{

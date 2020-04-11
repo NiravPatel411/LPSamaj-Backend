@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.validation.constraints.NotNull;
 
@@ -15,4 +14,6 @@ public class AddNewsType {
 
     @NotNull(message = "Name can not be null or empty")
     private String Name;
+    @NotNull
+    private int priority_number;
 }

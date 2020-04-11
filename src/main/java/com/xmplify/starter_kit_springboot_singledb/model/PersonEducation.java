@@ -9,16 +9,16 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "education")
+@Table(name = "personEducation")
 @NoArgsConstructor
 @Setter
 @Getter
-public class Education {
+public class PersonEducation extends AditableEntity {
 
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String id;
+    private String personEducationId;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
@@ -34,5 +34,12 @@ public class Education {
     private String startDate;
 
     private String endDate;
+//
+
+    private String degreeName;
+    private String startYear;
+    private String endYear;
+    private String proofPhoto;
+    private String medium;
 
 }

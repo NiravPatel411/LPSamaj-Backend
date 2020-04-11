@@ -25,4 +25,5 @@ public class NewsType {
     private String id;
 
     private String type;
+    private int priority_number;
 }
