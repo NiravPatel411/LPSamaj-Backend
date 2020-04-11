@@ -700,9 +700,8 @@ public class PersonController {
                     personalDetail.setIsSync(GlobalConstants.SYNC_STATUS);
 
                     personalDetail.setIsDelete(String.valueOf(user.getIsDeleted()));
-                    personalDetail.setDeletedAt("");
-                    personalDetail.setDeletedBy("");
-                    personalDetail.setCreatedBy("");
+                    personalDetail.setDeletedBy(String.valueOf(user.getDeletedBy() != null ? user.getDeletedBy().getId() : ""));
+                    personalDetail.setDeletedAt(String.valueOf(user.getDeletedAt()));
                     personalDetail.setStatus(String.valueOf(user.getStatus()));
                     personalDetail.setUpdatedAt(String.valueOf(user.getUpdatedAt()));
                     personalDetail.setUpdatedBy(String.valueOf(user.getUpdatedBy() != null ? user.getUpdatedBy().getId() : ""));
@@ -728,6 +727,10 @@ public class PersonController {
 
                         addressDetail.setCreatedBy(String.valueOf(add.getCreatedBy() != null ? add.getCreatedBy().getId() : null));
                         addressDetail.setCreatedAt(String.valueOf(add.getCreatedAt()));
+                        addressDetail.setDeletedBy(String.valueOf(add.getDeletedBy() != null ? add.getDeletedBy().getId() : ""));
+                        addressDetail.setDeletedAt(String.valueOf(add.getDeletedAt()));
+
+
                         addressDetail.setIsSync(GlobalConstants.SYNC_STATUS);
                         addressDetails.add(addressDetail);
                     });
