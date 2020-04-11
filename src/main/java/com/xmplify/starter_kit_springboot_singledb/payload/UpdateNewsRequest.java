@@ -28,5 +28,8 @@ public class UpdateNewsRequest {
     @NotNull(message = "adminId can not be null or empty")
     private String adminId;
 
+    @NotNull(message = "adminId can not be null or empty")
+    private String extraData;
+
     private UpdateNewsMedia[] newsMedia;
 }

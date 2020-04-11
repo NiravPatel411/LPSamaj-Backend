@@ -33,6 +33,10 @@ public class UpdateAddressFromUserDTO {
     @NotEmpty(message = "district can not be empty")
     private String districtId;
 
+    @NotNull(message = "district can not be null")
+    @NotEmpty(message = "district can not be empty")
+    private String stateId;
+
     @NotNull (message = "isSync can not be empty")
     private boolean isSync;
 

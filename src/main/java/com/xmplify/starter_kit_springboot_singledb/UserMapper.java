@@ -25,6 +25,7 @@ public class UserMapper {
                     updateAddressFromUserDTO.getAddressText(),
                     updateAddressFromUserDTO.getCountryId(),
                     updateAddressFromUserDTO.getDistrictId(),
+                    updateAddressFromUserDTO.getStateId(),
                     updateAddressFromUserDTO.getMobileLocalId(),
                     updateAddressFromUserDTO.isSync(),
                     updateAddressFromUserDTO.getCreatedDate(),
