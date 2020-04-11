@@ -22,6 +22,7 @@ public class AddressDetail {
     private String countryId;
 
     private String districtId;
+    private String stateId;
 
     private String deletedBy;
 
@@ -38,4 +39,5 @@ public class AddressDetail {
     private String isDelete;
 
     private String isSync;
+
 }

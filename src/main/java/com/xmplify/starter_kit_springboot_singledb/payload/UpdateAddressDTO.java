@@ -22,4 +22,5 @@ public class UpdateAddressDTO {
     private String countryId;
 
     private String districtId;
+    private String stateId;
 }
