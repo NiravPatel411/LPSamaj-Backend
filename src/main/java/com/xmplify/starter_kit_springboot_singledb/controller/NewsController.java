@@ -11,6 +11,7 @@ import com.xmplify.starter_kit_springboot_singledb.repository.AdminRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.MediaRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.NewsRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.NewsTypeRepository;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -213,7 +214,9 @@ public class NewsController {
                     if (!Files.exists(path)) {
                         Files.createDirectories(path);
                     }
-                    Path filePath = Paths.get(path + GlobalConstants.BACK_SLASH + newsResult.getId() + "_" + i + "." + file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]);
+
+                    String random = RandomStringUtils.random(5, true, true);
+                    Path filePath = Paths.get(path + GlobalConstants.BACK_SLASH + newsResult.getId() + "_" + random + "." + file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]);
                     Files.write(filePath, bytes);
                     Media media = new Media();
                     media.setMediaType(addNewsMedia.getMediaType());
@@ -221,7 +224,7 @@ public class NewsController {
                     media.setRelatedType(GlobalConstants.NEWS_TYPE);
 
                     //ServletContext context = request.getServletContext();
-                    media.setStorePath(ServletUriComponentsBuilder.fromCurrentContextPath().path(GlobalConstants.UPLOAD_NEWS_MEDIA_URL_PATH + newsResult.getId() + "_" + i + "." + file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]).toUriString());
+                    media.setStorePath(ServletUriComponentsBuilder.fromCurrentContextPath().path(GlobalConstants.UPLOAD_NEWS_MEDIA_URL_PATH + newsResult.getId() + "_" + random + "." + file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]).toUriString());
 
 
                     Media mediaDb = mediaRepository.save(media);
@@ -309,15 +312,20 @@ public class NewsController {
         }
         List<AllMedia> allMedia = new ArrayList<>();
 
+        if(updateNewsRequest.getNewsMedia() == null){
+            ret.setAllMedia(null);
+            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", ret), HttpStatus.OK);
+        }
         for (int i = 0; i < updateNewsRequest.getNewsMedia().length; i++) {
             UpdateNewsMedia updateNewsMedia = updateNewsRequest.getNewsMedia()[i];
             AllMedia retMedia = new AllMedia();
             Media media = new Media();
-            if (Objects.nonNull(updateNewsMedia.getMediaId())) {
+            //List<Media> oldMedias = mediaRepository.findAllByRelatedId(updateNewsRequest.getNewsId());
+            if(Objects.nonNull(updateNewsMedia.getMediaId())) {
                 Optional<Media> oldMedia = mediaRepository.findById(updateNewsMedia.getMediaId());
-                if (oldMedia.isPresent()) {
+                if(oldMedia.isPresent()){
                     media.setId(oldMedia.get().getId());
-                    File file = new File(GlobalConstants.UPLOAD_NEWS_MEDIA_FULL_PATH + news.get().getId() + "_" + i + "." + updateNewsMedia.getMedia().getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]);
+                    File file = new File(GlobalConstants.UPLOAD_NEWS_MEDIA_FULL_PATH+news.get().getId()+"_"+i+"."+updateNewsMedia.getMedia().getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]);
                     file.delete();
                 }
             }
@@ -331,12 +339,15 @@ public class NewsController {
             }
             try {
                 byte[] bytes = file.getBytes();
-
-                Path path = Paths.get(GlobalConstants.UPLOAD_NEWS_MEDIA_FULL_PATH);
+                ServletContext context = request.getServletContext();
+                String fullPath = context.getRealPath(GlobalConstants.UPLOAD_NEWS_MEDIA_FULL_PATH);
+                Path path = Paths.get(fullPath);
                 if (!Files.exists(path)) {
                     Files.createDirectories(path);
                 }
-                Path filePath = Paths.get(GlobalConstants.UPLOAD_NEWS_MEDIA_FULL_PATH + news.get().getId() + "_" + i + "." + file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]);
+                String random = RandomStringUtils.random(5, true, true);
+
+                Path filePath = Paths.get(path + GlobalConstants.BACK_SLASH + news.get().getId() + "_" + random + "." + file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]);
                 Files.write(filePath, bytes);
 
                 media.setMediaType(updateNewsMedia.getMediaType());
@@ -344,8 +355,7 @@ public class NewsController {
                 media.setMediaType(updateNewsMedia.getMediaType());
                 media.setRelatedType(GlobalConstants.NEWS_TYPE);
 
-                ServletContext context = request.getServletContext();
-                media.setStorePath(ServletUriComponentsBuilder.fromCurrentContextPath().path(GlobalConstants.UPLOAD_NEWS_MEDIA_URL_PATH + news.get().getId() + "_" + i + "." + file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]).toUriString());
+                media.setStorePath(ServletUriComponentsBuilder.fromCurrentContextPath().path(GlobalConstants.UPLOAD_NEWS_MEDIA_URL_PATH + news.get().getId() + "_" + random + "." + file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]).toUriString());
                 Media mediaDb = mediaRepository.save(media);
                 retMedia.setRelatedType(mediaDb.getRelatedType());
                 retMedia.setIdDeleted(mediaDb.getIdDeleted());
