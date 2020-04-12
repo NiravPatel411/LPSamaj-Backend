@@ -12,6 +12,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
@@ -30,9 +31,10 @@ public class AditableEntity implements Serializable{
 
      @CreatedDate
      @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+     @Column(updatable = false)
      private Date createdAt;
 
-    @LastModifiedDate
+     @LastModifiedDate
      @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
      private Date updatedAt;
 
