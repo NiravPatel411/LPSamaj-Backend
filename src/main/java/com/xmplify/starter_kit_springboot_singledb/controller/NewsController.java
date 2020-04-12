@@ -140,7 +140,6 @@ public class NewsController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addNews(@ModelAttribute AddNewsRequest newsRequest, BindingResult result, HttpServletRequest request) {
-        Media media = new Media();
         Map<String, Object> retObject = new HashMap<>();
         List<String> errors = new ArrayList<>();
         if (result.hasErrors()) {
@@ -216,7 +215,7 @@ public class NewsController {
                     }
                     Path filePath = Paths.get(path + GlobalConstants.BACK_SLASH + newsResult.getId() + "_" + i + "." + file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]);
                     Files.write(filePath, bytes);
-
+                    Media media = new Media();
                     media.setMediaType(addNewsMedia.getMediaType());
                     media.setRelatedId(newsResult.getId());
                     media.setRelatedType(GlobalConstants.NEWS_TYPE);
