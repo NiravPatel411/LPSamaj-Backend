@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -37,7 +39,7 @@ public class PersonDetailDTO {
     private String gender;
 
     @NotNull(message = "birthDate can not be null or empty")
-    private Date birthDate;
+    private String birthDate;
 
     private String bloodGroup;
 
@@ -58,9 +60,9 @@ public class PersonDetailDTO {
     @NotNull(message = "isSync can not be null or empty")
     private boolean isSync;
 
-    private Timestamp createdDate;
+    private String createdDate;
 
-    private Timestamp updatedDate;
+    private String updatedDate;
 
     private String createdBy;
 
