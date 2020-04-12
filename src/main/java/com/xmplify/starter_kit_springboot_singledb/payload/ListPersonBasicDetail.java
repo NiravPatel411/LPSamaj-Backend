@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
 
@@ -24,8 +25,8 @@ public class ListPersonBasicDetail {
     private String email;
     private String gender;
     private String mobileno;
-    private Timestamp createdDate;
-    private Timestamp updatedDate;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
     private String createdBy;
     private String updatedBy;
     private int isDeleted;

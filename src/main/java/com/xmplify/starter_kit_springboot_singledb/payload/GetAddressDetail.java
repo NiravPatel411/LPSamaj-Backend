@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -33,8 +34,8 @@ public class GetAddressDetail {
 
     private String mobileLocalId;
 
-    private Timestamp createdDate;
-    private Timestamp updatedDate;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
     private String createdBy;
     private String updatedBy;
     private int isDeleted;

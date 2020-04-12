@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -31,7 +32,7 @@ public class PersonalDetail {
 
     private String gender;
 
-    private Date birthDate;
+    private LocalDate birthDate;
 
     private String bloodGroup;
 

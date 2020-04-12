@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -19,7 +21,7 @@ public class GetPersonDetail {
     private String adminName;
     private String maritualStatus;
     private String villageName;
-    private Date birthDate;
+    private LocalDate birthDate;
     private String firstName;
     private String lastName;
     private String surname;
@@ -27,8 +29,8 @@ public class GetPersonDetail {
     private String email;
     private String gender;
     private String mobileno;
-    private Timestamp createdDate;
-    private Timestamp updatedDate;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
     private String createdBy;
     private String updatedBy;
     private int isDeleted;

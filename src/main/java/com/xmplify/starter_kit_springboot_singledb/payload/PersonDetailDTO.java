@@ -16,6 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -48,7 +49,7 @@ public class PersonDetailDTO {
     private String gender;
 
     @NotNull(message = "birthDate can not be null or empty")
-    private Date birthDate;
+    private LocalDate birthDate;
 
     private String bloodGroup;
 
@@ -69,9 +70,9 @@ public class PersonDetailDTO {
     @NotNull(message = "isSync can not be null or empty")
     private boolean isSync;
 
-    private Timestamp createdDate;
+    private LocalDateTime createdDate;
 
-    private Timestamp updatedDate;
+    private LocalDateTime updatedDate;
 
     private String createdBy;
 

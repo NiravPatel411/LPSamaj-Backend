@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -42,9 +43,9 @@ public class UpdateAddressFromUserDTO {
 
     private String mobileLocalId;
 
-    private Timestamp createdDate;
+    private LocalDateTime createdDate;
 
-    private Timestamp updatedDate;
+    private LocalDateTime updatedDate;
 
     private String createdBy;
 

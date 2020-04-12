@@ -11,6 +11,8 @@ import org.hibernate.annotations.NaturalId;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -58,7 +60,7 @@ public class User extends AditableEntity {
     private String gender;
 
     @JsonFormat(pattern="yyyy-MM-dd")
-    private Date birthDate;
+    private LocalDate birthDate;
 
     private String bloodGroup;
 
@@ -111,7 +113,7 @@ public class User extends AditableEntity {
         this.mobileno = mobileno;
     }
 
-    public User( @Size(max = 15) String firstName, @Size(max = 15) String lastName, @Size(max = 15) String surname, String profilePic, @Size(max = 40) @Email String email, String gender, Date birthDate, String bloodGroup, String maritalStatus, @Size(max = 100) String password, @Size(max = 15) String mobileno) {
+    public User( @Size(max = 15) String firstName, @Size(max = 15) String lastName, @Size(max = 15) String surname, String profilePic, @Size(max = 40) @Email String email, String gender, LocalDate birthDate, String bloodGroup, String maritalStatus, @Size(max = 100) String password, @Size(max = 15) String mobileno) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.surname = surname;
