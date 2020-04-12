@@ -5,11 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -29,6 +24,7 @@ public class GetPersonDetail {
     private String email;
     private String gender;
     private String mobileno;
+    private String bloodGroup;
     private String createdDate;
     private String updatedDate;
     private String createdBy;

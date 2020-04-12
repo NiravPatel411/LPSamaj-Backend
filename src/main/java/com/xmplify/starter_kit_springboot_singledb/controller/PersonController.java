@@ -303,6 +303,7 @@ public class PersonController {
             getPersonDetail.setLastName(addPersonDTO.getPersonDetail().getLastName());
             getPersonDetail.setMaritualStatus(addPersonDTO.getPersonDetail().getMaritualStatus());
             getPersonDetail.setMobileno(addPersonDTO.getPersonDetail().getMobileno());
+            getPersonDetail.setBloodGroup(addPersonDTO.getPersonDetail().getBloodGroup());
             getPersonDetail.setPersonId(userRes.getId());
             getPersonDetail.setMobileLocalId(addPersonDTO.getPersonDetail().getMobileLocalId());
             getPersonDetail.setCreatedBy(userCreated.get().getId());
@@ -358,6 +359,9 @@ public class PersonController {
                 Optional<District> district = districtRepository.findById(address.getDistrictId());
                 getAddress.setDistrict(district.isPresent() ? district.get().getName() : null);
                 getAddress.setDistrictId(district.isPresent() ? district.get().getId() : null);
+                Optional<State> state = stateRepository.findById(address.getStateId());
+                getAddress.setState(state.isPresent() ? state.get().getName() : null);
+                getAddress.setStateId(state.isPresent() ? state.get().getId() : null);
                 getAddress.setPersonId(person.get().getId());
                 getAddress.setMobileLocalId(address.getMobileLocalId());
                 getAddress.setCreatedBy(admin.get().getId());
@@ -459,6 +463,7 @@ public class PersonController {
             getPersonDetail.setLastName(updatedUser.get().getLastName());
             getPersonDetail.setMaritualStatus(updatedUser.get().getMaritalStatus());
             getPersonDetail.setMobileno(updatedUser.get().getMobileno());
+            getPersonDetail.setBloodGroup(updatedUser.get().getBloodGroup());
 
             getPersonDetail.setCreatedBy(updatedUser.get().getCreatedBy().getId());
             getPersonDetail.setCreatedDate(updatedUser.get().getCreatedAt().toString());
@@ -484,8 +489,8 @@ public class PersonController {
                     getAddress.setDistrict(district.isPresent() ? district.get().getName() : null);
                     getAddress.setDistrictId(district.isPresent() ? district.get().getId() : null);
                     Optional<State> state = stateRepository.findById(address.getStateId());
-                    getAddress.setDistrict(state.isPresent() ? state.get().getName() : null);
-                    getAddress.setDistrictId(state.isPresent() ? state.get().getId() : null);
+                    getAddress.setState(state.isPresent() ? state.get().getName() : null);
+                    getAddress.setStateId(state.isPresent() ? state.get().getId() : null);
                     getAddress.setPersonId(updatedUser.get().getId());
                     getAddress.setMobileLocalId(address.getMobileLocalId());
                     getAddress.setCreatedBy(address.getCreatedBy().getId());
@@ -515,6 +520,7 @@ public class PersonController {
         address.setAddressText(updateUserDTO.getAddressText());
         address.setCountry(coutryRepository.findById(updateUserDTO.getCountryId()).get());
         address.setDistrict(districtRepository.findById(updateUserDTO.getDistrictId()).get());
+        address.setState(stateRepository.findById(updateUserDTO.getStateId()).get());
         address.setMobileLocalId(updateUserDTO.getMobileLocalId());
         address.setCreatedBy(createdBy);
         address.setUpdatedBy(updatedBy);
@@ -565,6 +571,7 @@ public class PersonController {
         person.setLastName(personDetail.getLastName());
         person.setMaritalStatus(personDetail.getMaritualStatus());
         person.setMobileno(personDetail.getMobileno());
+        person.setBloodGroup(personDetail.getBloodGroup());
         person.setProfilePic(personDetail.getProfilePic());
         person.setSurname(personDetail.getSurname());
         person.setVillage(village.get());

@@ -22,11 +22,11 @@
 -- User
   INSERT INTO `36lpsamaj`.`users`
   (`id`, `is_deleted`, `status`, `birth_date`, `email`, `first_name`, `gender`, `last_name`, `marital_status`, `mobileno`,`password`) VALUES
-  ('1', '0', 'Active', '1994-04-11 00:00:00', 'nnmgpatel@mail.com', 'Nirav', 'male', 'Patel', 'Married', '9409324429','$2a$10$s1Fz9XJFbpJQTeTCjRdlE.oIzrvePZ5yihqTJaKuwNGC1X4HJ6b5e');
+  ('1', '0', 'Active', '1994-04-11', 'nnmgpatel@mail.com', 'Nirav', 'male', 'Patel', 'Married', '9409324429','$2a$10$s1Fz9XJFbpJQTeTCjRdlE.oIzrvePZ5yihqTJaKuwNGC1X4HJ6b5e');
 
   INSERT INTO `36lpsamaj`.`users`
   (`id`, `is_deleted`, `status`, `birth_date`, `email`, `first_name`, `gender`, `last_name`, `marital_status`, `mobileno`,`password`) VALUES
-  ('2', '0', 'Active', '1994-04-11 00:00:00', 'chiragpatel106@mail.com', 'Chirag', 'male', 'Patel', 'Married', '9924463385','$2a$10$s1Fz9XJFbpJQTeTCjRdlE.oIzrvePZ5yihqTJaKuwNGC1X4HJ6b5e');
+  ('2', '0', 'Active', '1994-04-11', 'chiragpatel106@mail.com', 'Chirag', 'male', 'Patel', 'Married', '9924463385','$2a$10$s1Fz9XJFbpJQTeTCjRdlE.oIzrvePZ5yihqTJaKuwNGC1X4HJ6b5e');
   insert into user_roles (user_id, role_id) values ('1', '1');
   insert into user_roles (user_id, role_id) values ('2', '1');
 
