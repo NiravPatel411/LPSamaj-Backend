@@ -1,1 +1,0 @@
-2019-12-27 21:39:42.395  WARN My-Laptop --- [ool housekeeper] c.z.h.p.HikariPool                       : startup-connection-pool - Thread starvation or clock leap detected (housekeeper delta=1d16h50m4s13ms340µs200ns).

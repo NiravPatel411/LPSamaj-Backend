@@ -302,7 +302,8 @@ public class PersonController {
             getPersonDetail.setLastName(addPersonDTO.getPersonDetail().getLastName());
             getPersonDetail.setMaritualStatus(addPersonDTO.getPersonDetail().getMaritualStatus());
             getPersonDetail.setMobileno(addPersonDTO.getPersonDetail().getMobileno());
-
+            getPersonDetail.setPersonId(userRes.getId());
+            getPersonDetail.setMobileLocalId(addPersonDTO.getPersonDetail().getMobileLocalId());
             getPersonDetail.setCreatedBy(userCreated.get().getId());
             getPersonDetail.setCreatedDate(addPersonDTO.getPersonDetail().getCreatedDate());
             getPersonDetail.setUpdatedDate(addPersonDTO.getPersonDetail().getUpdatedDate());
@@ -466,6 +467,8 @@ public class PersonController {
             getPersonDetail.setUpdatedBy(updatedUser.get().getUpdatedBy().getId());
             getPersonDetail.setStatus(updatedUser.get().getStatus());
             getPersonDetail.setIsDeleted(updatedUser.get().getIsDeleted());
+            getPersonDetail.setMobileLocalId(updatedUser.get().getMobileLocalId());
+            getPersonDetail.setPersonId(updatedUser.get().getId());
             // user.setProfilePic(addPersonDTO.getPersonDetail().getProfilePic());
             getPersonDetail.setSurname(updatedUser.get().getSurname());
             getPersonDetail.setVillageName(updatedUser.get().getVillage().getName());

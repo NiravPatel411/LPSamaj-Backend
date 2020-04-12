@@ -33,4 +33,5 @@ public class GetPersonDetail {
     private String updatedBy;
     private int isDeleted;
     private String status;
+    private String mobileLocalId;
 }

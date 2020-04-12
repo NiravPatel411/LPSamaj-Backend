@@ -59,6 +59,7 @@ public class UserMapper {
                 personDetail.getCreatedDate(),
                 personDetail.getUpdatedDate(),
                 personDetail.getCreatedBy(),
+                personDetail.getPersonId(),
                 personDetail.getUpdatedBy(),
                 personDetail.getIsDeleted(),
                 personDetail.getStatus()
