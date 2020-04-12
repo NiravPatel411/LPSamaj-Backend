@@ -64,6 +64,5 @@ public class UserMapper {
                 personDetail.getStatus()
         );
 
-
     }
 }

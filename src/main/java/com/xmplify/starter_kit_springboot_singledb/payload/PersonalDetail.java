@@ -32,7 +32,7 @@ public class PersonalDetail {
 
     private String gender;
 
-    private LocalDate birthDate;
+    private String birthDate;
 
     private String bloodGroup;
 

@@ -41,9 +41,9 @@ public class AddAddressFromUserDTO {
     @NotNull(message = "isSync can not be null or empty")
     private boolean isSync;
 
-    private LocalDateTime createdDate;
+    private String createdDate;
 
-    private LocalDateTime updatedDate;
+    private String updatedDate;
 
     private String createdBy;
 

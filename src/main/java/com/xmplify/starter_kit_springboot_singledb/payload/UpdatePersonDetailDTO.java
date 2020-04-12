@@ -41,7 +41,7 @@ public class UpdatePersonDetailDTO {
     private String gender;
 
     @NotNull(message = "birthDate can not be null or empty")
-    private LocalDate birthDate;
+    private String birthDate;
 
     private String bloodGroup;
 
@@ -62,10 +62,9 @@ public class UpdatePersonDetailDTO {
 
     private String mobileLocalId;
 
-    @NotNull(message = "createdDate can not be null")
-    private LocalDateTime createdDate;
+    private String createdDate;
 
-    private LocalDateTime updatedDate;
+    private String updatedDate;
 
     @NotNull(message = "createdBy can not be null")
     private String createdBy;

@@ -25,8 +25,8 @@ public class ListPersonBasicDetail {
     private String email;
     private String gender;
     private String mobileno;
-    private LocalDateTime createdDate;
-    private LocalDateTime updatedDate;
+    private String createdDate;
+    private String updatedDate;
     private String createdBy;
     private String updatedBy;
     private int isDeleted;

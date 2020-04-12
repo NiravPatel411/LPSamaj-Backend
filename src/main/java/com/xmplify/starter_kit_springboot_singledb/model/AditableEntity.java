@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -17,6 +18,7 @@ import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @MappedSuperclass
 @Getter
@@ -28,27 +30,23 @@ public class AditableEntity implements Serializable{
 
      @CreatedDate
      @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-     private LocalDateTime createdAt;
+     private Date createdAt;
 
-     @LastModifiedDate
+    @LastModifiedDate
      @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-     private LocalDateTime updatedAt;
+     private Date updatedAt;
 
      @ManyToOne
-     @CreatedBy
      private Admin createdBy;
 
      @ManyToOne
-     @LastModifiedBy
      private Admin updatedBy;
 
     @ManyToOne
-    @LastModifiedBy
     private Admin deletedBy;
 
-    @LastModifiedDate
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime deletedAt;
+    private Date deletedAt;
 
     private int isDeleted = 0;
 

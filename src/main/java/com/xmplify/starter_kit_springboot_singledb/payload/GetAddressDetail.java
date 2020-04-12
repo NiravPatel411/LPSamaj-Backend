@@ -34,8 +34,8 @@ public class GetAddressDetail {
 
     private String mobileLocalId;
 
-    private LocalDateTime createdDate;
-    private LocalDateTime updatedDate;
+    private String createdDate;
+    private String updatedDate;
     private String createdBy;
     private String updatedBy;
     private int isDeleted;

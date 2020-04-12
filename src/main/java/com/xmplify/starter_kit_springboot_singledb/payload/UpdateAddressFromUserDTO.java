@@ -43,9 +43,9 @@ public class UpdateAddressFromUserDTO {
 
     private String mobileLocalId;
 
-    private LocalDateTime createdDate;
+    private String createdDate;
 
-    private LocalDateTime updatedDate;
+    private String updatedDate;
 
     private String createdBy;
 

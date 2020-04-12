@@ -59,7 +59,7 @@ public class User extends AditableEntity {
 
     private String gender;
 
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDate birthDate;
 
     private String bloodGroup;

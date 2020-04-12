@@ -49,7 +49,7 @@ public class PersonDetailDTO {
     private String gender;
 
     @NotNull(message = "birthDate can not be null or empty")
-    private LocalDate birthDate;
+    private String birthDate;
 
     private String bloodGroup;
 
@@ -70,9 +70,9 @@ public class PersonDetailDTO {
     @NotNull(message = "isSync can not be null or empty")
     private boolean isSync;
 
-    private LocalDateTime createdDate;
+    private String createdDate;
 
-    private LocalDateTime updatedDate;
+    private String updatedDate;
 
     private String createdBy;
 
