@@ -1,17 +1,10 @@
 package com.xmplify.starter_kit_springboot_singledb.payload;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.xmplify.starter_kit_springboot_singledb.model.Country;
-import com.xmplify.starter_kit_springboot_singledb.model.District;
-import com.xmplify.starter_kit_springboot_singledb.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Getter
@@ -35,6 +28,8 @@ public class GetAddressDetail {
     private String district;
 
     private String districtId;
+    private String stateId;
+    private String state;
 
     private String mobileLocalId;
 

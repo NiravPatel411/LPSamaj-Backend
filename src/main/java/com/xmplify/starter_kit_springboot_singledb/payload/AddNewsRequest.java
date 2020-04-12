@@ -1,16 +1,11 @@
 package com.xmplify.starter_kit_springboot_singledb.payload;
 
-import com.xmplify.starter_kit_springboot_singledb.model.Admin;
-import com.xmplify.starter_kit_springboot_singledb.model.NewsType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -29,6 +24,8 @@ public class AddNewsRequest {
 
     @NotNull(message = "adminId can not be null or empty")
     private String adminId;
+
+    private String extraData;
 
     private AddNewsMedia[] newsMedia;
 

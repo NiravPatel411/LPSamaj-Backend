@@ -31,6 +31,10 @@ public class AddAddressFromUserDTO {
     @NotEmpty(message = "district can not be empty")
     private String districtId;
 
+    @NotNull(message = "district can not be null")
+    @NotEmpty(message = "district can not be empty")
+    private String stateId;
+
     private String mobileLocalId;
 
     @NotNull(message = "isSync can not be null or empty")

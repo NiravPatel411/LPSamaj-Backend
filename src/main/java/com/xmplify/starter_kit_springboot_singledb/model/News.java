@@ -25,8 +25,11 @@ public class News extends AditableEntity{
     private NewsType newsType;
 
     private String title;
-
+    @Column(columnDefinition = "Text")
     private String description;
+
+    @Column(columnDefinition = "Text")
+    private String extraData;
 
     @OneToOne
     private Admin adminId;

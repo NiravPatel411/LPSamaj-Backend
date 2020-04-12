@@ -30,6 +30,8 @@ public class AllNews {
 
     private String adminSurname;
 
+    private String extraData;
+
     private String createdAt;
 
     private String updatedAt;

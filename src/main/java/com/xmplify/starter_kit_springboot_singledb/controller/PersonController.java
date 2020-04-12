@@ -55,6 +55,9 @@ public class PersonController {
     DistrictRepository districtRepository;
 
     @Autowired
+    StateRepository stateRepository;
+
+    @Autowired
     AddressRepository addressRepository;
 
     @Autowired
@@ -169,7 +172,7 @@ public class PersonController {
         }
         List<String> addressErrors = new ArrayList<>();
         if (updateUserDTO.getPersonDetail().getPersonId() != null && userRepository.existsById(updateUserDTO.getPersonDetail().getPersonId())) {
-            ResponseEntity<?> responseEntity = this.updateUser(updateUserDTO,result);
+            ResponseEntity<?> responseEntity = this.updateUser(updateUserDTO, result);
             return responseEntity;
         } else {
             AddPersonDTO addPersonDTO = userMapper.updateUserDTOToAddUserDTO(updateUserDTO);
@@ -215,7 +218,7 @@ public class PersonController {
                         HttpStatus.BAD_REQUEST);
             }
             Optional<Admin> userCreated = null;
-            if(addPersonDTO.getPersonDetail().getCreatedBy() != null) {
+            if (addPersonDTO.getPersonDetail().getCreatedBy() != null) {
                 userCreated = adminRepository.findById(addPersonDTO.getPersonDetail().getCreatedBy());
                 if (userCreated == null || !userCreated.isPresent()) {
                     return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid User Id in Created By", null),
@@ -226,7 +229,7 @@ public class PersonController {
                         HttpStatus.BAD_REQUEST);
             }
             Optional<Admin> userUpdated = null;
-            if(addPersonDTO.getPersonDetail().getUpdatedBy() != null) {
+            if (addPersonDTO.getPersonDetail().getUpdatedBy() != null) {
                 userUpdated = adminRepository.findById(addPersonDTO.getPersonDetail().getUpdatedBy());
                 if (userUpdated == null || !userCreated.isPresent()) {
                     return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid User Id in Updated By", null),
@@ -303,7 +306,7 @@ public class PersonController {
             getPersonDetail.setCreatedBy(userCreated.get().getId());
             getPersonDetail.setCreatedDate(addPersonDTO.getPersonDetail().getCreatedDate());
             getPersonDetail.setUpdatedDate(addPersonDTO.getPersonDetail().getUpdatedDate());
-           getPersonDetail.setUpdatedBy(userUpdated.isPresent() ? userUpdated.get().getId() : "");
+            getPersonDetail.setUpdatedBy(userUpdated.isPresent() ? userUpdated.get().getId() : "");
             getPersonDetail.setStatus(addPersonDTO.getPersonDetail().getStatus());
             getPersonDetail.setIsDeleted(addPersonDTO.getPersonDetail().getIsDeleted());
             // user.setProfilePic(addPersonDTO.getPersonDetail().getProfilePic());
@@ -334,6 +337,7 @@ public class PersonController {
                 addressObj.setAddressType(address.getAddressType());
                 addressObj.setCountry(coutryRepository.findById(address.getCountryId()).get());
                 addressObj.setDistrict(districtRepository.findById(address.getDistrictId()).get());
+                addressObj.setState(stateRepository.findById(address.getStateId()).get());
                 addressObj.setPersonId(person.get());
                 addressObj.setMobileLocalId(address.getMobileLocalId());
                 addressObj.setCreatedBy(admin.get());
@@ -445,7 +449,7 @@ public class PersonController {
         Optional<User> updatedUser = userRepository.findById(updateUserDTO.getPersonDetail().getPersonId());
         GetPersonDetail getPersonDetail = new GetPersonDetail();
         List<GetAddressDetail> addressDetailList = new ArrayList<>();
-        if(updatedUser.isPresent()){
+        if (updatedUser.isPresent()) {
             getPersonDetail.setAdminId(updatedUser.get().getAdminId());
             getPersonDetail.setAdminName(updatedUser.get().getAdmin().getName());
             getPersonDetail.setBirthDate(updatedUser.get().getBirthDate());
@@ -465,7 +469,7 @@ public class PersonController {
             // user.setProfilePic(addPersonDTO.getPersonDetail().getProfilePic());
             getPersonDetail.setSurname(updatedUser.get().getSurname());
             getPersonDetail.setVillageName(updatedUser.get().getVillage().getName());
-            if(updatedUser.get() != null && updatedUser.get().getAddressList() != null) {
+            if (updatedUser.get() != null && updatedUser.get().getAddressList() != null) {
                 for (Address address : updatedUser.get().getAddressList()) {
                     GetAddressDetail getAddress = new GetAddressDetail();
                     getAddress.setId(updatedUser.get().getId());
@@ -477,6 +481,9 @@ public class PersonController {
                     Optional<District> district = districtRepository.findById(address.getDistrictId());
                     getAddress.setDistrict(district.isPresent() ? district.get().getName() : null);
                     getAddress.setDistrictId(district.isPresent() ? district.get().getId() : null);
+                    Optional<State> state = stateRepository.findById(address.getStateId());
+                    getAddress.setDistrict(state.isPresent() ? state.get().getName() : null);
+                    getAddress.setDistrictId(state.isPresent() ? state.get().getId() : null);
                     getAddress.setPersonId(updatedUser.get().getId());
                     getAddress.setMobileLocalId(address.getMobileLocalId());
                     getAddress.setCreatedBy(address.getCreatedBy().getId());

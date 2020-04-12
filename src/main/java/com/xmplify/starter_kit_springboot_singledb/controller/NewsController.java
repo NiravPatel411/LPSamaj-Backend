@@ -60,6 +60,7 @@ public class NewsController {
             allNews.setId(news.getId());
             allNews.setAdminId(news.getAdminId().getId());
             allNews.setDescription(news.getDescription());
+            allNews.setExtraData(news.getExtraData());
             allNews.setNewsTypeId(news.getNewsType().getId());
             allNews.setNewsTypeName(news.getNewsType().getType());
             allNews.setTitle(news.getTitle());
@@ -175,8 +176,8 @@ public class NewsController {
         news.setAdminId(admin.get());
         news.setDescription(newsRequest.getDescription());
         news.setNewsType(newsType.get());
-        news.setDescription(newsRequest.getDescription());
         news.setTitle(newsRequest.getTitle());
+        news.setExtraData(newsRequest.getExtraData());
 
         News newsResult = newsRepository.save(news);
 
@@ -186,11 +187,12 @@ public class NewsController {
         ret.setNewsTypeName(newsType.get().getType());
         ret.setTitle(newsResult.getTitle());
         ret.setId(newsResult.getId());
+        ret.setExtraData(newsResult.getExtraData());
         ret.setAdminSurname(newsResult.getAdminId().getPerson().getSurname());
         ret.setAdminLastName(newsResult.getAdminId().getPerson().getLastName());
         ret.setAdminFirstName(newsResult.getAdminId().getPerson().getFirstName());
-        ret.setCreatedAt(newsResult.getCreatedAt() != null ? newsResult.getCreatedAt().toString() : null);
-        ret.setUpdatedAt(newsResult.getUpdatedAt() != null ? newsResult.getUpdatedAt().toString() : null);
+        ret.setCreatedAt(newsResult.getCreatedAt() != null ? newsResult.getCreatedAt().toString() : "");
+        ret.setUpdatedAt(newsResult.getUpdatedAt() != null ? newsResult.getUpdatedAt().toString() : "");
         retObject.put("NewsDetail", newsResult);
         List<AllMedia> allMedia = new ArrayList<>();
         if (newsRequest.getNewsMedia() != null) {
@@ -284,21 +286,27 @@ public class NewsController {
             News newNews = new News();
             newNews.setId(oldNews.getId());
             newNews.setDescription(updateNewsRequest.getDescription());
+            newNews.setExtraData(updateNewsRequest.getExtraData());
             newNews.setNewsType(newsType.get());
             newNews.setAdminId(admin.get());
             newNews.setTitle(updateNewsRequest.getTitle());
             News newsResult = newsRepository.save(newNews);
+
+            // TODO: 11-04-2020 remove this below ids media
+            System.out.println("NewsController :updateNews : " + updateNewsRequest.getDeletedMediaIds());
+
             ret.setAdminId(admin.get().getId());
             ret.setDescription(newsResult.getDescription());
             ret.setNewsTypeId(newsType.get().getId());
             ret.setNewsTypeName(newsType.get().getType());
             ret.setTitle(newsResult.getTitle());
+            ret.setExtraData(newsResult.getExtraData());
             ret.setId(newsResult.getId());
             ret.setAdminSurname(newsResult.getAdminId().getPerson().getSurname());
             ret.setAdminLastName(newsResult.getAdminId().getPerson().getLastName());
             ret.setAdminFirstName(newsResult.getAdminId().getPerson().getFirstName());
-            ret.setCreatedAt(newsResult.getCreatedAt() != null ? newsResult.getCreatedAt().toString() : null);
-            ret.setUpdatedAt(newsResult.getUpdatedAt() != null ? newsResult.getUpdatedAt().toString() : null);
+            ret.setCreatedAt(newsResult.getCreatedAt() != null ? newsResult.getCreatedAt().toString() : "");
+            ret.setUpdatedAt(newsResult.getUpdatedAt() != null ? newsResult.getUpdatedAt().toString() : "");
         }
         List<AllMedia> allMedia = new ArrayList<>();
 
@@ -393,6 +401,7 @@ public class NewsController {
             allNews.setId(news.getId());
             allNews.setAdminId(news.getAdminId().getId());
             allNews.setDescription(news.getDescription());
+            allNews.setExtraData(news.getExtraData());
             allNews.setNewsTypeId(news.getNewsType().getId());
             allNews.setNewsTypeName(news.getNewsType().getType());
             allNews.setTitle(news.getTitle());
@@ -400,8 +409,8 @@ public class NewsController {
             allNews.setAdminLastName(news.getAdminId().getPerson().getLastName());
             allNews.setAdminSurname(news.getAdminId().getPerson().getSurname());
 
-            allNews.setCreatedAt(news.getCreatedAt() != null ? news.getCreatedAt().toString() : null);
-            allNews.setUpdatedAt(news.getUpdatedAt() != null ? news.getUpdatedAt().toString() : null);
+            allNews.setCreatedAt(news.getCreatedAt() != null ? news.getCreatedAt().toString() : "");
+            allNews.setUpdatedAt(news.getUpdatedAt() != null ? news.getUpdatedAt().toString() : "");
             List<Media> mediaList = mediaRepository.findAllByRelatedId(news.getId());
             if (mediaList != null) {
                 List<AllMedia> allMedia = new ArrayList<>();
@@ -444,6 +453,7 @@ public class NewsController {
             allNews.setNewsTypeId(news.getNewsType().getId());
             allNews.setNewsTypeName(news.getNewsType().getType());
             allNews.setTitle(news.getTitle());
+            allNews.setExtraData(news.getExtraData());
             allNews.setAdminFirstName(news.getAdminId().getPerson().getFirstName());
             allNews.setAdminLastName(news.getAdminId().getPerson().getLastName());
             allNews.setAdminSurname(news.getAdminId().getPerson().getSurname());

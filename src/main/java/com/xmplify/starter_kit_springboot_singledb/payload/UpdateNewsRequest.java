@@ -28,5 +28,8 @@ public class UpdateNewsRequest {
     @NotNull(message = "adminId can not be null or empty")
     private String adminId;
 
+    private String extraData;
+    private String deletedMediaIds;// comma sepraated string like 12,14
+
     private UpdateNewsMedia[] newsMedia;
 }
