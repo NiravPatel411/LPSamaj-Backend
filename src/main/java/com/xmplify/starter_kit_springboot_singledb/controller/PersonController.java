@@ -737,7 +737,7 @@ public class PersonController {
                         addressDetail.setIsDelete(String.valueOf(add.getIsDeleted()));
 
                         addressDetail.setUpdatedAt(String.valueOf(add.getUpdatedAt().toString()));
-                        addressDetail.setUpdatedBy(String.valueOf(add.getUpdatedBy()));
+                        addressDetail.setUpdatedBy(String.valueOf(add.getUpdatedBy().getId()));
 
                         addressDetail.setCreatedBy(String.valueOf(add.getCreatedBy() != null ? add.getCreatedBy().getId() : null));
                         addressDetail.setCreatedAt(String.valueOf(add.getCreatedAt().toString()));
