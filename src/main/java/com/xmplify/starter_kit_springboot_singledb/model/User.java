@@ -84,11 +84,11 @@ public class User extends AditableEntity {
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL, mappedBy = "person")
-    private Set<PersonAchievement> achievements;
+    private List<PersonAchievement> achievements;
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL, mappedBy = "person")
-    private Set<PersonEducation> educations;
+    private List<PersonEducation> educations;
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL, mappedBy = "person")

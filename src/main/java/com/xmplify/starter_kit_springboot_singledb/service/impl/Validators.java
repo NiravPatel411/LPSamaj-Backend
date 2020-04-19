@@ -4,6 +4,7 @@ import com.xmplify.starter_kit_springboot_singledb.model.Country;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddAddressFromUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddPersonDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.PersonDetailDTO;
+import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDTO;
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,16 +34,44 @@ public class Validators {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    DegreeRepository degreeRepository;
+
 
     public List<String> validateAddPersonDTO(AddPersonDTO addPersonDTO) {
         List<String> response = new ArrayList<>();
         if(Objects.nonNull(addPersonDTO)){
             validateAddPersonDetail(addPersonDTO.getPersonDetail(),response);
             validateAddPersonAddress(addPersonDTO.getAddress(),response);
+            if(Objects.nonNull(addPersonDTO.getEducationDTO())) {
+                validateEducation(addPersonDTO.getEducationDTO(), response);
+            }
         } else {
             response.add("Request can not be null");
         }
         return response;
+    }
+
+    private void validateEducation(List<EducationDTO> educationDTO, List<String> response) {
+        for(int i=0 ; i <educationDTO.size() ; i++){
+            if(!validateCreatedBy(educationDTO.get(i).getCreatedBy())){
+                response.add("\n Can not find Admin by createdBy ("+educationDTO.get(i).getCreatedBy()+") of education["+i+"]");
+            }
+            if(!validateDegreeId(educationDTO.get(i).getDegreeId())){
+                response.add("\n Can not find Degree by degreeId ("+educationDTO.get(i).getDegreeId()+") of education["+i+"]");
+            }
+            if(Objects.nonNull(educationDTO.get(i).getUpdatedBy()) && !validateUpdatedBy(educationDTO.get(i).getUpdatedBy())){
+                response.add("\n Can not find Admin by updatedBy ("+educationDTO.get(i).getUpdatedBy()+") of education["+i+"]");
+            }
+        }
+    }
+
+    private boolean validateUpdatedBy(String updatedBy) {
+        return adminRepository.existsById(updatedBy);
+    }
+
+    private boolean validateDegreeId(String degreeId) {
+        return degreeRepository.existsById(degreeId);
     }
 
     private void validateAddPersonAddress(List<AddAddressFromUserDTO> address, List<String> response) {

@@ -1,10 +1,9 @@
 package com.xmplify.starter_kit_springboot_singledb.controller;
 
-import com.xmplify.starter_kit_springboot_singledb.UserMapper;
+import com.xmplify.starter_kit_springboot_singledb.mapper.UserMapper;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.model.*;
 import com.xmplify.starter_kit_springboot_singledb.payload.*;
-import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddAddressFromUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddPersonDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdateAddressFromUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdatePersonDetailDTO;
@@ -167,66 +166,48 @@ public class PersonController {
 
         if (result.hasErrors()) {
             List<String> errors = new ArrayList<>();
-            for (Object object : result.getAllErrors()) {
-                if (object instanceof FieldError) {
-                    FieldError fieldError = (FieldError) object;
-
-                    System.out.println(fieldError.getCode());
-                    errors.add(fieldError.getDefaultMessage());
-                }
-                if (object instanceof ObjectError) {
-                    ObjectError objectError = (ObjectError) object;
-
-                    System.out.println(objectError.getCode());
-                    errors.add(objectError.getDefaultMessage());
-                }
-
-
-            }
+            getError(result,errors);
             return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Validation error", errors), HttpStatus.BAD_REQUEST);
         }
-        List<String> addressErrors = new ArrayList<>();
         if (updateUserDTO.getPersonDetail().getPersonId() != null && userRepository.existsById(updateUserDTO.getPersonDetail().getPersonId())) {
             ResponseEntity<?> responseEntity = this.updateUser(updateUserDTO, result);
             return responseEntity;
         } else {
             AddPersonDTO addPersonDTO = userMapper.updateUserDTOToAddUserDTO(updateUserDTO);
-
             List<String> messages = validators.validateAddPersonDTO(addPersonDTO);
             if (!messages.isEmpty()) {
                 return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, messages.toString(), null),
                         HttpStatus.BAD_REQUEST);
             }
             User savedUser = userService.save(addPersonDTO);
-            Optional<User> OptionalFromDbUser = userRepository.findById(savedUser.getId());
-            if (!OptionalFromDbUser.isPresent()) {
-                return null;
+//            Optional<User> OptionalFromDbUser = userRepository.findById(savedUser.getId());
+//            if (!OptionalFromDbUser.isPresent()) {
+//                return null;
+//            }
+//            User fromDbUser = OptionalFromDbUser.get();
+//            Optional<List<Address>> address = addressRepository.findByPersonIdId(fromDbUser.getId());
+//            if (address.isPresent()) {
+//                fromDbUser.setAddressList(address.get());
+//            }
+
+            return new ResponseEntity(new ApiResponse(HttpStatus.CREATED.value(), true, "User created", userMapper.userToAddPersonResponse(savedUser, addPersonDTO)), HttpStatus.CREATED);
+
+        }
+    }
+
+    private void getError(BindingResult result, List<String> errors) {
+        for (Object object : result.getAllErrors()) {
+            if (object instanceof FieldError) {
+                FieldError fieldError = (FieldError) object;
+                System.out.println(fieldError.getCode());
+                errors.add(fieldError.getDefaultMessage());
             }
-            User fromDbUser = OptionalFromDbUser.get();
-            Optional<List<Address>> address = addressRepository.findByPersonIdId(fromDbUser.getId());
-            if (address.isPresent()) {
-                fromDbUser.setAddressList(address.get());
+            if (object instanceof ObjectError) {
+                ObjectError objectError = (ObjectError) object;
+
+                System.out.println(objectError.getCode());
+                errors.add(objectError.getDefaultMessage());
             }
-
-            return new ResponseEntity(new ApiResponse(HttpStatus.CREATED.value(), true, "User created", userMapper.userToAddPersonResponse(fromDbUser, addPersonDTO)), HttpStatus.CREATED);
-
-            /***************************************************************************************************************
-             * todo : Put below code while adding profile pic
-             MultipartFile file = addPersonDTO.getPersonDetail().getProfilePic();
-             if(file.isEmpty()){
-             return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "File can not be empty", null),
-             HttpStatus.BAD_REQUEST);
-             }
-
-             try{
-             byte[] bytes = file.getBytes();
-             Path path = Paths.get(GlobalConstants.UPLOAD_IMAGE + addPersonDTO.getPersonDetail().getFirstName());
-             Files.write(path,bytes);
-             // byte[] bytes1 = file.getBytes();
-             } catch(IOException e){
-             e.printStackTrace();
-             }
-             //  ****************************************************************************************************************/
         }
     }
 
@@ -325,21 +306,20 @@ public class PersonController {
             // user.setProfilePic(addPersonDTO.getPersonDetail().getProfilePic());
             getPersonDetail.setSurname(updatedUser.get().getSurname());
             getPersonDetail.setVillageName(updatedUser.get().getVillage().getName());
-            if (updatedUser.get() != null && updatedUser.get().getAddressList() != null) {
-                for (Address address : updatedUser.get().getAddressList()) {
+
+            Optional<List<Address>> addressFromDB = addressRepository.findByPersonIdId(updatedUser.get().getId());
+            if (updatedUser.get() != null && addressFromDB.isPresent()) {
+                for (Address address : addressFromDB.get()) {
                     GetAddressDetail getAddress = new GetAddressDetail();
                     getAddress.setId(updatedUser.get().getId());
                     getAddress.setAddressText(address.getAddressText());
                     getAddress.setAddressType(address.getAddressType());
-                    Optional<Country> country = coutryRepository.findById(address.getCountryId());
-                    getAddress.setCountry(country.isPresent() ? country.get().getName() : null);
-                    getAddress.setCountryId(country.isPresent() ? country.get().getId() : null);
-                    Optional<District> district = districtRepository.findById(address.getDistrictId());
-                    getAddress.setDistrict(district.isPresent() ? district.get().getName() : null);
-                    getAddress.setDistrictId(district.isPresent() ? district.get().getId() : null);
-                    Optional<State> state = stateRepository.findById(address.getStateId());
-                    getAddress.setState(state.isPresent() ? state.get().getName() : null);
-                    getAddress.setStateId(state.isPresent() ? state.get().getId() : null);
+                    getAddress.setCountry(Objects.nonNull(address.getCountry()) ? address.getCountry().getName() : "");
+                    getAddress.setCountryId(Objects.nonNull(address.getCountry()) ? address.getCountry().getId() : "");
+                    getAddress.setDistrict(Objects.nonNull(address.getDistrict()) ? address.getDistrict().getName() : "");
+                    getAddress.setDistrictId(Objects.nonNull(address.getDistrict()) ? address.getDistrict().getId() : "");
+                    getAddress.setState(Objects.nonNull(address.getState()) ? address.getState().getName() : "");
+                    getAddress.setStateId(Objects.nonNull(address.getState()) ? address.getState().getId() : "");
                     getAddress.setPersonId(updatedUser.get().getId());
                     getAddress.setMobileLocalId(address.getMobileLocalId());
                     getAddress.setCreatedBy(address.getCreatedBy().getId());

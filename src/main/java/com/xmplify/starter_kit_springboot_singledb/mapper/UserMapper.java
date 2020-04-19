@@ -1,4 +1,4 @@
-package com.xmplify.starter_kit_springboot_singledb;
+package com.xmplify.starter_kit_springboot_singledb.mapper;
 
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.model.Address;
@@ -52,6 +52,7 @@ public class UserMapper {
         AddPersonDTO addPersonDTO = new AddPersonDTO();
         addPersonDTO.setPersonDetail(this.updatePersonDetailDTOToAddPersonDetailDTO(updatePersonDTO.getPersonDetail()));
         addPersonDTO.setAddress(this.updateAddressFromUserDTOToAddAddressFromUserDTO(updatePersonDTO.getAddress()));
+        addPersonDTO.setEducationDTO(updatePersonDTO.getEducationDTO());
         return addPersonDTO;
     }
 

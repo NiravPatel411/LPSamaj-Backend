@@ -19,6 +19,9 @@
   INSERT INTO `36lpsamaj`.`admin_role` (`id`, `is_deleted`, `status`, `display_name`, `name`,`created_at`) VALUES ('2', '0', 'Active', 'MASTER_ADMIN', 'MASTER_ADMIN','9999-12-31 23:59:59');
   INSERT INTO `36lpsamaj`.`admin_role` (`id`, `is_deleted`, `status`, `display_name`, `name`,`created_at`) VALUES ('3', '0', 'Active', 'NEWS_ADMIN', 'NEWS_ADMIN','9999-12-31 23:59:59');
 
+-- Degree
+INSERT INTO `36lpsamaj`.`degree` (`id`, `is_proof_nedded`, `name`) VALUES ('1', 0, 'BE');
+INSERT INTO `36lpsamaj`.`degree` (`id`, `is_proof_nedded`, `name`) VALUES ('2', 0, 'B.ED');
  -- User
    INSERT INTO `36lpsamaj`.`users`
    (`id`, `is_deleted`, `status`, `birth_date`, `email`, `first_name`, `gender`, `last_name`, `marital_status`, `mobileno`,`password`,`created_at`) VALUES

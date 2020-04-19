@@ -57,7 +57,7 @@ public class EducationController {
     public ResponseEntity<?> getEducationByPerson(@PathVariable String personId){
         Optional<User> user = userRepository.findById(personId);
         if(user.isPresent()){
-            Set<PersonEducation> Educations = user.get().getEducations();
+            List<PersonEducation> Educations = user.get().getEducations();
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", Educations), HttpStatus.OK);
         }
         else{

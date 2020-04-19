@@ -1,5 +1,6 @@
 package com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload;
 
+import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,5 +23,7 @@ public class UpdateUserDTO {
     @NotNull (message = "address can not be null")
     @Valid
     private List<UpdateAddressFromUserDTO> address;
+
+    private List<EducationDTO> educationDTO;
 
 }

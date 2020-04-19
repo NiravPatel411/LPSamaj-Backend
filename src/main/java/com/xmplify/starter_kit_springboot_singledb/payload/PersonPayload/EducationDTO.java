@@ -17,7 +17,7 @@ import java.util.Date;
 public class EducationDTO {
 
     private String personEducationId;
-    private User person;
+    private String person;
 
     private String degreeId;
 
@@ -41,9 +41,11 @@ public class EducationDTO {
 
     private String createdAt;
     private String updatedAt;
-    private Date deletedAt;
+    private String deletedAt;
 
     private int isDeleted;
+
+    private String mobileLocalId;
 
     private String status;
 }

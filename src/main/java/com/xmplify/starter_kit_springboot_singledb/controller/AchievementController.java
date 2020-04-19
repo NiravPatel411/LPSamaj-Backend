@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -53,7 +54,7 @@ public class AchievementController {
     public ResponseEntity<?> getEducationByPerson(@PathVariable String personId){
         Optional<User> user = userRepository.findById(personId);
         if(user.isPresent()){
-            Set<PersonAchievement> achievements = user.get().getAchievements();
+            List<PersonAchievement> achievements = user.get().getAchievements();
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", achievements), HttpStatus.OK);
         }
         else{

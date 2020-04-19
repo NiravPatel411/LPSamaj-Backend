@@ -1,6 +1,7 @@
 package com.xmplify.starter_kit_springboot_singledb.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "personEducation")
 @NoArgsConstructor
+@AllArgsConstructor
 @Setter
 @Getter
 public class PersonEducation extends AditableEntity {
@@ -40,5 +42,8 @@ public class PersonEducation extends AditableEntity {
     private String endYear;
     private String proofPhoto;
     private String medium;
+
+    @Transient
+    private String mobileLocalId;
 
 }
