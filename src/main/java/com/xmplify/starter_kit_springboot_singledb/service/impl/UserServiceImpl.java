@@ -58,8 +58,8 @@ public class UserServiceImpl implements UserService {
 			addresses.add(userMapper.addAddressFromUserDTOtoAddress(address,savedUser));
 		}
 		List<PersonEducation> educations = new ArrayList<>();
-		if(Objects.nonNull(addPersonDTO.getEducationDTO())) {
-			for (EducationDTO educationDTO : addPersonDTO.getEducationDTO()) {
+		if(Objects.nonNull(addPersonDTO.getEducation())) {
+			for (EducationDTO educationDTO : addPersonDTO.getEducation()) {
 				educations.add(educationMapper.educationDTOtoPersonEducation(educationDTO, savedUser));
 			}
 			savedUser.setEducations(educationRepository.saveAll(educations));

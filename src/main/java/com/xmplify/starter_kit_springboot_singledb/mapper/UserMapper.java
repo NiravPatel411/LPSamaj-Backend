@@ -2,7 +2,6 @@ package com.xmplify.starter_kit_springboot_singledb.mapper;
 
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.model.Address;
-import com.xmplify.starter_kit_springboot_singledb.model.Role;
 import com.xmplify.starter_kit_springboot_singledb.model.User;
 import com.xmplify.starter_kit_springboot_singledb.payload.GetAddressDetail;
 import com.xmplify.starter_kit_springboot_singledb.payload.GetPersonDetail;
@@ -12,11 +11,9 @@ import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPers
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdateAddressFromUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdatePersonDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdateUserDTO;
-import com.xmplify.starter_kit_springboot_singledb.payload.PersonalDetail;
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
 import com.xmplify.starter_kit_springboot_singledb.service.impl.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -52,7 +49,7 @@ public class UserMapper {
         AddPersonDTO addPersonDTO = new AddPersonDTO();
         addPersonDTO.setPersonDetail(this.updatePersonDetailDTOToAddPersonDetailDTO(updatePersonDTO.getPersonDetail()));
         addPersonDTO.setAddress(this.updateAddressFromUserDTOToAddAddressFromUserDTO(updatePersonDTO.getAddress()));
-        addPersonDTO.setEducationDTO(updatePersonDTO.getEducationDTO());
+        addPersonDTO.setEducation(updatePersonDTO.getEducationDTO());
         return addPersonDTO;
     }
 

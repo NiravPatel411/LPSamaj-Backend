@@ -44,7 +44,6 @@ public class EducationMapper {
                 educationDTO.getResult(),
                 educationDTO.getStartDate(),
                 educationDTO.getEndDate(),
-                educationDTO.getDegreeName(),
                 educationDTO.getStartYear(),
                 educationDTO.getEndYear(),
                 educationDTO.getProofPhoto(),

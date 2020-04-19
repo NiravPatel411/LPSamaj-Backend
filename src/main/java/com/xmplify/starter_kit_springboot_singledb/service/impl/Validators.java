@@ -1,6 +1,5 @@
 package com.xmplify.starter_kit_springboot_singledb.service.impl;
 
-import com.xmplify.starter_kit_springboot_singledb.model.Country;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddAddressFromUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddPersonDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.PersonDetailDTO;
@@ -43,8 +42,8 @@ public class Validators {
         if(Objects.nonNull(addPersonDTO)){
             validateAddPersonDetail(addPersonDTO.getPersonDetail(),response);
             validateAddPersonAddress(addPersonDTO.getAddress(),response);
-            if(Objects.nonNull(addPersonDTO.getEducationDTO())) {
-                validateEducation(addPersonDTO.getEducationDTO(), response);
+            if(Objects.nonNull(addPersonDTO.getEducation())) {
+                validateEducation(addPersonDTO.getEducation(), response);
             }
         } else {
             response.add("Request can not be null");

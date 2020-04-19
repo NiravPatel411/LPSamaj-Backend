@@ -20,6 +20,6 @@ public class AddPersonDTO {
     @Valid
     private List<AddAddressFromUserDTO> address;
 
-    private List<EducationDTO> educationDTO;
+    private List<EducationDTO> education;
     
 }
