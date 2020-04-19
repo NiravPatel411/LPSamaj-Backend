@@ -1,7 +1,7 @@
 package com.xmplify.starter_kit_springboot_singledb.controller;
 
-import com.xmplify.starter_kit_springboot_singledb.mapper.UserMapper;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
+import com.xmplify.starter_kit_springboot_singledb.mapper.UserMapper;
 import com.xmplify.starter_kit_springboot_singledb.model.*;
 import com.xmplify.starter_kit_springboot_singledb.payload.*;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddPersonDTO;
@@ -312,7 +312,7 @@ public class PersonController {
             if (returnAddress != null) {
                 for (Address address : returnAddress) {
                     GetAddressDetail getAddress = new GetAddressDetail();
-                    getAddress.setId(updatedUser.get().getId());
+                    getAddress.setId(address.getId());
                     getAddress.setAddressText(address.getAddressText());
                     getAddress.setAddressType(address.getAddressType());
                     getAddress.setCountry(Objects.nonNull(address.getCountry()) ? address.getCountry().getName() : "");

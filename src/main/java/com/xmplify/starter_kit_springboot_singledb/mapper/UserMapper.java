@@ -18,7 +18,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserMapper {
@@ -49,7 +52,7 @@ public class UserMapper {
         AddPersonDTO addPersonDTO = new AddPersonDTO();
         addPersonDTO.setPersonDetail(this.updatePersonDetailDTOToAddPersonDetailDTO(updatePersonDTO.getPersonDetail()));
         addPersonDTO.setAddress(this.updateAddressFromUserDTOToAddAddressFromUserDTO(updatePersonDTO.getAddress()));
-        addPersonDTO.setEducation(updatePersonDTO.getEducationDTO());
+        addPersonDTO.setEducation(updatePersonDTO.getEducation());
         return addPersonDTO;
     }
 

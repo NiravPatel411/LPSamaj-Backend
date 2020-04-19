@@ -24,6 +24,6 @@ public class UpdateUserDTO {
     @Valid
     private List<UpdateAddressFromUserDTO> address;
 
-    private List<EducationDTO> educationDTO;
+    private List<EducationDTO> education;
 
 }
