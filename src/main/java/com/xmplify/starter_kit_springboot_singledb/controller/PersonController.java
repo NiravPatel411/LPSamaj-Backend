@@ -265,6 +265,7 @@ public class PersonController {
             return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "some thing went wrong", null), HttpStatus.BAD_REQUEST);
         }
 
+        List<Address> returnAddress = new ArrayList<>();
         for (UpdateAddressFromUserDTO address : updateUserDTO.getAddress()) {
             if (address.isSync()) {
                 Optional<Admin> createdBy = adminRepository.findById(address.getCreatedBy());
@@ -276,7 +277,7 @@ public class PersonController {
                 if (!updatedBy.isPresent()) {
                     return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "updatedBy does not exist in User", null), HttpStatus.BAD_REQUEST);
                 }
-                updatePersonAddress(address, user.get(), createdBy.get(), updatedBy.get());
+                returnAddress.add(updatePersonAddress(address, user.get(), createdBy.get(), updatedBy.get()));
             }
         }
         userRepository.flush();
@@ -301,15 +302,15 @@ public class PersonController {
             getPersonDetail.setUpdatedBy(updatedUser.get().getUpdatedBy().getId());
             getPersonDetail.setStatus(updatedUser.get().getStatus());
             getPersonDetail.setIsDeleted(updatedUser.get().getIsDeleted());
-            getPersonDetail.setMobileLocalId(updatedUser.get().getMobileLocalId());
+            getPersonDetail.setMobileLocalId(updateUserDTO.getPersonDetail().getMobileLocalId());
             getPersonDetail.setPersonId(updatedUser.get().getId());
             // user.setProfilePic(addPersonDTO.getPersonDetail().getProfilePic());
             getPersonDetail.setSurname(updatedUser.get().getSurname());
             getPersonDetail.setVillageName(updatedUser.get().getVillage().getName());
 
             Optional<List<Address>> addressFromDB = addressRepository.findByPersonIdId(updatedUser.get().getId());
-            if (updatedUser.get() != null && addressFromDB.isPresent()) {
-                for (Address address : addressFromDB.get()) {
+            if (returnAddress != null) {
+                for (Address address : returnAddress) {
                     GetAddressDetail getAddress = new GetAddressDetail();
                     getAddress.setId(updatedUser.get().getId());
                     getAddress.setAddressText(address.getAddressText());
@@ -328,6 +329,7 @@ public class PersonController {
                     getAddress.setUpdatedDate(Objects.nonNull(address.getUpdatedAt()) ? updatedUser.get().getUpdatedAt().toString() : "");
                     getAddress.setStatus(address.getStatus());
                     getAddress.setIsDeleted(address.getIsDeleted());
+                    getAddress.setMobileLocalId(address.getMobileLocalId());
                     addressDetailList.add(getAddress);
                 }
             }
@@ -338,7 +340,7 @@ public class PersonController {
         return new ResponseEntity(new ApiResponse(HttpStatus.CREATED.value(), true, "User created", userRet), HttpStatus.CREATED);
     }
 
-    private void updatePersonAddress(UpdateAddressFromUserDTO updateUserDTO, User personId, Admin createdBy, Admin updatedBy) {
+    private Address updatePersonAddress(UpdateAddressFromUserDTO updateUserDTO, User personId, Admin createdBy, Admin updatedBy) {
 
         Address address = new Address();
         if (addressRepository.existsById(updateUserDTO.getAddressId())) {
@@ -354,9 +356,11 @@ public class PersonController {
         address.setCreatedBy(createdBy);
         address.setUpdatedBy(updatedBy);
         address.setStatus(updateUserDTO.getStatus());
+        address.setMobileLocalId(updateUserDTO.getMobileLocalId());
         address.setIsDeleted(updateUserDTO.getIsDeleted());
-        addressRepository.save(address);
-
+        Address address1 =  addressRepository.save(address);
+        address1.setMobileLocalId(updateUserDTO.getMobileLocalId());
+        return address1;
     }
 
     private String updatePersonDetail(UpdateUserDTO updateUserDTO) {
