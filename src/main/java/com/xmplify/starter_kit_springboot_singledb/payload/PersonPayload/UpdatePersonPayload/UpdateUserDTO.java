@@ -1,4 +1,4 @@
-package com.xmplify.starter_kit_springboot_singledb.payload;
+package com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,6 @@ import lombok.Setter;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 import java.util.List;
 
 @Getter

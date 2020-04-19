@@ -2,6 +2,7 @@ package com.xmplify.starter_kit_springboot_singledb.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,6 +26,7 @@ import java.util.Set;
         })
 })
 @NoArgsConstructor
+@AllArgsConstructor
 @Setter
 @Getter
 public class User extends AditableEntity {
@@ -106,24 +108,4 @@ public class User extends AditableEntity {
     @OneToMany(mappedBy = "personId")
     private List<Address> addressList;
 
-
-    public User(String name, String email, String password, String mobileno) {
-        this.email = email;
-        this.password = password;
-        this.mobileno = mobileno;
-    }
-
-    public User( @Size(max = 15) String firstName, @Size(max = 15) String lastName, @Size(max = 15) String surname, String profilePic, @Size(max = 40) @Email String email, String gender, LocalDate birthDate, String bloodGroup, String maritalStatus, @Size(max = 100) String password, @Size(max = 15) String mobileno) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.surname = surname;
-        this.profilePic = profilePic;
-        this.email = email;
-        this.gender = gender;
-        this.birthDate = birthDate;
-        this.bloodGroup = bloodGroup;
-        this.maritalStatus = maritalStatus;
-        this.password = password;
-        this.mobileno = mobileno;
-    }
 }

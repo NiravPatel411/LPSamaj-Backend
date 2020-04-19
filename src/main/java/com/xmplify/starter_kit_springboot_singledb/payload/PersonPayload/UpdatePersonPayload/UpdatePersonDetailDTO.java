@@ -1,4 +1,4 @@
-package com.xmplify.starter_kit_springboot_singledb.payload;
+package com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +15,9 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersonDetailDTO {
+public class UpdatePersonDetailDTO {
+
+    private String personId;
 
     @NotNull(message = "firstName can not be null or empty")
     private String firstName;
@@ -26,7 +28,7 @@ public class PersonDetailDTO {
     @NotNull(message = "surname can not be null or empty")
     private String surname;
 
-    //@NotNull(message = "profilePic can not be null or empty")
+    @NotNull(message = "profilePic can not be null or empty")
     private String profilePic;
 
     @NotNull(message = "villageId can not be null or empty")
@@ -55,19 +57,17 @@ public class PersonDetailDTO {
     @NotNull(message = "gender can not be null or empty")
     private String adminId;
 
-    private String mobileLocalId;
-
     @NotNull(message = "isSync can not be null or empty")
     private boolean isSync;
+
+    private String mobileLocalId;
 
     private String createdDate;
 
     private String updatedDate;
 
+    @NotNull(message = "createdBy can not be null")
     private String createdBy;
-
-    private String personId;
-
 
     private String updatedBy;
 

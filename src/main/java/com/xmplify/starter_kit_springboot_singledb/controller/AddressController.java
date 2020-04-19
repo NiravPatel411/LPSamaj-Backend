@@ -44,7 +44,7 @@ public class AddressController {
             return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(),false,"Person Id can be null or blank",addressRepository.findAll()),HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(),true,"SUCCESS",addressRepository.findByPersonId(personId)),HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(),true,"SUCCESS",addressRepository.findByPersonIdId(personId)),HttpStatus.OK);
     }
 
     @PostMapping("/")

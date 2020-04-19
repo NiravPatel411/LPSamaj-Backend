@@ -1,4 +1,4 @@
-package com.xmplify.starter_kit_springboot_singledb.payload;
+package com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

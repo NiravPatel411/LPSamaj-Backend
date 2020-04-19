@@ -34,7 +34,6 @@ public class PersonEducation extends AditableEntity {
     private String startDate;
 
     private String endDate;
-//
 
     private String degreeName;
     private String startYear;

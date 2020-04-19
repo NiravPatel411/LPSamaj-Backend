@@ -1,13 +1,10 @@
-package com.xmplify.starter_kit_springboot_singledb.payload;
+package com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 import java.util.List;
 
 @Setter
