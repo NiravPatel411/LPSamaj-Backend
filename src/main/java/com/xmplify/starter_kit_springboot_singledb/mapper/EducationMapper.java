@@ -5,7 +5,6 @@ import com.xmplify.starter_kit_springboot_singledb.model.User;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDTO;
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
 import com.xmplify.starter_kit_springboot_singledb.service.impl.RoleService;
-import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,8 +41,6 @@ public class EducationMapper {
                 educationDTO.getDegreeId(),
                 educationDTO.getSchoolName(),
                 educationDTO.getResult(),
-                educationDTO.getStartDate(),
-                educationDTO.getEndDate(),
                 educationDTO.getStartYear(),
                 educationDTO.getEndYear(),
                 educationDTO.getProofPhoto(),
