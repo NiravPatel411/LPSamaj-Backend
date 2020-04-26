@@ -46,10 +46,15 @@ public class EducationMapper {
                 educationDTO.getProofPhoto(),
                 educationDTO.getMedium(),
                 educationDTO.getMobileLocalId());
-        personEducation.setCreatedBy(adminRepository.findById(educationDTO.getCreatedBy()).get());
+        personEducation.setStatus(educationDTO.getStatus());
         personEducation.setCreatedBy(Objects.nonNull(educationDTO.getCreatedBy())?
                 adminRepository.findById(educationDTO.getCreatedBy()).isPresent()?
                         adminRepository.findById(educationDTO.getCreatedBy()).get():
+                        null :
+                null);
+        personEducation.setUpdatedBy(Objects.nonNull(educationDTO.getUpdatedBy()) ?
+                adminRepository.findById(educationDTO.getUpdatedBy()).isPresent() ?
+                        adminRepository.findById(educationDTO.getUpdatedBy()).get() :
                         null:
                 null);
         return personEducation;

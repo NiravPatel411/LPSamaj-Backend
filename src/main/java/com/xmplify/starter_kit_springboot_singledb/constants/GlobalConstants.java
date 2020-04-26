@@ -10,6 +10,7 @@ public class GlobalConstants {
     public static final String ROLE_NORMAL = "Normal";
     public static final String BASIC_DETAIL = "Basic_Detail";
     public static final String ADDRESS = "Address";
+    public static final String EDUCATION = "Education";
     public static final String UPLOAD_IMAGE = "/WEB-INF/images/";
     public static final String UPLOAD_NEWS_MEDIA_FULL_PATH = UPLOAD_IMAGE+"news/";
     public static final String UPLOAD_NEWS_MEDIA_URL_PATH = "/images/news/";

@@ -155,11 +155,16 @@ public class UserMapper {
                 address.getStateId(),
                 address.getMobileLocalId()
         );
-        newAddress.setCreatedBy(adminRepository.findById(address.getCreatedBy()).get());
+//        newAddress.setCreatedBy(adminRepository.findById(address.getCreatedBy()).get());
         newAddress.setCreatedBy(Objects.nonNull(address.getCreatedBy())?
                 adminRepository.findById(address.getCreatedBy()).isPresent()?
                         adminRepository.findById(address.getCreatedBy()).get():
                         null:
+                null);
+        newAddress.setUpdatedBy(Objects.nonNull(address.getCreatedBy()) ?
+                adminRepository.findById(address.getUpdatedBy()).isPresent() ?
+                        adminRepository.findById(address.getUpdatedBy()).get() :
+                        null :
                 null);
         return newAddress;
     }
