@@ -5,6 +5,7 @@ import com.xmplify.starter_kit_springboot_singledb.mapper.UserMapper;
 import com.xmplify.starter_kit_springboot_singledb.model.*;
 import com.xmplify.starter_kit_springboot_singledb.payload.*;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddPersonDTO;
+import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdateAddressFromUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdatePersonDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdateUserDTO;
@@ -77,11 +78,14 @@ public class PersonController {
     @Autowired
     Validators validators;
 
+    @Autowired
+    EducationRepository educationRepository;
+
     @GetMapping("/")
-    public ResponseEntity<?> listUser(final Pageable pageable) {
+    public ResponseEntity<?> listUser(Pageable pageable) {
         Page<User> users = userRepository.findAll(pageable);
         List<ListPersonBasicDetail> listPersonBasicDetails = new ArrayList<>();
-        users.forEach(user -> {
+        users.getContent().forEach(user -> {
 
             ListPersonBasicDetail listPersonBasicDetail = new ListPersonBasicDetail();
             listPersonBasicDetail.setEmail(user.getEmail());
@@ -95,8 +99,8 @@ public class PersonController {
             //todo : remove temp string in setProfilePic
             listPersonBasicDetail.setProfilePic("");
             listPersonBasicDetail.setSurname(user.getSurname());
-            listPersonBasicDetail.setCreatedDate(user.getCreatedAt().toString());
-            listPersonBasicDetail.setUpdatedDate(user.getUpdatedAt().toString());
+            listPersonBasicDetail.setCreatedDate(Objects.nonNull(user.getCreatedAt())?user.getCreatedAt().toString():"");
+            listPersonBasicDetail.setUpdatedDate(Objects.nonNull(user.getUpdatedAt())?user.getUpdatedAt().toString():"");
             listPersonBasicDetail.setCreatedBy(user.getCreatedBy() != null ? user.getCreatedBy().getId() : null);
             listPersonBasicDetail.setUpdatedBy(user.getUpdatedBy() != null ? user.getUpdatedBy().getId() : null);
             listPersonBasicDetail.setIsDeleted(user.getIsDeleted());
@@ -526,6 +530,7 @@ public class PersonController {
                 HashMap<String, Object> retObj = new HashMap<>();
                 List<PersonalDetail> personalDetails = new ArrayList<>();
                 List<AddressDetail> addressDetails = new ArrayList<>();
+                List<EducationDTO> educationDetails = new ArrayList<>();
                 users.forEach((user) -> {
                     PersonalDetail personalDetail = new PersonalDetail();
                     personalDetail.setBirthDate(user.getBirthDate().toString());
@@ -581,10 +586,42 @@ public class PersonController {
                         addressDetail.setIsSync(GlobalConstants.SYNC_STATUS);
                         addressDetails.add(addressDetail);
                     });
+
+                    List<PersonEducation> personEducationList = educationRepository.findAllByPersonId(user.getId());
+
+                    if (personEducationList.isEmpty()) {
+
+                    } else {
+                        personEducationList.forEach((education) -> {
+                            EducationDTO educationDTO = new EducationDTO(
+                                    education.getPersonEducationId(),
+                                    education.getPerson().getId(),
+                                    education.getDegreeId(),
+                                    education.getSchoolName(),
+                                    education.getResult(),
+                                    education.getStartYear(),
+                                    education.getEndYear(),
+                                    education.getProofPhoto(),
+                                    education.getMedium(),
+                                    education.getCreatedBy() != null ? education.getCreatedBy().getId() : "",
+                                    education.getUpdatedBy() != null ? education.getUpdatedBy().getId() : "",
+                                    education.getDeletedBy() != null ? education.getDeletedBy().getId() : "",
+                                    education.getCreatedAt() != null ? education.getCreatedAt().toString(): "",
+                                    education.getUpdatedAt() != null ? education.getUpdatedAt().toString(): "",
+                                    education.getDeletedAt() != null ? education.getDeletedAt().toString(): "",
+                                    education.getIsDeleted(),
+                                    education.getMobileLocalId(),
+                                    education.getStatus()
+                            );
+                            educationDetails.add(educationDTO);
+                                }
+                        );
+                    }
                 });
 
                 retObj.put("personalDetail", personalDetails);
                 retObj.put("address", addressDetails);
+                retObj.put("education",educationDetails);
                 return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Success", retObj), HttpStatus.OK);
 
             } else {
