@@ -134,9 +134,9 @@ public class PersonController {
             listPersonBasicDetail.setProfilePic(user.getProfilePic());
             listPersonBasicDetail.setSurname(user.getSurname());
             listPersonBasicDetail.setCreatedDate(user.getCreatedAt().toString());
-            listPersonBasicDetail.setUpdatedDate(user.getUpdatedAt().toString());
+//            listPersonBasicDetail.setUpdatedDate(user.getUpdatedAt().toString());
             listPersonBasicDetail.setCreatedBy(user.getCreatedBy() != null ? user.getCreatedBy().getId() : null);
-            listPersonBasicDetail.setUpdatedBy(user.getUpdatedBy().getId());
+//            listPersonBasicDetail.setUpdatedBy(user.getUpdatedBy().getId());
             listPersonBasicDetail.setIsDeleted(user.getIsDeleted());
             listPersonBasicDetail.setStatus(user.getStatus());
             if (user.getVillage() != null) {

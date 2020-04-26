@@ -1,7 +1,5 @@
 package com.xmplify.starter_kit_springboot_singledb.constants;
 
-import java.net.URI;
-
 public class GlobalConstants {
 
     public static final String STATUS_ACTIVE = "Active";
@@ -21,4 +19,7 @@ public class GlobalConstants {
     public static final String FILE_DOWNLOAD_HTTP_HEADER = "attachment; filename=\"%s\"";
 
     public static final String SYNC_STATUS = "1";
+    public static final String CREDIT = "CREDIT";
+    public static final String DEBIT = "DEBIT";
+
 }
