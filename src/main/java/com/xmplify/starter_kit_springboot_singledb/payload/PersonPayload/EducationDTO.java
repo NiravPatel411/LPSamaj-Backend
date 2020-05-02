@@ -36,5 +36,5 @@ public class EducationDTO {
     private String mobileLocalId;
 
     private String status;
-    private String sync;
+    private String isSync;
 }

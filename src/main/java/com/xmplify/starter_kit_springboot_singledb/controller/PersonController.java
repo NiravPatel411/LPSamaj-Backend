@@ -287,7 +287,7 @@ public class PersonController {
         List<PersonEducation> educationList = new ArrayList<>();
 
         for (EducationDTO education : updateUserDTO.getEducation()) {
-            if (education.getSync().equalsIgnoreCase("true")) {
+            if (education.getIsSync().equalsIgnoreCase("true")) {
                 Optional<Admin> createdBy = adminRepository.findById(education.getCreatedBy());
                 if (!createdBy.isPresent()) {
                     return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "createdBy does not exist in User", null), HttpStatus.BAD_REQUEST);
@@ -321,7 +321,7 @@ public class PersonController {
             getPersonDetail.setCreatedBy(updatedUser.get().getCreatedBy().getId());
             getPersonDetail.setCreatedDate(Objects.nonNull(updatedUser.get().getCreatedAt()) ? updatedUser.get().getCreatedAt().toString() : "");
             getPersonDetail.setUpdatedDate(Objects.nonNull(updatedUser.get().getUpdatedAt()) ? updatedUser.get().getUpdatedAt().toString() : "");
-            getPersonDetail.setUpdatedBy(updatedUser.get().getUpdatedBy().getId());
+            getPersonDetail.setUpdatedBy(Objects.nonNull(updatedUser.get().getUpdatedBy()) ? updatedUser.get().getUpdatedBy().getId() : "");
             getPersonDetail.setStatus(updatedUser.get().getStatus());
             getPersonDetail.setIsDeleted(updatedUser.get().getIsDeleted());
             getPersonDetail.setMobileLocalId(updateUserDTO.getPersonDetail().getMobileLocalId());

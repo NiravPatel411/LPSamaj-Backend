@@ -132,7 +132,11 @@ public class UserMapper {
                 personDetail.getMobileLocalId(),
                 null
         );
-        user.setCreatedBy(adminRepository.findById(personDetail.getCreatedBy()).get());
+        user.setUpdatedBy(Objects.nonNull(personDetail.getUpdatedBy()) ?
+                adminRepository.findById(personDetail.getUpdatedBy()).isPresent() ?
+                        adminRepository.findById(personDetail.getUpdatedBy()).get() :
+                        null :
+                null);
         user.setCreatedBy(Objects.nonNull(personDetail.getCreatedBy())?
                 adminRepository.findById(personDetail.getCreatedBy()).isPresent()?
                         adminRepository.findById(personDetail.getCreatedBy()).get():
