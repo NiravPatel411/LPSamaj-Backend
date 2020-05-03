@@ -132,7 +132,11 @@ public class UserMapper {
                 personDetail.getMobileLocalId(),
                 null
         );
-        user.setCreatedBy(adminRepository.findById(personDetail.getCreatedBy()).get());
+        user.setUpdatedBy(Objects.nonNull(personDetail.getUpdatedBy()) ?
+                adminRepository.findById(personDetail.getUpdatedBy()).isPresent() ?
+                        adminRepository.findById(personDetail.getUpdatedBy()).get() :
+                        null :
+                null);
         user.setCreatedBy(Objects.nonNull(personDetail.getCreatedBy())?
                 adminRepository.findById(personDetail.getCreatedBy()).isPresent()?
                         adminRepository.findById(personDetail.getCreatedBy()).get():
@@ -155,11 +159,16 @@ public class UserMapper {
                 address.getStateId(),
                 address.getMobileLocalId()
         );
-        newAddress.setCreatedBy(adminRepository.findById(address.getCreatedBy()).get());
+//        newAddress.setCreatedBy(adminRepository.findById(address.getCreatedBy()).get());
         newAddress.setCreatedBy(Objects.nonNull(address.getCreatedBy())?
                 adminRepository.findById(address.getCreatedBy()).isPresent()?
                         adminRepository.findById(address.getCreatedBy()).get():
                         null:
+                null);
+        newAddress.setUpdatedBy(Objects.nonNull(address.getCreatedBy()) ?
+                adminRepository.findById(address.getUpdatedBy()).isPresent() ?
+                        adminRepository.findById(address.getUpdatedBy()).get() :
+                        null :
                 null);
         return newAddress;
     }

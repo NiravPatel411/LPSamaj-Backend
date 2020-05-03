@@ -284,10 +284,28 @@ public class PersonController {
                 returnAddress.add(updatePersonAddress(address, user.get(), createdBy.get(), updatedBy.get()));
             }
         }
+        List<PersonEducation> educationList = new ArrayList<>();
+
+        for (EducationDTO education : updateUserDTO.getEducation()) {
+            if (education.getIsSync().equalsIgnoreCase("true")) {
+                Optional<Admin> createdBy = adminRepository.findById(education.getCreatedBy());
+                if (!createdBy.isPresent()) {
+                    return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "createdBy does not exist in User", null), HttpStatus.BAD_REQUEST);
+                }
+
+                Optional<Admin> updatedBy = adminRepository.findById(education.getUpdatedBy());
+                if (!updatedBy.isPresent()) {
+                    return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "updatedBy does not exist in User", null), HttpStatus.BAD_REQUEST);
+                }
+                educationList.add(updateEducation(education, user.get(), createdBy.get(), updatedBy.get()));
+            }
+        }
+
         userRepository.flush();
         Optional<User> updatedUser = userRepository.findById(updateUserDTO.getPersonDetail().getPersonId());
         GetPersonDetail getPersonDetail = new GetPersonDetail();
         List<GetAddressDetail> addressDetailList = new ArrayList<>();
+        List<EducationDTO> educationDTOList = new ArrayList<>();
         if (updatedUser.isPresent()) {
             getPersonDetail.setAdminId(updatedUser.get().getAdminId());
             getPersonDetail.setAdminName(updatedUser.get().getAdmin().getName());
@@ -303,7 +321,7 @@ public class PersonController {
             getPersonDetail.setCreatedBy(updatedUser.get().getCreatedBy().getId());
             getPersonDetail.setCreatedDate(Objects.nonNull(updatedUser.get().getCreatedAt()) ? updatedUser.get().getCreatedAt().toString() : "");
             getPersonDetail.setUpdatedDate(Objects.nonNull(updatedUser.get().getUpdatedAt()) ? updatedUser.get().getUpdatedAt().toString() : "");
-            getPersonDetail.setUpdatedBy(updatedUser.get().getUpdatedBy().getId());
+            getPersonDetail.setUpdatedBy(Objects.nonNull(updatedUser.get().getUpdatedBy()) ? updatedUser.get().getUpdatedBy().getId() : "");
             getPersonDetail.setStatus(updatedUser.get().getStatus());
             getPersonDetail.setIsDeleted(updatedUser.get().getIsDeleted());
             getPersonDetail.setMobileLocalId(updateUserDTO.getPersonDetail().getMobileLocalId());
@@ -337,11 +355,59 @@ public class PersonController {
                     addressDetailList.add(getAddress);
                 }
             }
+            if (educationList != null) {
+                for (PersonEducation education : educationList) {
+                    EducationDTO educationDTO = new EducationDTO();
+                    educationDTO.setPersonEducationId(education.getPersonEducationId());
+                    educationDTO.setDegreeId(education.getDegreeId());
+                    educationDTO.setStartYear(education.getStartYear());
+                    educationDTO.setEndYear(education.getEndYear());
+                    educationDTO.setMedium(education.getMedium());
+                    educationDTO.setSchoolName(education.getSchoolName());
+                    educationDTO.setStatus(education.getStatus());
+                    educationDTO.setProofPhoto(education.getProofPhoto());
+                    educationDTO.setPersonId(updatedUser.get().getId());
+                    educationDTO.setCreatedBy(education.getCreatedBy().getId());
+                    educationDTO.setUpdatedBy(education.getUpdatedBy().getId());
+                    educationDTO.setStatus(education.getStatus());
+                    educationDTO.setIsDeleted(String.valueOf(education.getIsDeleted()));
+                    educationDTO.setMobileLocalId(education.getMobileLocalId());
+                    educationDTOList.add(educationDTO);
+                }
+            }
+
         }
         HashMap<String, Object> userRet = new HashMap<>();
         userRet.put(GlobalConstants.BASIC_DETAIL, getPersonDetail);
         userRet.put(GlobalConstants.ADDRESS, addressDetailList);
+        userRet.put(GlobalConstants.EDUCATION, educationDTOList);
         return new ResponseEntity(new ApiResponse(HttpStatus.CREATED.value(), true, "User created", userRet), HttpStatus.CREATED);
+    }
+
+    private PersonEducation updateEducation(EducationDTO educationDTO, User user, Admin createdBy, Admin updatedBy) {
+
+
+        PersonEducation personEducation = new PersonEducation();
+        if (educationRepository.existsById(educationDTO.getPersonEducationId())) {
+            personEducation.setPersonEducationId(educationDTO.getPersonEducationId());
+        }
+
+        personEducation.setPerson(user);
+        personEducation.setDegreeId(educationDTO.getDegreeId());
+        personEducation.setEndYear(educationDTO.getEndYear());
+        personEducation.setStartYear(educationDTO.getStartYear());
+        personEducation.setMedium(educationDTO.getMedium());
+        personEducation.setProofPhoto(educationDTO.getProofPhoto());
+        personEducation.setResult(educationDTO.getResult());
+        personEducation.setSchoolName(educationDTO.getSchoolName());
+        personEducation.setMobileLocalId(educationDTO.getMobileLocalId());
+        personEducation.setStatus(educationDTO.getStatus());
+        personEducation.setCreatedBy(createdBy);
+        personEducation.setUpdatedBy(updatedBy);
+        PersonEducation personEducation1 = educationRepository.save(personEducation);
+        personEducation1.setMobileLocalId(personEducation.getMobileLocalId());
+        return personEducation1;
+
     }
 
     private Address updatePersonAddress(UpdateAddressFromUserDTO updateUserDTO, User personId, Admin createdBy, Admin updatedBy) {
@@ -580,7 +646,7 @@ public class PersonController {
                         addressDetail.setCreatedBy(String.valueOf(add.getCreatedBy() != null ? add.getCreatedBy().getId() : null));
                         addressDetail.setCreatedAt(String.valueOf(add.getCreatedAt().toString()));
                         addressDetail.setDeletedBy(String.valueOf(add.getDeletedBy() != null ? add.getDeletedBy().getId() : ""));
-                        addressDetail.setDeletedAt(String.valueOf(add.getDeletedAt()));
+                        addressDetail.setDeletedAt(String.valueOf(add.getDeletedAt() != null ? add.getDeletedAt() : ""));
 
 
                         addressDetail.setIsSync(GlobalConstants.SYNC_STATUS);
@@ -598,10 +664,10 @@ public class PersonController {
                                     education.getPerson().getId(),
                                     education.getDegreeId(),
                                     education.getSchoolName(),
-                                    education.getResult(),
+                                    education.getResult() != null ? education.getResult() : "",
                                     education.getStartYear(),
                                     education.getEndYear(),
-                                    education.getProofPhoto(),
+                                    education.getProofPhoto() != null ? education.getProofPhoto() : "",
                                     education.getMedium(),
                                     education.getCreatedBy() != null ? education.getCreatedBy().getId() : "",
                                     education.getUpdatedBy() != null ? education.getUpdatedBy().getId() : "",
@@ -609,9 +675,9 @@ public class PersonController {
                                     education.getCreatedAt() != null ? education.getCreatedAt().toString(): "",
                                     education.getUpdatedAt() != null ? education.getUpdatedAt().toString(): "",
                                     education.getDeletedAt() != null ? education.getDeletedAt().toString(): "",
-                                    education.getIsDeleted(),
+                                    String.valueOf(education.getIsDeleted()),
                                     education.getMobileLocalId(),
-                                    education.getStatus()
+                                    education.getStatus(), GlobalConstants.SYNC_STATUS
                             );
                             educationDetails.add(educationDTO);
                                 }

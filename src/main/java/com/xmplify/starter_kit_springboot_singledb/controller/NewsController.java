@@ -178,6 +178,8 @@ public class NewsController {
         news.setNewsType(newsType.get());
         news.setTitle(newsRequest.getTitle());
         news.setExtraData(newsRequest.getExtraData());
+        news.setCreatedBy(admin.get());
+        news.setUpdatedBy(admin.get());
 
         News newsResult = newsRepository.save(news);
 
@@ -292,6 +294,7 @@ public class NewsController {
             newNews.setNewsType(newsType.get());
             newNews.setAdminId(admin.get());
             newNews.setTitle(updateNewsRequest.getTitle());
+            newNews.setUpdatedBy(admin.get());
             News newsResult = newsRepository.save(newNews);
 
             // TODO: 11-04-2020 remove this below ids media
