@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.xmplify.starter_kit_springboot_singledb.model.Admin;
+import com.xmplify.starter_kit_springboot_singledb.payload.AuthAdmin;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,9 +29,15 @@ public class UserPrincipal implements UserDetails {
     @JsonIgnore
     private String mobileno;
 
+    @JsonIgnore
+    private String role;
+
+    @JsonIgnore
+    private AuthAdmin authAdmin;
+
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrincipal(String id, String firstName, String lastName, String email, String password,String mobileno, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(String id, String firstName, String lastName, String email, String password,String mobileno, Collection<? extends GrantedAuthority> authorities,AuthAdmin authAdmin) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -38,20 +45,13 @@ public class UserPrincipal implements UserDetails {
         this.password = password;
         this.mobileno = mobileno;
         this.authorities = authorities;
+        this.authAdmin = authAdmin;
     }
 
-    public static UserPrincipal create(User user) {
+    public static UserPrincipal create(User user, AuthAdmin authAdmin) {
         List<GrantedAuthority> authorities = user.getRoles().stream().map(role ->
                 new SimpleGrantedAuthority(role.getName())
         ).collect(Collectors.toList());
-
-        Admin admin = user.getAdmin();
-      //  List<GrantedAuthority> authorities = admin.stream().map((adm) -> adm.getAdminRoles().stream().forEach((role) -> new SimpleGrantedAuthority((role.getName()))));
-//        if(Objects.nonNull(admin)){
-//            authorities = admin.getAdminRoles().stream().map(role ->
-//                    new SimpleGrantedAuthority(role.getName())
-//            ).collect(Collectors.toList());
-//        }
 
         return new UserPrincipal(
                 user.getId(),
@@ -60,7 +60,8 @@ public class UserPrincipal implements UserDetails {
                 user.getEmail(),
                 user.getPassword(),
                 user.getMobileno(),
-                authorities
+                authorities,
+                authAdmin
         );
     }
 
@@ -79,6 +80,14 @@ public class UserPrincipal implements UserDetails {
     @Override
     public String getUsername() {
         return lastName;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     @Override

@@ -3,6 +3,7 @@ import java.net.URI;
 import java.util.*;
 import java.util.stream.Stream;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,6 +22,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.xmplify.starter_kit_springboot_singledb.repository.RoleRepository;
@@ -54,6 +57,8 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) throws JsonProcessingException {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        request.setAttribute("signInAs",loginRequest.getSignInAs());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsernameOrMobileno(),
@@ -83,6 +88,7 @@ public class AuthController {
                 authAdmin.setAdminName(admin.getName());
                 authAdmin.setPersonId(admin.getPerson().getId());
                 authAdmin.setAdminType(loginRequest.getSignInAs());
+
                 returnUserObject.put("adminDetail",authAdmin);
             }else {
                 return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "NOT ACCESS with "+loginRequest.getSignInAs()+" role",null), HttpStatus.OK);

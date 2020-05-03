@@ -66,6 +66,16 @@ public class JwtTokenProvider {
         return jwtCustomPayload.getUserId();
     }
 
+    public String getRoleFromJWT(String token) throws IOException {
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        JwtCustomPayload jwtCustomPayload = objectMapper.readValue(claims.getSubject() , JwtCustomPayload.class);
+        return jwtCustomPayload.getRoleType();
+    }
+
     public boolean validateToken(String authToken) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
