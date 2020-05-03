@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.Where;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -25,9 +27,10 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners({AuditingEntityListener.class})
+@Where(clause = "isDeleted = 0")
 public class AditableEntity implements Serializable{
 
-     @CreationTimestamp
+     @CreatedDate
      @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
      @Column(nullable = false, updatable = false)
      private Date createdAt;

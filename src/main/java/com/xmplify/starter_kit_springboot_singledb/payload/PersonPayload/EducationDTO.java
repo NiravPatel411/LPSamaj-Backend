@@ -12,7 +12,6 @@ import java.util.Date;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @ToString
 public class EducationDTO {
 
@@ -24,10 +23,6 @@ public class EducationDTO {
     private String schoolName;
 
     private String result;
-
-    private String startDate;
-
-    private String endDate;
 
     private String startYear;
     private String endYear;
