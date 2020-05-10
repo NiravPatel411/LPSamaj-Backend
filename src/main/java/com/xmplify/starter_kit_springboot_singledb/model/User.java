@@ -13,8 +13,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,13 +33,13 @@ public class User extends AditableEntity {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
-    @Size(max = 15)
+    @Size(max = 50)
     private String firstName;
 
-    @Size(max = 15)
+    @Size(max = 50)
     private String lastName;
 
-    @Size(max = 15)
+    @Size(max = 50)
     private String surname;
 
     private String profilePic;
@@ -53,6 +51,18 @@ public class User extends AditableEntity {
 
     @Column(name ="village_id",insertable = false,updatable = false)
     private String villageId;
+
+    private String husbandVillageId;
+
+    @Size(max = 50)
+    private String husbandFirstName;
+
+    @Size(max = 50)
+    private String husbandLastName;
+
+    @Size(max = 50)
+    private String husbandSurname;
+
 
     @NaturalId
     @Size(max = 40)

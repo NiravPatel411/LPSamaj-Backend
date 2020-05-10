@@ -100,6 +100,13 @@ public class PersonController {
             //todo : remove temp string in setProfilePic
             listPersonBasicDetail.setProfilePic("");
             listPersonBasicDetail.setSurname(user.getSurname());
+
+            listPersonBasicDetail.setHusbandVillageName(user.getHusbandVillageId() != null ? user.getHusbandVillageId() : "");
+            listPersonBasicDetail.setHusbandFirstName(user.getHusbandFirstName() != null ? user.getHusbandFirstName() : "");
+            listPersonBasicDetail.setHusbandLastName(user.getHusbandLastName() != null ? user.getHusbandLastName() : "");
+            listPersonBasicDetail.setHusbandSurname(user.getHusbandSurname() != null ? user.getHusbandSurname() : "");
+
+
             listPersonBasicDetail.setCreatedDate(Objects.nonNull(user.getCreatedAt())?user.getCreatedAt().toString():"");
             listPersonBasicDetail.setUpdatedDate(Objects.nonNull(user.getUpdatedAt())?user.getUpdatedAt().toString():"");
             listPersonBasicDetail.setCreatedBy(user.getCreatedBy() != null ? user.getCreatedBy().getId() : null);
@@ -108,6 +115,7 @@ public class PersonController {
             listPersonBasicDetail.setStatus(user.getStatus());
             if (user.getVillage() != null) {
                 listPersonBasicDetail.setVillageName(user.getVillage().getName());
+                listPersonBasicDetail.setHusbandVillageName(user.getVillage() != null ? user.getVillage().getName() : "");
             }
 
             listPersonBasicDetails.add(listPersonBasicDetail);
@@ -138,6 +146,13 @@ public class PersonController {
             listPersonBasicDetail.setPersonId(user.getId());
             listPersonBasicDetail.setProfilePic(user.getProfilePic());
             listPersonBasicDetail.setSurname(user.getSurname());
+
+            listPersonBasicDetail.setHusbandVillageName(user.getHusbandVillageId() != null ? user.getHusbandVillageId() : "");
+            listPersonBasicDetail.setHusbandFirstName(user.getHusbandFirstName() != null ? user.getHusbandFirstName() : "");
+            listPersonBasicDetail.setHusbandLastName(user.getHusbandLastName() != null ? user.getHusbandLastName() : "");
+            listPersonBasicDetail.setHusbandSurname(user.getHusbandSurname() != null ? user.getHusbandSurname() : "");
+
+
             listPersonBasicDetail.setCreatedDate(user.getCreatedAt().toString());
 //            listPersonBasicDetail.setUpdatedDate(user.getUpdatedAt().toString());
             listPersonBasicDetail.setCreatedBy(user.getCreatedBy() != null ? user.getCreatedBy().getId() : null);
@@ -329,6 +344,14 @@ public class PersonController {
             getPersonDetail.setPersonId(updatedUser.get().getId());
             // user.setProfilePic(addPersonDTO.getPersonDetail().getProfilePic());
             getPersonDetail.setSurname(updatedUser.get().getSurname());
+
+
+            getPersonDetail.setHusbandVillageId(updatedUser.get().getHusbandVillageId() != null ? updatedUser.get().getHusbandVillageId() : "");
+            getPersonDetail.setHusbandFirstName(updatedUser.get().getHusbandFirstName() != null ? updatedUser.get().getHusbandFirstName() : "");
+            getPersonDetail.setHusbandLastName(updatedUser.get().getHusbandLastName() != null ? updatedUser.get().getHusbandLastName() : "");
+            getPersonDetail.setHusbandSurname(updatedUser.get().getHusbandSurname() != null ? updatedUser.get().getHusbandSurname() : "");
+
+
             getPersonDetail.setVillageName(updatedUser.get().getVillage().getName());
 
             Optional<List<Address>> addressFromDB = addressRepository.findByPersonIdId(updatedUser.get().getId());
@@ -448,6 +471,13 @@ public class PersonController {
         if (!village.isPresent()) {
             return "Can not found Village";
         }
+        Optional<Village> husbandvillage = null;
+        if (personDetail.getHusbandVillageId() != null && (!personDetail.getHusbandVillageId().isEmpty())) {
+            husbandvillage = villageRepository.findById(personDetail.getVillageId());
+            if (!husbandvillage.isPresent()) {
+                return "Can not found  husband Village";
+            }
+        }
 
         Optional<Admin> userCreated = adminRepository.findById(personDetail.getCreatedBy());
         if (!userCreated.isPresent()) {
@@ -478,6 +508,12 @@ public class PersonController {
         person.setBloodGroup(personDetail.getBloodGroup());
         person.setProfilePic(personDetail.getProfilePic());
         person.setSurname(personDetail.getSurname());
+        person.setHusbandFirstName(personDetail.getHusbandFirstName());
+        person.setHusbandLastName(personDetail.getHusbandLastName());
+        person.setHusbandSurname(personDetail.getHusbandSurname());
+        if (husbandvillage != null) {
+//            person.setHusbandVillage(husbandvillage.get());
+        }
         person.setVillage(village.get());
         person.setMobileLocalId(personDetail.getMobileLocalId());
 
@@ -576,6 +612,18 @@ public class PersonController {
                 if (admin.getPerson().getSurname() != null) {
                     adminBasicDetail.setSurname(admin.getPerson().getSurname());
                 }
+                if (admin.getPerson().getHusbandFirstName() != null) {
+                    adminBasicDetail.setHusbandFirstName(admin.getPerson().getHusbandFirstName());
+                }
+                if (admin.getPerson().getHusbandLastName() != null) {
+                    adminBasicDetail.setHusbandLastName(admin.getPerson().getHusbandLastName());
+                }
+                if (admin.getPerson().getHusbandLastName() != null) {
+                    adminBasicDetail.setHusbandLastName(admin.getPerson().getHusbandLastName());
+                }
+                /*if (admin.getPerson().getHusbandVillage() != null && admin.getPerson().getHusbandVillage().getName() != null) {
+                    adminBasicDetail.setHusbandVillageName(admin.getPerson().getHusbandVillage().getName());
+                }*/
                 if (admin.getPerson().getVillage() != null && admin.getPerson().getVillage().getName() != null) {
                     adminBasicDetail.setVillageName(admin.getPerson().getVillage().getName());
                 }
@@ -615,6 +663,12 @@ public class PersonController {
                     personalDetail.setProfilePic("");
                     personalDetail.setSurname(user.getSurname());
                     personalDetail.setVillageId(user.getVillageId());
+
+                    personalDetail.setHusbandVillageId(user.getHusbandVillageId() != null ? user.getHusbandVillageId() : "");
+                    personalDetail.setHusbandFirstName(user.getHusbandFirstName() != null ? user.getHusbandFirstName() : "");
+                    personalDetail.setHusbandLastName(user.getHusbandLastName() != null ? user.getHusbandLastName() : "");
+                    personalDetail.setHusbandSurname(user.getHusbandSurname() != null ? user.getHusbandSurname() : "");
+
                     personalDetail.setIsSync(GlobalConstants.SYNC_STATUS);
 
                     personalDetail.setIsDelete(String.valueOf(user.getIsDeleted()));

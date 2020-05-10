@@ -1,15 +1,9 @@
 package com.xmplify.starter_kit_springboot_singledb.payload;
 
-import com.xmplify.starter_kit_springboot_singledb.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -21,6 +15,14 @@ public class ListPersonBasicDetail {
     private String lastName;
     private String surname;
     private String profilePic;
+
+    private String husbandVillageName;
+
+    private String husbandFirstName;
+
+    private String husbandLastName;
+
+    private String husbandSurname;
     private String villageName;
     private String email;
     private String gender;

@@ -6,10 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -59,6 +55,14 @@ public class UpdatePersonDetailDTO {
 
     @NotNull(message = "isSync can not be null or empty")
     private boolean isSync;
+
+    private String husbandVillageId;
+
+    private String husbandFirstName;
+
+    private String husbandLastName;
+
+    private String husbandSurname;
 
     private String mobileLocalId;
 

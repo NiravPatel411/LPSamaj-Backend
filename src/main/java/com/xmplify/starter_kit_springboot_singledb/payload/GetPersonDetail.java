@@ -20,6 +20,10 @@ public class GetPersonDetail {
     private String firstName;
     private String lastName;
     private String surname;
+    private String husbandVillageId;
+    private String husbandFirstName;
+    private String husbandLastName;
+    private String husbandSurname;
     private String profilePic;
     private String email;
     private String gender;
