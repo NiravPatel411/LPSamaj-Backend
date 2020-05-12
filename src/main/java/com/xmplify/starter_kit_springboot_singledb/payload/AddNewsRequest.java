@@ -27,6 +27,6 @@ public class AddNewsRequest {
 
     private String extraData;
 
-    private AddNewsMedia[] newsMedia;
+    private AddEditMedia[] newsMedia;
 
 }
