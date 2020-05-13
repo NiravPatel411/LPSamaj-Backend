@@ -5,9 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-import java.util.Date;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,6 +16,14 @@ public class PersonalDetail {
     private String firstName;
 
     private String lastName;
+
+    private String husbandVillageId;
+
+    private String husbandFirstName;
+
+    private String husbandLastName;
+
+    private String husbandSurname;
 
     private String surname;
 

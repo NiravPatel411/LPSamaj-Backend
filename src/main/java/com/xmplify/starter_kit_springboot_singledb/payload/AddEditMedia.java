@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddNewsMedia {
+public class AddEditMedia {
 
     private String mediaType;
 

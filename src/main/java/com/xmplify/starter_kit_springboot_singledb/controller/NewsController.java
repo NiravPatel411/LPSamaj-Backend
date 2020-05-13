@@ -12,7 +12,6 @@ import com.xmplify.starter_kit_springboot_singledb.repository.MediaRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.NewsRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.NewsTypeRepository;
 import com.xmplify.starter_kit_springboot_singledb.security.SecurityUtils;
-import com.xmplify.starter_kit_springboot_singledb.security.UserPrincipal;
 import com.xmplify.starter_kit_springboot_singledb.service.impl.NewsService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -206,7 +205,7 @@ public class NewsController {
         if (newsRequest.getNewsMedia() != null) {
             for (int i = 0; i < newsRequest.getNewsMedia().length; i++) {
                 AllMedia retMedia = new AllMedia();
-                AddNewsMedia addNewsMedia = newsRequest.getNewsMedia()[i];
+                AddEditMedia addNewsMedia = newsRequest.getNewsMedia()[i];
                 MultipartFile file = addNewsMedia.getMedia();
 
                 if (file.isEmpty()) {
