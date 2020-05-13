@@ -433,63 +433,6 @@ public class NewsController {
                 return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Can not access", null), HttpStatus.OK);
             }
         }
-/*
-
-        SecurityUtils.isCurrentUserInRole(GlobalConstants.MASTER_ADMIN);
-        List<AllNews> allNewsList = new ArrayList<>();
-        Optional<NewsType> newsType = newsTypeRepository.findById(newsTypeId);
-        if (!newsType.isPresent()) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.NOT_FOUND.value(), false, "Invalid id. News type not found", null), HttpStatus.OK);
-        }
-
-        List<News> newsList = newsRepository.findByNewsTypeId(newsType.get().getId());
-        if (newsList == null) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", allNewsList), HttpStatus.OK);
-        }
-
-        for (News news : newsList) {
-            AllNews allNews = new AllNews();
-            allNews.setId(news.getId());
-            allNews.setAdminId(news.getAdminId().getId());
-            allNews.setDescription(news.getDescription());
-            allNews.setExtraData(news.getExtraData());
-            allNews.setNewsTypeId(news.getNewsType().getId());
-            allNews.setNewsTypeName(news.getNewsType().getType());
-            allNews.setTitle(news.getTitle());
-            allNews.setAdminFirstName(news.getAdminId().getPerson().getFirstName());
-            allNews.setAdminLastName(news.getAdminId().getPerson().getLastName());
-            allNews.setAdminSurname(news.getAdminId().getPerson().getSurname());
-
-            allNews.setCreatedAt(news.getCreatedAt() != null ? news.getCreatedAt().toString() : "");
-            allNews.setUpdatedAt(news.getUpdatedAt() != null ? news.getUpdatedAt().toString() : "");
-            List<Media> mediaList = mediaRepository.findAllByRelatedId(news.getId());
-            if (mediaList != null) {
-                List<AllMedia> allMedia = new ArrayList<>();
-
-                for (Media media : mediaList) {
-                    AllMedia allMediaObj = new AllMedia();
-                    allMediaObj.setId(media.getId());
-                    allMediaObj.setMediaType(media.getMediaType());
-                    allMediaObj.setRelatedId(media.getRelatedId());
-                    ServletContext context = request.getServletContext();
-                    String fullPath = GlobalConstants.BACK_SLASH +
-                            allNews.getNewsTypeName() + GlobalConstants.BACK_SLASH +
-                            GlobalConstants.NEWS_MEDIA_TYPE + GlobalConstants.BACK_SLASH;
-
-                    String storePath = media.getStorePath();
-
-                    allMediaObj.setStorePath(ServletUriComponentsBuilder.fromCurrentContextPath().path(fullPath + storePath).toUriString());
-                    allMediaObj.setCreatedAt(media.getCreatedAt());
-                    allMediaObj.setIdDeleted(media.getIdDeleted());
-                    allMediaObj.setRelatedType(media.getRelatedType());
-                    allMedia.add(allMediaObj);
-                }
-                allNews.setAllMedia(allMedia);
-            }
-            allNewsList.add(allNews);
-        }
-        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", allNewsList), HttpStatus.OK);
-*/
     }
 
     @GetMapping("/byAdminId/{adminId}")

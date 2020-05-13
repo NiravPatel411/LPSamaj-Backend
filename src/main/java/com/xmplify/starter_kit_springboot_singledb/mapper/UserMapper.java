@@ -14,6 +14,7 @@ import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdateP
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
 import com.xmplify.starter_kit_springboot_singledb.service.impl.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -46,6 +47,9 @@ public class UserMapper {
 
     @Autowired
     StateRepository stateRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
 
     public AddPersonDTO updateUserDTOToAddUserDTO(UpdateUserDTO updatePersonDTO) {
@@ -129,7 +133,7 @@ public class UserMapper {
                 LocalDate.parse(personDetail.getBirthDate(),df),
                 personDetail.getBloodGroup(),
                 personDetail.getMaritualStatus(),
-                personDetail.getPassword(),
+                passwordEncoder.encode(personDetail.getPassword()),
                 personDetail.getMobileno(),
                 roleService.toSet(roleService.getNormalUserRole()),
                 null,

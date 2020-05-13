@@ -46,6 +46,7 @@ public class PersonController {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+
     @Autowired
     RoleRepository roleRepository;
 
@@ -200,16 +201,6 @@ public class PersonController {
                         HttpStatus.BAD_REQUEST);
             }
             User savedUser = userService.save(addPersonDTO);
-//            Optional<User> OptionalFromDbUser = userRepository.findById(savedUser.getId());
-//            if (!OptionalFromDbUser.isPresent()) {
-//                return null;
-//            }
-//            User fromDbUser = OptionalFromDbUser.get();
-//            Optional<List<Address>> address = addressRepository.findByPersonIdId(fromDbUser.getId());
-//            if (address.isPresent()) {
-//                fromDbUser.setAddressList(address.get());
-//            }
-
             return new ResponseEntity(new ApiResponse(HttpStatus.CREATED.value(), true, "User created", userMapper.userToAddPersonResponse(savedUser, addPersonDTO)), HttpStatus.CREATED);
 
         }
@@ -496,7 +487,7 @@ public class PersonController {
 
         person.setId(personDetail.getPersonId());
         person.setAdmin(admin.get());
-        person.setPassword(personDetail.getPassword());
+        person.setPassword(passwordEncoder.encode(personDetail.getPassword()));
         DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         person.setBirthDate(LocalDate.parse(personDetail.getBirthDate(), df));
         person.setEmail(personDetail.getEmail());

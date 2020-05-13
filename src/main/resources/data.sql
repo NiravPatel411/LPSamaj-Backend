@@ -21,6 +21,7 @@
   INSERT INTO `36lpsamaj`.`admin_role` (`id`, `display_name`, `name`) VALUES ('4', 'VILLAGE ADMIN', 'VILLAGE_ADMIN');
   INSERT INTO `36lpsamaj`.`admin_role` (`id`, `display_name`, `name`) VALUES ('5', 'NEWS ADMIN', 'NEWS_ADMIN');
   INSERT INTO `36lpsamaj`.`admin_role` (`id`, `display_name`, `name`) VALUES ('6', 'ACTIVITY ADMIN', 'ACTIVITY_ADMIN');
+  INSERT INTO `36lpsamaj`.`admin_role` (`id`, `display_name`, `name`) VALUES ('7', 'Normal_User', 'Normal_User');
 
 -- Degree
   INSERT INTO `36lpsamaj`.`degree` (`id`, `is_proof_nedded`, `name`) VALUES ('1', 0, 'BE');

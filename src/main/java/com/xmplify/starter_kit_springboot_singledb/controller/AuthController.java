@@ -70,7 +70,7 @@ public class AuthController {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         Map<String, Object> returnUserObject = new HashMap<>();
         List<Admin> admins = adminRepository.isExistsAdminByPerson(userPrincipal.getId());
-        if(Objects.nonNull(admins) && (! "NORMAL".equalsIgnoreCase(loginRequest.getSignInAs()))){
+        if(Objects.nonNull(admins) && (! GlobalConstants.ROLE_NORMAL.equalsIgnoreCase(loginRequest.getSignInAs()))){
             if(admins.stream().anyMatch(a -> a.getAdminRole().getName().equalsIgnoreCase(loginRequest.getSignInAs()))){
                 returnUserObject.put("userDetail", UserDto.create(userRepository.findById(userPrincipal.getId()).get(), loginRequest.getSignInAs()));
                 AuthAdmin authAdmin = new AuthAdmin();
@@ -94,7 +94,7 @@ public class AuthController {
                 return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "NOT ACCESS with "+loginRequest.getSignInAs()+" role",null), HttpStatus.OK);
             }
         } else {
-            if("NORMAL".equalsIgnoreCase(loginRequest.getSignInAs())) {
+            if(GlobalConstants.ROLE_NORMAL.equalsIgnoreCase(loginRequest.getSignInAs())) {
                 returnUserObject.put("userDetail", UserDto.create(userRepository.findById(userPrincipal.getId()).get(), loginRequest.getSignInAs()));
             }else {
                 return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "NOT ACCESS with "+loginRequest.getSignInAs()+" role",null), HttpStatus.OK);
