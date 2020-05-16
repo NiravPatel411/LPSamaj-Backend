@@ -39,7 +39,7 @@ public class ActivityControler {
     }
 
     @PostMapping("/addEditActivity")
-    public ResponseEntity<?> addAccountData(@RequestBody AddActivityRequest request) {
+    public ResponseEntity<?> addAccountData(@ModelAttribute AddActivityRequest request) {
 
         Optional<Admin> admin = adminRepository.findById(request.getAdminId());
 
