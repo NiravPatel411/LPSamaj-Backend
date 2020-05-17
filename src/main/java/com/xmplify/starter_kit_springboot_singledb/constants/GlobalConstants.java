@@ -12,6 +12,7 @@ public class GlobalConstants {
     public static final String ADDRESS = "Address";
     public static final String EDUCATION = "Education";
     public static final String NEWS_MEDIA_TYPE = "news";
+    public static final String ACTIVITY_MEDIA_TYPE = "activity";
     public static final String UPLOAD_IMAGE = "/WEB-INF/";
     public static final String UPLOAD_NEWS_MEDIA_FULL_PATH = UPLOAD_IMAGE+"image/news/";
     public static final String UPLOAD_NEWS_MEDIA_URL_PATH = "/image/news/";
@@ -27,5 +28,7 @@ public class GlobalConstants {
     public static final String MASTER_ADMIN = "MASTER_ADMIN";
     public static final String ANONYMUS = "ANONYMUS_USER";
     public static final String NEWS_ADMIN = "NEWS_ADMIN";
+    public static final String ACTIVITY_ADMIN = "ACTIVITY_ADMIN";
     public static final String ALL_DATA = "ALL_DATA";
+    public static final int DEFAULT_PAGE_SIZE = 10;
 }

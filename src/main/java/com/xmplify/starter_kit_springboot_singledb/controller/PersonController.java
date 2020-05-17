@@ -84,7 +84,7 @@ public class PersonController {
     EducationRepository educationRepository;
 
     @GetMapping("/")
-    public ResponseEntity<?> listUser(@PageableDefault(page = 1)Pageable pageable) {
+    public ResponseEntity<?> listUser(@PageableDefault(page = 0,size = GlobalConstants.DEFAULT_PAGE_SIZE)Pageable pageable) {
         Page<User> users = userRepository.findAll(pageable);
         List<ListPersonBasicDetail> listPersonBasicDetails = new ArrayList<>();
         users.getContent().forEach(user -> {
@@ -126,7 +126,7 @@ public class PersonController {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<?> filterUser(@RequestParam String searchText, final Pageable pageable) {
+    public ResponseEntity<?> filterUser(@RequestParam String searchText, @PageableDefault(page = 0,size = GlobalConstants.DEFAULT_PAGE_SIZE)Pageable pageable) {
         List<String> fields = new ArrayList<>();
         fields.add("firstName");
         fields.add("lastName");

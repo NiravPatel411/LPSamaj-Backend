@@ -10,6 +10,8 @@ import com.xmplify.starter_kit_springboot_singledb.repository.AdminRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.MediaRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.NewsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -98,12 +100,12 @@ public class NewsService {
         allNews.setAllMedia(allMediaList);
     }
 
-    public List<AllNews> getAllNewsByType(String newsTypeId) {
-        List<News> newsList = newsRepository.findByNewsTypeId(newsTypeId);
-        return  getAllNewsFromNews(newsList);
+    public List<AllNews> getAllNewsByType(String newsTypeId, Pageable pageable) {
+        Page<News> newsList = newsRepository.findByNewsTypeId(newsTypeId,pageable);
+        return  getAllNewsFromNews(newsList.getContent());
     }
 
-    public List<AllNews> getAllNewsByTypeAndAdmin(String newsTypeId,String role, String currentUserId) {
+    public List<AllNews> getAllNewsByTypeAndAdmin(String newsTypeId, String role, String currentUserId, Pageable pageable) {
         String adminId = null;
         List<Admin> admins = adminRepository.isExistsAdminByPerson(currentUserId);
         if(Objects.nonNull(admins) && admins.stream().anyMatch(a -> a.getAdminRole().getName().equalsIgnoreCase(role))){
@@ -114,7 +116,7 @@ public class NewsService {
                 }
             }
         }
-        List<News> newsList = newsRepository.findByNewsTypeId(newsTypeId,adminId);
-        return getAllNewsFromNews(newsList);
+        Page<News> newsList = newsRepository.findByNewsTypeId(newsTypeId,adminId,pageable);
+        return getAllNewsFromNews(newsList.getContent());
     }
 }

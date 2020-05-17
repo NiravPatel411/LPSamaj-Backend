@@ -17,6 +17,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -418,19 +420,19 @@ public class NewsController {
     }
 
     @GetMapping("/byNewsTypeId/{newsTypeId}")
-    public ResponseEntity<?> getAllNewsByNewsTypeId(@PathVariable String newsTypeId, HttpServletRequest request) {
+    public ResponseEntity<?> getAllNewsByNewsTypeId(@PathVariable String newsTypeId, HttpServletRequest request,@PageableDefault(page = 0,size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {
         if(newsTypeId.equalsIgnoreCase(GlobalConstants.ALL_DATA)){
             List<AllNews> ret = newsService.getAllNews();
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", ret), HttpStatus.OK);
         } else {
-            if (GlobalConstants.MASTER_ADMIN.equalsIgnoreCase(SecurityUtils.getCurrentUserRole())) {
-                List<AllNews> ret = newsService.getAllNewsByType(newsTypeId);
+            if (GlobalConstants.MASTER_ADMIN.equalsIgnoreCase(SecurityUtils.getCurrentUserRole()) || GlobalConstants.ROLE_NORMAL.equalsIgnoreCase(SecurityUtils.getCurrentUserRole())) {
+                List<AllNews> ret = newsService.getAllNewsByType(newsTypeId,pageable);
                 return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", ret), HttpStatus.OK);
             } else if (GlobalConstants.NEWS_ADMIN.equalsIgnoreCase(SecurityUtils.getCurrentUserRole())) {
-                List<AllNews> ret = newsService.getAllNewsByTypeAndAdmin(newsTypeId,SecurityUtils.getCurrentUserRole(),SecurityUtils.getCurrentUserId());
+                List<AllNews> ret = newsService.getAllNewsByTypeAndAdmin(newsTypeId,SecurityUtils.getCurrentUserRole(),SecurityUtils.getCurrentUserId(),pageable);
                 return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", ret), HttpStatus.OK);
             } else {
-                return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Can not access", null), HttpStatus.OK);
+                return new ResponseEntity(new ApiResponse(HttpStatus.NON_AUTHORITATIVE_INFORMATION.value(), true, "Can not access", null), HttpStatus.OK);
             }
         }
     }

@@ -1,12 +1,20 @@
 package com.xmplify.starter_kit_springboot_singledb.service.impl;
 
+import com.xmplify.starter_kit_springboot_singledb.model.Activity;
+import com.xmplify.starter_kit_springboot_singledb.model.Admin;
+import com.xmplify.starter_kit_springboot_singledb.payload.AddEditMedia;
+import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddAddressFromUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddPersonDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.PersonDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDTO;
+import com.xmplify.starter_kit_springboot_singledb.payload.activity.AddActivityRequest;
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +43,9 @@ public class Validators {
 
     @Autowired
     DegreeRepository degreeRepository;
+
+    @Autowired
+    AccountRepository accountRepository;
 
 
     public List<String> validateAddPersonDTO(AddPersonDTO addPersonDTO) {
@@ -140,4 +151,50 @@ public class Validators {
     private boolean validateAdminId(String adminId) {
         return adminRepository.existsById(adminId);
     }
+
+    public List<String> validateUpdateActivityRequst(Activity activity) {
+        List<String> response = new ArrayList<>();
+        validateAdmin(activity.getAdminId(),response);
+        validateActivityId(activity.getId(),response);
+        return response;
+    }
+
+    private void validateActivityId(String id, List<String> response) {
+        if(!accountRepository.existsById(id)){
+            response.add("Invalid Activity Id");
+        }
+    }
+
+    private void validateAdmin(Admin adminId, List<String> response) {
+        if(Objects.nonNull(adminId)){
+            if(validateAdminId(adminId.getId())){
+                response.add("Can not find Admin by adminId ("+adminId+") of activity");
+            }
+        } else {
+            response.add("Can not find Admin by adminId of activity");
+        }
+    }
+
+    public List<String> validateAddActivityRequst(Activity activity) {
+        List<String> response = new ArrayList<>();
+        validateAdmin(activity.getAdminId(),response);
+        return response;
+    }
+
+    public List<String> validateAddActivityRequestDTO(AddActivityRequest request) {
+        List<String> response = new ArrayList<>();
+        validateMedia(request.getActivityMedia(),response);
+        return response;
+
+    }
+
+    private void validateMedia(AddEditMedia[] media, List<String> response) {
+        for(AddEditMedia addEditMedia : media) {
+            MultipartFile file = addEditMedia.getMedia();
+            if (file.isEmpty()) {
+               response.add("file can not be empty in media");
+            }
+        }
+    }
+
 }

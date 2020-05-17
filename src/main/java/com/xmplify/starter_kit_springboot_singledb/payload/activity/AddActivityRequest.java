@@ -28,7 +28,7 @@ public class AddActivityRequest {
 
     private String id;
 
-    private AddEditMedia[] newsMedia;
+    private AddEditMedia[] activityMedia;
 
     private String extraData;
     private String deletedMediaIds;
