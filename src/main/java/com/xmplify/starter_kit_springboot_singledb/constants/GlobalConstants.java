@@ -7,7 +7,7 @@ public class GlobalConstants {
     public static final String STATUS_SUCCESS = "Success";
     public static final String STATUS_FAILED = "Failed";
     public static final String ROLE_ADMIN = "ADMIN";
-    public static final String ROLE_NORMAL = "Normal_User";
+    public static final String ROLE_NORMAL = "NORMAL_USER";
     public static final String BASIC_DETAIL = "Basic_Detail";
     public static final String ADDRESS = "Address";
     public static final String EDUCATION = "Education";
