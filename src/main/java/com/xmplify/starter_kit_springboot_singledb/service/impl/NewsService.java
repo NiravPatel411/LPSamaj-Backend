@@ -12,7 +12,6 @@ import com.xmplify.starter_kit_springboot_singledb.repository.NewsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -53,7 +52,7 @@ public class NewsService {
     }
 
     public List<AllNews> getAllNews(Pageable pageable) {
-        Page<News> newsList = newsRepository.findAllByOrderByCreatedAt(pageable);
+        Page<News> newsList = newsRepository.findAllByOrderByCreatedAtDesc(pageable);
         return  getAllNewsFromNews(newsList.getContent());
     }
 

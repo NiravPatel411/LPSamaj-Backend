@@ -42,7 +42,7 @@
 
     INSERT INTO `36lpsamaj`.`users`
    (`id`, `is_deleted`, `status`, `birth_date`, `email`, `first_name`, `gender`, `last_name`, `marital_status`, `mobileno`,`password`,`created_at`) VALUES
-   ('4', '0', 'Active', '1994-04-11', 'abc@mail.com', 'Ramesh', 'male', 'Patel', 'Married', '9876543210','$2a$10$s1Fz9XJFbpJQTeTCjRdlE.oIzrvePZ5yihqTJaKuwNGC1X4HJ6b5e','9999-12-31 23:59:59');
+   ('4', '0', 'Active', '1994-04-11', 'abc@mail.com', 'Ramesh', 'male', 'Patel', 'Married', '9924463386','$2a$10$s1Fz9XJFbpJQTeTCjRdlE.oIzrvePZ5yihqTJaKuwNGC1X4HJ6b5e','9999-12-31 23:59:59');
 /*
    insert into user_roles (user_id, role_id) values ('1', '1');
    insert into user_roles (user_id, role_id) values ('2', '1');
