@@ -167,7 +167,7 @@ public class Validators {
 
     private void validateAdmin(Admin adminId, List<String> response) {
         if(Objects.nonNull(adminId)){
-            if(validateAdminId(adminId.getId())){
+            if(!validateAdminId(adminId.getId())){
                 response.add("Can not find Admin by adminId ("+adminId+") of activity");
             }
         } else {
@@ -183,7 +183,9 @@ public class Validators {
 
     public List<String> validateAddActivityRequestDTO(AddActivityRequest request) {
         List<String> response = new ArrayList<>();
-        validateMedia(request.getActivityMedia(),response);
+        if(Objects.nonNull(request.getActivityMedia())) {
+            validateMedia(request.getActivityMedia(), response);
+        }
         return response;
 
     }

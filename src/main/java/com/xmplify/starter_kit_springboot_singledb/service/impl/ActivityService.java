@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 @Service
 public class ActivityService {
@@ -33,30 +34,32 @@ public class ActivityService {
     @Transactional
     public boolean addUpdateActivity(Activity activity, AddEditMedia[] activityMedia, HttpServletRequest context) throws IOException {
         Activity savedActivity = activityRepository.save(activity);
-        for(AddEditMedia editMedia : activityMedia){
-            Media media = new Media();
+        if(Objects.nonNull(activityMedia)) {
+            for (AddEditMedia editMedia : activityMedia) {
+                Media media = new Media();
 
-            MultipartFile file = editMedia.getMedia();
-            byte[] bytes = file.getBytes();
-            ServletContext servletContext = context.getServletContext();
-            String fullPath = context.getRealPath(
-                    GlobalConstants.UPLOAD_IMAGE +
-                            GlobalConstants.ACTIVITY_MEDIA_TYPE + GlobalConstants.BACK_SLASH +
-                            GlobalConstants.ACTIVITY_MEDIA_TYPE + GlobalConstants.BACK_SLASH);
-            Path path = Paths.get(fullPath);
-            if (!Files.exists(path)) {
-                Files.createDirectories(path);
+                MultipartFile file = editMedia.getMedia();
+                byte[] bytes = file.getBytes();
+                ServletContext servletContext = context.getServletContext();
+                String fullPath = context.getRealPath(
+                        GlobalConstants.UPLOAD_IMAGE +
+                                GlobalConstants.ACTIVITY_MEDIA_TYPE + GlobalConstants.BACK_SLASH +
+                                GlobalConstants.ACTIVITY_MEDIA_TYPE + GlobalConstants.BACK_SLASH);
+                Path path = Paths.get(fullPath);
+                if (!Files.exists(path)) {
+                    Files.createDirectories(path);
+                }
+                String random = RandomStringUtils.random(5, true, true);
+                String storePath = savedActivity.getId() + "_" + random + "." + file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1];
+                Path filePath = Paths.get(path + GlobalConstants.BACK_SLASH + storePath);
+                Files.write(filePath, bytes);
+
+                media.setMediaType(editMedia.getMediaType());
+                media.setRelatedId(savedActivity.getId());
+                media.setRelatedType(GlobalConstants.ACTIVITY_MEDIA_TYPE);
+                media.setStorePath(storePath);
+                mediaRepository.save(media);
             }
-            String random = RandomStringUtils.random(5, true, true);
-            String storePath = savedActivity.getId() + "_" + random + "." + file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1];
-            Path filePath = Paths.get(path + GlobalConstants.BACK_SLASH + storePath);
-            Files.write(filePath, bytes);
-
-            media.setMediaType(editMedia.getMediaType());
-            media.setRelatedId(savedActivity.getId());
-            media.setRelatedType(GlobalConstants.ACTIVITY_MEDIA_TYPE);
-            media.setStorePath(storePath);
-            mediaRepository.save(media);
         }
         return true;
     }
