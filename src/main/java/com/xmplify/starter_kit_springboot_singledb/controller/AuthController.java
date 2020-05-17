@@ -104,7 +104,8 @@ public class AuthController {
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "LOGIN_SUCCESS", returnUserObject), HttpStatus.OK);
     }
 
-    @PostMapping("/signup")
+    /*@PostMapping("/signup")
+    @Deprecated
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
 
         if(userRepository.existsByMobileno(signUpRequest.getMobileno())) {
@@ -130,7 +131,7 @@ public class AuthController {
                 .buildAndExpand(result.getFirstName()).toUri();
 
         return ResponseEntity.created(location).body(new ApiResponse(HttpStatus.OK.value(),true, "User registered successfully",null));
-    }
+    }*/
 
     @PostMapping("/addRole")
     public ResponseEntity<?> addRole(@RequestBody List<String> role){

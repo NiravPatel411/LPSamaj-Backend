@@ -422,7 +422,7 @@ public class NewsController {
     @GetMapping("/byNewsTypeId/{newsTypeId}")
     public ResponseEntity<?> getAllNewsByNewsTypeId(@PathVariable String newsTypeId, HttpServletRequest request,@PageableDefault(page = 0,size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {
         if(newsTypeId.equalsIgnoreCase(GlobalConstants.ALL_DATA)){
-            List<AllNews> ret = newsService.getAllNews();
+            List<AllNews> ret = newsService.getAllNews(pageable);
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", ret), HttpStatus.OK);
         } else {
             if (GlobalConstants.MASTER_ADMIN.equalsIgnoreCase(SecurityUtils.getCurrentUserRole()) || GlobalConstants.ROLE_NORMAL.equalsIgnoreCase(SecurityUtils.getCurrentUserRole())) {

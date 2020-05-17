@@ -22,4 +22,6 @@ public interface NewsRepository extends JpaRepository<News, String> {
 
     @Query("SELECT n FROM News n where n.adminId.id = :adminId")
     public List<News> getByAdminId(String adminId);
+
+    Page<News> findAllByOrderByCreatedAt(Pageable pageable);
 }

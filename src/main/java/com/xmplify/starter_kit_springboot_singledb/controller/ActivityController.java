@@ -114,7 +114,7 @@ public class ActivityController {
     }
 */
     @PostMapping("/addEditActivity")
-    public ResponseEntity<?> addActivityData(@RequestBody AddActivityRequest request, HttpServletRequest context) throws IOException {
+    public ResponseEntity<?> addActivityData(@ModelAttribute AddActivityRequest request, HttpServletRequest context) throws IOException {
         List<String> dtoMessage = validators.validateAddActivityRequestDTO(request);
         if(!dtoMessage.isEmpty()){
             return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, dtoMessage.toString(), null),
