@@ -4,15 +4,16 @@ import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.model.Activity;
 import com.xmplify.starter_kit_springboot_singledb.model.Media;
 import com.xmplify.starter_kit_springboot_singledb.payload.AddEditMedia;
+import com.xmplify.starter_kit_springboot_singledb.payload.AllActivity;
+import com.xmplify.starter_kit_springboot_singledb.payload.AllMedia;
 import com.xmplify.starter_kit_springboot_singledb.repository.ActivityRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.MediaRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -64,4 +67,49 @@ public class ActivityService {
         return true;
     }
 
+    public List<AllActivity> getAllActivityDTOWithMedia(List<Activity> content) {
+        List<AllActivity> allActivityList = new ArrayList<>();
+        for(Activity activity : content){
+            AllActivity allActivity = new AllActivity(activity.getId(),
+                    activity.getAim(),
+                    activity.getDescription(),
+                    activity.getDateTime(),
+                    activity.getConclusion(),
+                    activity.getAdminId().getId(),
+                    activity.getAdminId().getPerson().getFirstName(),
+                    activity.getAdminId().getPerson().getLastName(),
+                    activity.getAdminId().getPerson().getLastName(),
+                    activity.getExtraData(),
+                    activity.getCreatedAt().toString(),
+                    activity.getUpdatedAt().toString(),
+                    null
+                    );
+            getAllMediaByActivity(allActivity);
+            allActivityList.add(allActivity);
+        }
+        return allActivityList;
+    }
+
+    private void getAllMediaByActivity(AllActivity allActivity) {
+        List<Media> mediaList = mediaRepository.findAllByRelatedId(allActivity.getId());
+        List<AllMedia> allMediaList = new ArrayList<>();
+        for(Media media : mediaList){
+            String fullPath = GlobalConstants.BACK_SLASH +
+                    GlobalConstants.ACTIVITY_MEDIA_TYPE + GlobalConstants.BACK_SLASH +
+                    GlobalConstants.ACTIVITY_MEDIA_TYPE + GlobalConstants.BACK_SLASH;
+
+            String storePath = media.getStorePath();
+            AllMedia allMedia = new AllMedia(
+                    media.getId(),
+                    media.getMediaType(),
+                    media.getRelatedType(),
+                    media.getRelatedId(),
+                    ServletUriComponentsBuilder.fromCurrentContextPath().path(fullPath + storePath).toUriString(),
+                    media.getCreatedAt() != null ? media.getCreatedAt().toString() : "",
+                    0
+            );
+            allMediaList.add(allMedia);
+        }
+        allActivity.setAllMedia(allMediaList);
+    }
 }

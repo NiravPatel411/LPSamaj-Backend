@@ -134,6 +134,10 @@ public class PersonController {
         fields.add("email");
         fields.add("gender");
         fields.add("mobileno");
+        fields.add("");
+        fields.add("mobileno");
+        fields.add("mobileno");
+        fields.add("mobileno");
         Page<User> users = userRepository.findAll(textInAllColumns(searchText, fields), pageable);
         List<ListPersonBasicDetail> listPersonBasicDetails = new ArrayList<>();
         users.forEach(user -> {

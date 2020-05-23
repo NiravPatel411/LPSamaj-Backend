@@ -5,6 +5,7 @@ import com.xmplify.starter_kit_springboot_singledb.mapper.ActivityMapper;
 import com.xmplify.starter_kit_springboot_singledb.model.Activity;
 import com.xmplify.starter_kit_springboot_singledb.model.Admin;
 import com.xmplify.starter_kit_springboot_singledb.model.Media;
+import com.xmplify.starter_kit_springboot_singledb.payload.AllActivity;
 import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
 import com.xmplify.starter_kit_springboot_singledb.payload.activity.AddActivityRequest;
 import com.xmplify.starter_kit_springboot_singledb.repository.ActivityRepository;
@@ -54,65 +55,17 @@ public class ActivityController {
     public ResponseEntity<?> getAllActivity(@PageableDefault(page = 0,size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {
         if (GlobalConstants.MASTER_ADMIN.equalsIgnoreCase(SecurityUtils.getCurrentUserRole()) || GlobalConstants.ROLE_NORMAL.equalsIgnoreCase(SecurityUtils.getCurrentUserRole())) {
             Page<Activity> activityList = activityRepository.findAll(pageable);
-            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", activityList.getContent()), HttpStatus.OK);
+            List<AllActivity> allActivityList = activityService.getAllActivityDTOWithMedia(activityList.getContent());
+            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", allActivityList), HttpStatus.OK);
         } else if (GlobalConstants.ACTIVITY_ADMIN.equalsIgnoreCase(SecurityUtils.getCurrentUserRole())){
             Page<Activity> activityList = activityRepository.findAllByAdminIdIdOrderByUpdatedAtDesc(SecurityUtils.getCurrentUserId(),pageable);
-            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", activityList.getContent()), HttpStatus.OK);
+            List<AllActivity> allActivityList = activityService.getAllActivityDTOWithMedia(activityList.getContent());
+            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", allActivityList), HttpStatus.OK);
         } else {
             return new ResponseEntity(new ApiResponse(HttpStatus.NON_AUTHORITATIVE_INFORMATION.value(), true, "Can not access", null), HttpStatus.OK);
         }
     }
 
-   /* @PostMapping("/addEditActivity")
-    public ResponseEntity<?> addAccountData(@RequestBody AddActivityRequest request) {
-
-        Optional<Admin> admin = adminRepository.findById(request.getAdminId());
-
-        if (!admin.isPresent()) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Your are not authorized to add the data", null), HttpStatus.BAD_REQUEST);
-        }
-
-        if (request.getId() != null && !request.getId().isEmpty()) {
-            //Edit
-            Activity activity = new Activity();
-            activity.setId(request.getId());
-            activity.setAim(request.getAim());
-            activity.setAdminId(admin.get());
-            activity.setDescription(request.getDescription());
-            activity.setConclusion(request.getConclusion());
-            activity.setDateTime(request.getDateTime());
-            activity.setExtraData(request.getExtraData() != null ? request.getExtraData() : "");
-            activity.setCreatedBy(admin.get());
-            activity.setUpdatedBy(admin.get());
-
-            if (request.getDeletedMediaIds() != null && !(request.getDeletedMediaIds().isEmpty())) {
-                String[] strings = request.getDeletedMediaIds().split(",");
-                for (int i = 0; i < strings.length; i++) {
-                    mediaRepository.deleteById(strings[i]);
-                }
-            }
-
-            Object obj = activityRepository.save(activity);
-            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Activity udate sucessfully", ""), HttpStatus.OK);
-
-        } else {
-            //add
-
-            Activity activity = new Activity();
-            activity.setAim(request.getAim());
-            activity.setDescription(request.getDescription());
-            activity.setConclusion(request.getConclusion());
-            activity.setDateTime(request.getDateTime());
-            activity.setAdminId(admin.get());
-            activity.setExtraData(request.getExtraData() != null ? request.getExtraData() : "");
-            activity.setCreatedBy(admin.get());
-            activity.setUpdatedBy(admin.get());
-
-            Object obj = activityRepository.save(activity);
-            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Activity added sucessfully", ""), HttpStatus.OK);
-        }
-    }
-*/
     @PostMapping("/addEditActivity")
     public ResponseEntity<?> addActivityData(@ModelAttribute AddActivityRequest request, HttpServletRequest context) throws IOException {
         List<String> dtoMessage = validators.validateAddActivityRequestDTO(request);
