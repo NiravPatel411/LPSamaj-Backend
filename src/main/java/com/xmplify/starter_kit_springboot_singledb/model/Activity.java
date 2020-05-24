@@ -33,6 +33,7 @@ public class Activity extends AditableEntity {
     private String dateTime;
 
     private String conclusion;
+    private String place;
 
     @OneToOne
     private Admin adminId;

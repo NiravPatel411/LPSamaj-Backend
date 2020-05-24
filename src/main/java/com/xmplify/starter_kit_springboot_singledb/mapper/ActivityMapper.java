@@ -2,16 +2,11 @@ package com.xmplify.starter_kit_springboot_singledb.mapper;
 
 import com.xmplify.starter_kit_springboot_singledb.model.Activity;
 import com.xmplify.starter_kit_springboot_singledb.model.Admin;
-import com.xmplify.starter_kit_springboot_singledb.model.Media;
-import com.xmplify.starter_kit_springboot_singledb.payload.AddEditMedia;
 import com.xmplify.starter_kit_springboot_singledb.payload.activity.AddActivityRequest;
 import com.xmplify.starter_kit_springboot_singledb.repository.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 
 
@@ -29,6 +24,7 @@ public class ActivityMapper {
                 request.getAim(),
                 request.getDateTime(),
                 request.getConclusion(),
+                request.getPlace(),
                 admin.isPresent() ? admin.get() : null
                 );
         activity.setCreatedBy(admin.isPresent() ? admin.get() : null);

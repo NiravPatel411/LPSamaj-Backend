@@ -22,6 +22,8 @@ public class AddActivityRequest {
     private String dateTime;
     @NotNull(message = "Conclusion can not be null or empty")
     private String conclusion;
+    @NotNull(message = "Place can not be null or empty")
+    private String place;
 
     @NotNull(message = "adminId can not be null or empty")
     private String adminId;

@@ -75,6 +75,7 @@ public class ActivityService {
                     activity.getDescription(),
                     activity.getDateTime(),
                     activity.getConclusion(),
+                    activity.getPlace(),
                     activity.getAdminId().getId(),
                     activity.getAdminId().getPerson().getFirstName(),
                     activity.getAdminId().getPerson().getLastName(),

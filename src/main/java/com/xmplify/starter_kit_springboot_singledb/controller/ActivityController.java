@@ -3,8 +3,6 @@ package com.xmplify.starter_kit_springboot_singledb.controller;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.mapper.ActivityMapper;
 import com.xmplify.starter_kit_springboot_singledb.model.Activity;
-import com.xmplify.starter_kit_springboot_singledb.model.Admin;
-import com.xmplify.starter_kit_springboot_singledb.model.Media;
 import com.xmplify.starter_kit_springboot_singledb.payload.AllActivity;
 import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
 import com.xmplify.starter_kit_springboot_singledb.payload.activity.AddActivityRequest;
@@ -24,9 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/activity")
@@ -54,7 +50,7 @@ public class ActivityController {
     @GetMapping("/")
     public ResponseEntity<?> getAllActivity(@PageableDefault(page = 0,size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {
         if (GlobalConstants.MASTER_ADMIN.equalsIgnoreCase(SecurityUtils.getCurrentUserRole()) || GlobalConstants.ROLE_NORMAL.equalsIgnoreCase(SecurityUtils.getCurrentUserRole())) {
-            Page<Activity> activityList = activityRepository.findAll(pageable);
+            Page<Activity> activityList = activityRepository.findAllByOrderByCreatedAtDesc(pageable);
             List<AllActivity> allActivityList = activityService.getAllActivityDTOWithMedia(activityList.getContent());
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", allActivityList), HttpStatus.OK);
         } else if (GlobalConstants.ACTIVITY_ADMIN.equalsIgnoreCase(SecurityUtils.getCurrentUserRole())){

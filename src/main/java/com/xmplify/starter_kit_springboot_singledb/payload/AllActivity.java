@@ -21,6 +21,7 @@ public class AllActivity {
     private String dateTime;
 
     private String conclusion;
+    private String place;
 
     private String adminId;
 

@@ -3,7 +3,6 @@ package com.xmplify.starter_kit_springboot_singledb.service.impl;
 import com.xmplify.starter_kit_springboot_singledb.model.Activity;
 import com.xmplify.starter_kit_springboot_singledb.model.Admin;
 import com.xmplify.starter_kit_springboot_singledb.payload.AddEditMedia;
-import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddAddressFromUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddPersonDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.PersonDetailDTO;
@@ -11,8 +10,6 @@ import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.Educati
 import com.xmplify.starter_kit_springboot_singledb.payload.activity.AddActivityRequest;
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,6 +37,9 @@ public class Validators {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    ActivityRepository activityRepository;
 
     @Autowired
     DegreeRepository degreeRepository;
@@ -160,7 +160,7 @@ public class Validators {
     }
 
     private void validateActivityId(String id, List<String> response) {
-        if(!accountRepository.existsById(id)){
+        if (!activityRepository.existsById(id)) {
             response.add("Invalid Activity Id");
         }
     }

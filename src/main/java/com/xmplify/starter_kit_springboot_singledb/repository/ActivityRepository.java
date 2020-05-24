@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ActivityRepository extends JpaRepository<Activity, String> {
 
     Page<Activity> findAllByAdminIdIdOrderByUpdatedAtDesc(String currentUserId, Pageable pageable);
+
+    Page<Activity> findAllByOrderByCreatedAtDesc(Pageable pageable);
 }
