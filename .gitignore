@@ -35,3 +35,5 @@ build/
 WEB-INF/
 *.logs
 *.log.gz
+*.log
+*.log*
