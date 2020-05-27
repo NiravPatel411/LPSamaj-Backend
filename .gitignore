@@ -22,7 +22,7 @@ logs/
 
 ### NetBeans ###
 /nbproject/private/
-/nbbuild/
+/nbbuil
 /dist/
 /nbdist/
 /.nb-gradle/
