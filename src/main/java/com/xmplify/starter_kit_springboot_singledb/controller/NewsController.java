@@ -324,12 +324,28 @@ public class NewsController {
             ret.setAdminFirstName(newsResult.getAdminId().getPerson().getFirstName());
             ret.setCreatedAt(newsResult.getCreatedAt() != null ? newsResult.getCreatedAt().toString() : "");
             ret.setUpdatedAt(newsResult.getUpdatedAt() != null ? newsResult.getUpdatedAt().toString() : "");
+            ServletContext context1 = request.getServletContext();
+            String fullPath1 = context1.getRealPath(
+                    GlobalConstants.UPLOAD_IMAGE +
+                            newsResult.getNewsType().getType() + GlobalConstants.BACK_SLASH +
+                            GlobalConstants.NEWS_MEDIA_TYPE + GlobalConstants.BACK_SLASH);
+            if( Objects.nonNull(updateNewsRequest.getDeletedMediaIds())){
+                for(String mediaId : updateNewsRequest.getDeletedMediaIds()) {
+                    Optional<Media> media = mediaRepository.findById(mediaId);
+                    if(media.isPresent()){
+                        File file = new File(fullPath1+media.get().getStorePath());
+                        file.delete();
+                    }
+                    mediaRepository.delete(media.get());
+                }
+            }
         List<AllMedia> allMedia = new ArrayList<>();
 
         if(updateNewsRequest.getNewsMedia() == null){
             ret.setAllMedia(null);
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", ret), HttpStatus.OK);
         }
+
         for (int i = 0; i < updateNewsRequest.getNewsMedia().length; i++) {
             UpdateNewsMedia updateNewsMedia = updateNewsRequest.getNewsMedia()[i];
             AllMedia retMedia = new AllMedia();

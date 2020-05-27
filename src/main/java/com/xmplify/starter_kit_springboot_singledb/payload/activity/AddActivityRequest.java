@@ -33,5 +33,5 @@ public class AddActivityRequest {
     private AddEditMedia[] activityMedia;
 
     private String extraData;
-    private String deletedMediaIds;
+    private String[] deletedMediaIds;
 }

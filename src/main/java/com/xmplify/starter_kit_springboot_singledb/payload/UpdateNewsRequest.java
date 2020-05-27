@@ -29,7 +29,7 @@ public class UpdateNewsRequest {
     private String adminId;
 
     private String extraData;
-    private String deletedMediaIds;// comma sepraated string like 12,14
+    private String[] deletedMediaIds;// comma sepraated string like 12,14
 
     private UpdateNewsMedia[] newsMedia;
 }

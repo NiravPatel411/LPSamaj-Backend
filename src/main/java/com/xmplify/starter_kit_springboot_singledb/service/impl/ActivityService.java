@@ -6,6 +6,7 @@ import com.xmplify.starter_kit_springboot_singledb.model.Media;
 import com.xmplify.starter_kit_springboot_singledb.payload.AddEditMedia;
 import com.xmplify.starter_kit_springboot_singledb.payload.AllActivity;
 import com.xmplify.starter_kit_springboot_singledb.payload.AllMedia;
+import com.xmplify.starter_kit_springboot_singledb.payload.activity.AddActivityRequest;
 import com.xmplify.starter_kit_springboot_singledb.repository.ActivityRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.MediaRepository;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,6 +26,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class ActivityService {
@@ -35,19 +38,21 @@ public class ActivityService {
     MediaRepository mediaRepository;
 
     @Transactional
-    public boolean addUpdateActivity(Activity activity, AddEditMedia[] activityMedia, HttpServletRequest context) throws IOException {
+    public boolean addUpdateActivity(Activity activity, AddActivityRequest activityRequest, HttpServletRequest context) throws IOException {
         Activity savedActivity = activityRepository.save(activity);
-        if(Objects.nonNull(activityMedia)) {
-            for (AddEditMedia editMedia : activityMedia) {
+        if(Objects.nonNull(activityRequest) && Objects.nonNull(activityRequest.getActivityMedia())) {
+            for (AddEditMedia editMedia : activityRequest.getActivityMedia()) {
                 Media media = new Media();
 
                 MultipartFile file = editMedia.getMedia();
                 byte[] bytes = file.getBytes();
                 ServletContext servletContext = context.getServletContext();
-                String fullPath = context.getRealPath(
+                String fullPath = servletContext.getRealPath(
                         GlobalConstants.UPLOAD_IMAGE +
-                                GlobalConstants.ACTIVITY_MEDIA_TYPE + GlobalConstants.BACK_SLASH +
+                                GlobalConstants.IMAGE + GlobalConstants.BACK_SLASH +
                                 GlobalConstants.ACTIVITY_MEDIA_TYPE + GlobalConstants.BACK_SLASH);
+
+
                 Path path = Paths.get(fullPath);
                 if (!Files.exists(path)) {
                     Files.createDirectories(path);
@@ -62,6 +67,23 @@ public class ActivityService {
                 media.setRelatedType(GlobalConstants.ACTIVITY_MEDIA_TYPE);
                 media.setStorePath(storePath);
                 mediaRepository.save(media);
+            }
+
+        }
+
+        if(Objects.nonNull(activityRequest) && Objects.nonNull(activityRequest.getDeletedMediaIds())){
+            ServletContext servletContext = context.getServletContext();
+            String fullPath1 = servletContext.getRealPath(
+                    GlobalConstants.UPLOAD_IMAGE +
+                            GlobalConstants.IMAGE + GlobalConstants.BACK_SLASH +
+                            GlobalConstants.ACTIVITY_MEDIA_TYPE + GlobalConstants.BACK_SLASH);
+            for(String mediaId : activityRequest.getDeletedMediaIds()) {
+                Optional<Media> media = mediaRepository.findById(mediaId);
+                if(media.isPresent()){
+                    File file = new File(fullPath1+media.get().getStorePath());
+                    file.delete();
+                }
+                mediaRepository.delete(media.get());
             }
         }
         return true;
@@ -96,7 +118,7 @@ public class ActivityService {
         List<AllMedia> allMediaList = new ArrayList<>();
         for(Media media : mediaList){
             String fullPath = GlobalConstants.BACK_SLASH +
-                    GlobalConstants.ACTIVITY_MEDIA_TYPE + GlobalConstants.BACK_SLASH +
+                    GlobalConstants.IMAGE + GlobalConstants.BACK_SLASH +
                     GlobalConstants.ACTIVITY_MEDIA_TYPE + GlobalConstants.BACK_SLASH;
 
             String storePath = media.getStorePath();

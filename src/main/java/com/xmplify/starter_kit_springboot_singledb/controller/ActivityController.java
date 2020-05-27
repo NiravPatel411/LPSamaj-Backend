@@ -76,7 +76,7 @@ public class ActivityController {
                 return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, messages.toString(), null),
                         HttpStatus.BAD_REQUEST);
             }
-            boolean result = activityService.addUpdateActivity(activity,request.getActivityMedia(),context);
+            boolean result = activityService.addUpdateActivity(activity,request,context);
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Activity updated sucessfully", ""), HttpStatus.OK);
         } else {
             List<String> messages = validators.validateAddActivityRequst(activity);
@@ -84,7 +84,7 @@ public class ActivityController {
                 return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, messages.toString(), null),
                         HttpStatus.BAD_REQUEST);
             }
-            boolean result = activityService.addUpdateActivity(activity,request.getActivityMedia(),context);
+            boolean result = activityService.addUpdateActivity(activity,request,context);
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Activity added sucessfully", ""), HttpStatus.OK);
         }
     }

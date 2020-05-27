@@ -16,6 +16,7 @@ public class GlobalConstants {
     public static final String UPLOAD_IMAGE = "/WEB-INF/";
     public static final String UPLOAD_NEWS_MEDIA_FULL_PATH = UPLOAD_IMAGE+"image/news/";
     public static final String UPLOAD_NEWS_MEDIA_URL_PATH = "/image/news/";
+    public static final String IMAGE = "Image";
     public static final String BACK_SLASH = "/";
 
     public static final String NEWS_TYPE = "News";
