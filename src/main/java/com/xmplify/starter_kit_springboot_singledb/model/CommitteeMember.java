@@ -21,11 +21,12 @@ public class CommitteeMember extends AditableEntity {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "committee_type_Id")
     private CommitteeType committeeType;
 
-    private String personId;
-
-    private String designation; // free text maximum 20 character
-
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User userId;
+    private String designation;
 }

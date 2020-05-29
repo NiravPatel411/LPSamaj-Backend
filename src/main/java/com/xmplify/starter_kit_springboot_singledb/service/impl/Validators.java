@@ -2,7 +2,9 @@ package com.xmplify.starter_kit_springboot_singledb.service.impl;
 
 import com.xmplify.starter_kit_springboot_singledb.model.Activity;
 import com.xmplify.starter_kit_springboot_singledb.model.Admin;
+import com.xmplify.starter_kit_springboot_singledb.model.CommitteeType;
 import com.xmplify.starter_kit_springboot_singledb.payload.AddEditMedia;
+import com.xmplify.starter_kit_springboot_singledb.payload.CommitteeDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddAddressFromUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddPersonDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.PersonDetailDTO;
@@ -46,6 +48,12 @@ public class Validators {
 
     @Autowired
     AccountRepository accountRepository;
+
+    @Autowired
+    CommitteeRepository committeeRepository;
+
+    @Autowired
+    CommitteeTypeRepository committeeTypeRepository;
 
 
     public List<String> validateAddPersonDTO(AddPersonDTO addPersonDTO) {
@@ -199,4 +207,67 @@ public class Validators {
         }
     }
 
+    public List<String> validateUpdateCommitteeDTO(CommitteeDTO committeeDTO) {
+        List<String> response = new ArrayList<>();
+        if(!committeeRepository.existsById(committeeDTO.getId())){
+            response.add("Id does not exist in CommitteeMember");
+        }
+        validateCommitteeType(committeeDTO.getCommitteeTypeId(),response);
+        validateUserId(committeeDTO.getPersonId(),response);
+        return response;
+    }
+
+    private void validateUserId(String personId, List<String> response) {
+        if(Objects.isNull(personId)){
+            response.add("Person Id can not be null or empty");
+        } else {
+            if(!userRepository.existsById(personId)){
+                response.add("Person does not exist by provided person id : "+personId);
+            }
+        }
+    }
+
+    private void validateCommitteeType(String committeeTypeId, List<String> response) {
+        if(Objects.isNull(committeeTypeId)){
+            response.add("Committee Type Id can not be null or empty");
+        }
+        if(!committeeTypeRepository.existsById(committeeTypeId)){
+            response.add("Invalid/Does not exist Committee Type Id.");
+        }
+    }
+
+    public List<String> validateAddCommitteeDTO(CommitteeDTO committeeDTO) {
+        List<String> response = new ArrayList<>();
+        validateCommitteeType(committeeDTO.getCommitteeTypeId(),response);
+        validateUserId(committeeDTO.getPersonId(),response);
+        return response;
+    }
+
+    public List<String> validateAddCommitteeType(CommitteeType committeeType) {
+        List<String> response = new ArrayList<>();
+        validateUniqueTypeOfCommitteeType(committeeType.getType(),response);
+        return response;
+    }
+
+    private void validateUniqueTypeOfCommitteeType(String type, List<String> response) {
+        if(Objects.isNull(type)){
+            response.add("Type can not be null");
+        }
+        if(committeeTypeRepository.existsByType(type)){
+           response.add("Type already exist");
+        }
+    }
+
+    public List<String> validateUpdateCommitteeType(CommitteeType committeeType) {
+        List<String> response = new ArrayList<>();
+        validateCommitteeId(committeeType.getId(),response);
+        validateUniqueTypeOfCommitteeType(committeeType.getType(),response);
+        return response;
+    }
+
+    private void validateCommitteeId(String id, List<String> response) {
+        if(!committeeTypeRepository.existsById(id)){
+            response.add("Invalid Id.");
+        }
+    }
 }
