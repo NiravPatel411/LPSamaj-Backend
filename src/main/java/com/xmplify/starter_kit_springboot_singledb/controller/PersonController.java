@@ -32,7 +32,10 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -126,19 +129,9 @@ public class PersonController {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<?> filterUser(@RequestParam String searchText, @PageableDefault(page = 0,size = GlobalConstants.DEFAULT_PAGE_SIZE)Pageable pageable) {
-        List<String> fields = new ArrayList<>();
-        fields.add("firstName");
-        fields.add("lastName");
-        fields.add("surname");
-        fields.add("email");
-        fields.add("gender");
-        fields.add("mobileno");
-        fields.add("");
-        fields.add("mobileno");
-        fields.add("mobileno");
-        fields.add("mobileno");
-        Page<User> users = userRepository.findAll(textInAllColumns(searchText, fields), pageable);
+    public ResponseEntity<?> filterUser(FilterUserDTO filterUser, @PageableDefault(page = 0,size = GlobalConstants.DEFAULT_PAGE_SIZE)Pageable pageable) {
+        //Page<User> users = userRepository.findAll(textInAllColumns(filterUser.getSearchText(), filterUser.getfields()), pageable);
+        Page<User> users = userRepository.findAll(CreateSpecification(filterUser), pageable);
         List<ListPersonBasicDetail> listPersonBasicDetails = new ArrayList<>();
         users.forEach(user -> {
             ListPersonBasicDetail listPersonBasicDetail = new ListPersonBasicDetail();
@@ -174,16 +167,60 @@ public class PersonController {
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", listPersonBasicDetails), HttpStatus.OK);
     }
 
-    private Specification<User> textInAllColumns(String text, List<String> attributes) {
-        if (!text.contains("%")) {
-            text = "%" + text + "%";
-        }
-        String finalText = text;
-        return (Root<User> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> builder.or(root.getModel().getDeclaredSingularAttributes().stream()
-                .filter(a -> attributes.contains(a.getName()))
-                .map(a -> builder.like(root.get(a.getName()), finalText))
-                .toArray(Predicate[]::new)
-        );
+
+    private Specification<User> CreateSpecification(FilterUserDTO filterUser){
+        return new Specification<User>() {
+            @Override
+            public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                final Collection<Predicate> predicates = new ArrayList<>();
+                if (!StringUtils.isEmpty(filterUser.getGender())) {
+                    final Predicate genderPredicate = cb.equal(root.get(GlobalConstants.GENDER), filterUser.getGender());
+                    predicates.add(genderPredicate);
+                }
+                if (!StringUtils.isEmpty(filterUser.getSearchText())) {
+                    String text = filterUser.getSearchText();
+                    if (!text.contains("%")) {
+                        text = "%" + text + "%";
+                    }
+                    String finalText = text;
+                    Predicate searchTextPredicate = cb.or(root.getModel().getDeclaredSingularAttributes().stream()
+                                    .filter(a -> filterUser.getfields().contains(a.getName()))
+                                    .map(a -> cb.like(root.get(a.getName()), finalText))
+                                    .toArray(Predicate[]::new));
+                    predicates.add(searchTextPredicate);
+                }
+
+                if (!StringUtils.isEmpty(filterUser.getMaritalStatus())) {
+                    final Predicate maritalStatusPredicate = cb.equal(root.get(GlobalConstants.MARITAL_STATUS), filterUser.getMaritalStatus());
+                    predicates.add(maritalStatusPredicate);
+                }
+
+                if(Objects.nonNull(filterUser.getVillageIds()) && filterUser.getVillageIds().length > 0){
+                   CriteriaBuilder.In<String> inClause = cb.in(root.join("village").get("id"));
+                   for(String villageId : filterUser.getVillageIds()){
+                       inClause.value(villageId);
+                   }
+                   predicates.add(inClause);
+                }
+
+                if(Objects.nonNull(filterUser.getDegreeIds()) && filterUser.getDegreeIds().length > 0){
+                    CriteriaBuilder.In<String> educationIn = cb.in(root.join("educations").get("degreeId"));
+                    for(String degreeId : filterUser.getDegreeIds()){
+                        educationIn.value(degreeId);
+                    }
+                    predicates.add(educationIn);
+                }
+
+                if(Objects.nonNull(filterUser.getGreaterThanBOD()) && Objects.nonNull(filterUser.getLessThanBOD())){
+                    LocalDate greaterThan = Instant.ofEpochMilli(filterUser.getGreaterThanBOD()).atZone(ZoneId.systemDefault()).toLocalDate();
+                    LocalDate lessThan = Instant.ofEpochMilli(filterUser.getLessThanBOD()).atZone(ZoneId.systemDefault()).toLocalDate();
+
+                    Predicate bodPredicate= cb.between(root.get("birthDate"),greaterThan,lessThan );
+                    predicates.add(bodPredicate);
+                }
+                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+            }
+        };
     }
 
     @PostMapping(value = "/add")

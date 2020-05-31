@@ -32,4 +32,14 @@ public class GlobalConstants {
     public static final String ACTIVITY_ADMIN = "ACTIVITY_ADMIN";
     public static final String ALL_DATA = "ALL_DATA";
     public static final int DEFAULT_PAGE_SIZE = 10;
+
+
+    //User Fields
+    public static final String FIRST_NAME = "firstName";
+    public static final String LAST_NAME = "lastName";
+    public static final String SURNAME = "surname";
+    public static final String EMAIL = "email";
+    public static final String MOBILENO = "mobileno";
+    public static final String GENDER = "gender";
+    public static final String MARITAL_STATUS = "maritalStatus";
 }
