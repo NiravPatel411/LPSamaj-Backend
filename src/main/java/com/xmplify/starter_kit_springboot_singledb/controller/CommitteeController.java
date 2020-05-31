@@ -81,19 +81,19 @@ public class CommitteeController {
             if(!messages.isEmpty()){
                 return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "BAD_REQUEST", messages), HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "Added", committeeTypeRepository.save(committeeType)), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Added", committeeTypeRepository.save(committeeType)), HttpStatus.OK);
         } else {
             List<String> messages = validators.validateAddCommitteeType(committeeType);
             if(!messages.isEmpty()){
                 return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "BAD_REQUEST", messages), HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "Added", committeeTypeRepository.save(committeeType)), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Added", committeeTypeRepository.save(committeeType)), HttpStatus.OK);
         }
     }
 
     @GetMapping("/committeeType")
     public ResponseEntity<?> getAllCommitteeType(){
-        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "Success", committeeTypeRepository.findAll()), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Success", committeeTypeRepository.findAll()), HttpStatus.OK);
     }
 
     @GetMapping("/committeeByType/{type}")
@@ -107,7 +107,7 @@ public class CommitteeController {
                     committeeMembers.getDesignation());
             committeeDTOS.add(committeeDTO);
         }
-        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "Success", committeeDTOS), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Success", committeeDTOS), HttpStatus.OK);
     }
 
 }
