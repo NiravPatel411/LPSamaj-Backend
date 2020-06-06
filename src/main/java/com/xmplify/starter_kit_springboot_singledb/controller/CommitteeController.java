@@ -4,11 +4,14 @@ import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.mapper.CommitteeMapper;
 import com.xmplify.starter_kit_springboot_singledb.model.CommitteeMember;
 import com.xmplify.starter_kit_springboot_singledb.model.CommitteeType;
+import com.xmplify.starter_kit_springboot_singledb.model.User;
 import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
 import com.xmplify.starter_kit_springboot_singledb.payload.CommitteeDTO;
+import com.xmplify.starter_kit_springboot_singledb.payload.ListPersonBasicDetail;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonAllDetails;
 import com.xmplify.starter_kit_springboot_singledb.repository.CommitteeRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.CommitteeTypeRepository;
+import com.xmplify.starter_kit_springboot_singledb.repository.UserRepository;
 import com.xmplify.starter_kit_springboot_singledb.service.UserService;
 import com.xmplify.starter_kit_springboot_singledb.service.impl.CommitteeService;
 import com.xmplify.starter_kit_springboot_singledb.service.impl.Validators;
@@ -44,14 +47,18 @@ public class CommitteeController {
     private final
     CommitteeTypeRepository committeeTypeRepository;
 
+    final
+    UserRepository userRepository;
+
     @Autowired
-    public CommitteeController(CommitteeRepository committeeRepository, CommitteeService committeeService, CommitteeMapper committeeMapper, UserService userService, Validators validators, CommitteeTypeRepository committeeTypeRepository) {
+    public CommitteeController(CommitteeRepository committeeRepository, CommitteeService committeeService, CommitteeMapper committeeMapper, UserService userService, Validators validators, CommitteeTypeRepository committeeTypeRepository, UserRepository userRepository) {
         this.committeeRepository = committeeRepository;
         this.committeeService = committeeService;
         this.committeeMapper = committeeMapper;
         this.userService = userService;
         this.validators = validators;
         this.committeeTypeRepository = committeeTypeRepository;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/addUpdateCommittee")
@@ -106,11 +113,39 @@ public class CommitteeController {
         Page<CommitteeMember> committeeMemberPage =  committeeRepository.getCommitteeMemberByCommitteeTypeId(type,pageable);
         List<CommitteeDTO> committeeDTOS = new ArrayList<>();
         for(CommitteeMember committeeMembers : committeeMemberPage.getContent()){
-            PersonAllDetails personAllDetails  = userService.getPersonAllServiceByPersonId(committeeMembers.getUserId().getId());
+            User user = userRepository.findById(committeeMembers.getUserId().getId()).get();
+                ListPersonBasicDetail listPersonBasicDetail = new ListPersonBasicDetail();
+
+                listPersonBasicDetail.setEmail(user.getEmail());
+                listPersonBasicDetail.setFirstName(user.getFirstName());
+                listPersonBasicDetail.setGender(user.getGender());
+                listPersonBasicDetail.setLastName(user.getLastName());
+                listPersonBasicDetail.setMobileno(user.getMobileno());
+                listPersonBasicDetail.setPersonId(user.getId());
+                listPersonBasicDetail.setProfilePic(user.getProfilePic());
+                listPersonBasicDetail.setSurname(user.getSurname());
+
+                listPersonBasicDetail.setHusbandVillageName(user.getHusbandVillageId() != null ? user.getHusbandVillageId() : "");
+                listPersonBasicDetail.setHusbandFirstName(user.getHusbandFirstName() != null ? user.getHusbandFirstName() : "");
+                listPersonBasicDetail.setHusbandLastName(user.getHusbandLastName() != null ? user.getHusbandLastName() : "");
+                listPersonBasicDetail.setHusbandSurname(user.getHusbandSurname() != null ? user.getHusbandSurname() : "");
+
+
+                listPersonBasicDetail.setCreatedDate(user.getCreatedAt().toString());
+//            listPersonBasicDetail.setUpdatedDate(user.getUpdatedAt().toString());
+                listPersonBasicDetail.setCreatedBy(user.getCreatedBy() != null ? user.getCreatedBy().getId() : null);
+//            listPersonBasicDetail.setUpdatedBy(user.getUpdatedBy().getId());
+                listPersonBasicDetail.setIsDeleted(user.getIsDeleted());
+                listPersonBasicDetail.setStatus(user.getStatus());
+                if (user.getVillage() != null) {
+                    listPersonBasicDetail.setVillageName(user.getVillage().getName());
+                }
+
+
             CommitteeDTO committeeDTO = new CommitteeDTO(committeeMembers.getId(),
                     committeeMembers.getCommitteeType().getId(),
                     committeeMembers.getUserId().getId(),
-                    personAllDetails,
+                    listPersonBasicDetail,
                     committeeMembers.getDesignation());
             committeeDTOS.add(committeeDTO);
         }

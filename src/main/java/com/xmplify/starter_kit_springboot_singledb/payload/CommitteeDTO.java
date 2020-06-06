@@ -19,6 +19,6 @@ public class CommitteeDTO {
     private String id;
     private String committeeTypeId;
     private String personId;
-    private PersonAllDetails person;
+    private ListPersonBasicDetail person;
     private String designation;
 }
