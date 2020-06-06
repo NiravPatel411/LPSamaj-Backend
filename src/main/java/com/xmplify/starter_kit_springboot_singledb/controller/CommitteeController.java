@@ -8,7 +8,6 @@ import com.xmplify.starter_kit_springboot_singledb.model.User;
 import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
 import com.xmplify.starter_kit_springboot_singledb.payload.CommitteeDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.ListPersonBasicDetail;
-import com.xmplify.starter_kit_springboot_singledb.payload.PersonAllDetails;
 import com.xmplify.starter_kit_springboot_singledb.repository.CommitteeRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.CommitteeTypeRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.UserRepository;
@@ -61,7 +60,7 @@ public class CommitteeController {
         this.userRepository = userRepository;
     }
 
-    @PostMapping("/addUpdateCommittee")
+    @PostMapping("/addUpdateCommitteeMember")
     public ResponseEntity<?> addUpdateCommittee(@RequestBody CommitteeDTO committeeDTO){
         if(!Objects.nonNull(committeeDTO)){
             return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "BAD_REQUEST", "RequestBody not found"), HttpStatus.BAD_REQUEST);
