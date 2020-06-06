@@ -1,6 +1,7 @@
 package com.xmplify.starter_kit_springboot_singledb.payload;
 
 import com.xmplify.starter_kit_springboot_singledb.model.CommitteeType;
+import com.xmplify.starter_kit_springboot_singledb.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,5 +19,6 @@ public class CommitteeDTO {
     private String id;
     private String committeeTypeId;
     private String personId;
+    private PersonAllDetails person;
     private String designation;
 }

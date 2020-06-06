@@ -6,8 +6,10 @@ import com.xmplify.starter_kit_springboot_singledb.model.CommitteeMember;
 import com.xmplify.starter_kit_springboot_singledb.model.CommitteeType;
 import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
 import com.xmplify.starter_kit_springboot_singledb.payload.CommitteeDTO;
+import com.xmplify.starter_kit_springboot_singledb.payload.PersonAllDetails;
 import com.xmplify.starter_kit_springboot_singledb.repository.CommitteeRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.CommitteeTypeRepository;
+import com.xmplify.starter_kit_springboot_singledb.service.UserService;
 import com.xmplify.starter_kit_springboot_singledb.service.impl.CommitteeService;
 import com.xmplify.starter_kit_springboot_singledb.service.impl.Validators;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,8 @@ public class CommitteeController {
     private final
     CommitteeMapper committeeMapper;
 
+    private final UserService userService;
+
     private final
     Validators validators;
 
@@ -41,10 +45,11 @@ public class CommitteeController {
     CommitteeTypeRepository committeeTypeRepository;
 
     @Autowired
-    public CommitteeController(CommitteeRepository committeeRepository, CommitteeService committeeService, CommitteeMapper committeeMapper, Validators validators, CommitteeTypeRepository committeeTypeRepository) {
+    public CommitteeController(CommitteeRepository committeeRepository, CommitteeService committeeService, CommitteeMapper committeeMapper, UserService userService, Validators validators, CommitteeTypeRepository committeeTypeRepository) {
         this.committeeRepository = committeeRepository;
         this.committeeService = committeeService;
         this.committeeMapper = committeeMapper;
+        this.userService = userService;
         this.validators = validators;
         this.committeeTypeRepository = committeeTypeRepository;
     }
@@ -101,9 +106,11 @@ public class CommitteeController {
         Page<CommitteeMember> committeeMemberPage =  committeeRepository.getCommitteeMemberByCommitteeTypeId(type,pageable);
         List<CommitteeDTO> committeeDTOS = new ArrayList<>();
         for(CommitteeMember committeeMembers : committeeMemberPage.getContent()){
+            PersonAllDetails personAllDetails  = userService.getPersonAllServiceByPersonId(committeeMembers.getUserId().getId());
             CommitteeDTO committeeDTO = new CommitteeDTO(committeeMembers.getId(),
                     committeeMembers.getCommitteeType().getId(),
                     committeeMembers.getUserId().getId(),
+                    personAllDetails,
                     committeeMembers.getDesignation());
             committeeDTOS.add(committeeDTO);
         }
