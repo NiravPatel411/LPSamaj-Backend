@@ -5,7 +5,8 @@ import com.xmplify.starter_kit_springboot_singledb.mapper.UserMapper;
 import com.xmplify.starter_kit_springboot_singledb.model.*;
 import com.xmplify.starter_kit_springboot_singledb.payload.*;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddPersonDTO;
-import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDTO;
+import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddressDBDetail;
+import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDBDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdateAddressFromUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdatePersonDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdateUserDTO;
@@ -32,7 +33,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -125,7 +125,7 @@ public class PersonController {
             listPersonBasicDetails.add(listPersonBasicDetail);
         });
 
-        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", listPersonBasicDetails), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", listPersonBasicDetails), HttpStatus.OK);
     }
 
     @GetMapping("/filter")
@@ -164,7 +164,7 @@ public class PersonController {
             listPersonBasicDetails.add(listPersonBasicDetail);
         });
 
-        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", listPersonBasicDetails), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", listPersonBasicDetails), HttpStatus.OK);
     }
 
 
@@ -229,7 +229,7 @@ public class PersonController {
         if (result.hasErrors()) {
             List<String> errors = new ArrayList<>();
             getError(result,errors);
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Validation error", errors), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Validation error", errors), HttpStatus.BAD_REQUEST);
         }
         if (updateUserDTO.getPersonDetail().getPersonId() != null && userRepository.existsById(updateUserDTO.getPersonDetail().getPersonId())) {
             ResponseEntity<?> responseEntity = this.updateUser(updateUserDTO, result);
@@ -238,11 +238,11 @@ public class PersonController {
             AddPersonDTO addPersonDTO = userMapper.updateUserDTOToAddUserDTO(updateUserDTO);
             List<String> messages = validators.validateAddPersonDTO(addPersonDTO);
             if (!messages.isEmpty()) {
-                return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, messages.toString(), null),
+                return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, messages.toString(), null),
                         HttpStatus.BAD_REQUEST);
             }
             User savedUser = userService.save(addPersonDTO);
-            return new ResponseEntity(new ApiResponse(HttpStatus.CREATED.value(), true, "User created", userMapper.userToAddPersonResponse(savedUser, addPersonDTO)), HttpStatus.CREATED);
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.CREATED.value(), true, "User created", userMapper.userToAddPersonResponse(savedUser, addPersonDTO)), HttpStatus.CREATED);
 
         }
     }
@@ -284,11 +284,11 @@ public class PersonController {
         }
 
         if (!errors.isEmpty()) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Validation error", errors), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Validation error", errors), HttpStatus.BAD_REQUEST);
         }
 
         if (!userRepository.existsById(updateUserDTO.getPersonDetail().getPersonId())) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "can not found person", null), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "can not found person", null), HttpStatus.BAD_REQUEST);
         }
 
         List<String> addressErrors = new ArrayList<>();
@@ -308,13 +308,13 @@ public class PersonController {
         if (updateUserDTO.getPersonDetail().isSync()) {
             String resp = updatePersonDetail(updateUserDTO);
             if (!StringUtils.isEmpty(resp)) {
-                return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, resp, null), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, resp, null), HttpStatus.BAD_REQUEST);
             }
         }
 
         Optional<User> user = userRepository.findById(updateUserDTO.getPersonDetail().getPersonId());
         if (!user.isPresent()) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "some thing went wrong", null), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "some thing went wrong", null), HttpStatus.BAD_REQUEST);
         }
 
         List<Address> returnAddress = new ArrayList<>();
@@ -322,28 +322,28 @@ public class PersonController {
             if (address.isSync()) {
                 Optional<Admin> createdBy = adminRepository.findById(address.getCreatedBy());
                 if (!createdBy.isPresent()) {
-                    return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "createdBy does not exist in User", null), HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "createdBy does not exist in User", null), HttpStatus.BAD_REQUEST);
                 }
 
                 Optional<Admin> updatedBy = adminRepository.findById(address.getUpdatedBy());
                 if (!updatedBy.isPresent()) {
-                    return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "updatedBy does not exist in User", null), HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "updatedBy does not exist in User", null), HttpStatus.BAD_REQUEST);
                 }
                 returnAddress.add(updatePersonAddress(address, user.get(), createdBy.get(), updatedBy.get()));
             }
         }
         List<PersonEducation> educationList = new ArrayList<>();
 
-        for (EducationDTO education : updateUserDTO.getEducation()) {
+        for (EducationDBDTO education : updateUserDTO.getEducation()) {
             if (education.getIsSync().equalsIgnoreCase("true")) {
                 Optional<Admin> createdBy = adminRepository.findById(education.getCreatedBy());
                 if (!createdBy.isPresent()) {
-                    return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "createdBy does not exist in User", null), HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "createdBy does not exist in User", null), HttpStatus.BAD_REQUEST);
                 }
 
                 Optional<Admin> updatedBy = adminRepository.findById(education.getUpdatedBy());
                 if (!updatedBy.isPresent()) {
-                    return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "updatedBy does not exist in User", null), HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "updatedBy does not exist in User", null), HttpStatus.BAD_REQUEST);
                 }
                 educationList.add(updateEducation(education, user.get(), createdBy.get(), updatedBy.get()));
             }
@@ -353,7 +353,7 @@ public class PersonController {
         Optional<User> updatedUser = userRepository.findById(updateUserDTO.getPersonDetail().getPersonId());
         GetPersonDetail getPersonDetail = new GetPersonDetail();
         List<GetAddressDetail> addressDetailList = new ArrayList<>();
-        List<EducationDTO> educationDTOList = new ArrayList<>();
+        List<EducationDBDTO> educationDTOList = new ArrayList<>();
         if (updatedUser.isPresent()) {
             getPersonDetail.setAdminId(updatedUser.get().getAdminId());
             getPersonDetail.setAdminName(updatedUser.get().getAdmin().getName());
@@ -413,7 +413,7 @@ public class PersonController {
             }
             if (educationList != null) {
                 for (PersonEducation education : educationList) {
-                    EducationDTO educationDTO = new EducationDTO();
+                    EducationDBDTO educationDTO = new EducationDBDTO();
                     educationDTO.setPersonEducationId(education.getPersonEducationId());
                     educationDTO.setDegreeId(education.getDegreeId());
                     educationDTO.setStartYear(education.getStartYear());
@@ -437,10 +437,10 @@ public class PersonController {
         userRet.put(GlobalConstants.BASIC_DETAIL, getPersonDetail);
         userRet.put(GlobalConstants.ADDRESS, addressDetailList);
         userRet.put(GlobalConstants.EDUCATION, educationDTOList);
-        return new ResponseEntity(new ApiResponse(HttpStatus.CREATED.value(), true, "User created", userRet), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.CREATED.value(), true, "User created", userRet), HttpStatus.CREATED);
     }
 
-    private PersonEducation updateEducation(EducationDTO educationDTO, User user, Admin createdBy, Admin updatedBy) {
+    private PersonEducation updateEducation(EducationDBDTO educationDTO, User user, Admin createdBy, Admin updatedBy) {
 
 
         PersonEducation personEducation = new PersonEducation();
@@ -563,19 +563,19 @@ public class PersonController {
     public ResponseEntity<?> updateAdmin(@Valid @RequestBody UpdateAdmin updateAdmin) {
         Optional<Admin> admin = adminRepository.findById(updateAdmin.getAdminId());
         if (!admin.isPresent()) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not find admin by admin id", null),
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not find admin by admin id", null),
                     HttpStatus.BAD_REQUEST);
         }
 
         Optional<User> user = userRepository.findById(updateAdmin.getPersonId());
         if (!user.isPresent()) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not find person by person id", null),
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not find person by person id", null),
                     HttpStatus.BAD_REQUEST);
         }
         Admin adminNew = admin.get();
         adminNew.setPerson(user.get());
 
-        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "SUCCESS", adminRepository.save(adminNew)),
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "SUCCESS", adminRepository.save(adminNew)),
                 HttpStatus.OK);
     }
 
@@ -584,30 +584,30 @@ public class PersonController {
     public ResponseEntity<?> addAdmin(@Valid @RequestBody AddAdminRequest addAdminRequest) {
         Admin result = null;
         if (!userRepository.existsById(addAdminRequest.getPersonId())) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not find person by person id", null),
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not find person by person id", null),
                     HttpStatus.BAD_REQUEST);
         }
 
         Optional<AdminRole> adminRole = adminRoleRepository.findById(addAdminRequest.getRoleId());
         if (!adminRole.isPresent()) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), true, "Role Not Found", result), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), true, "Role Not Found", result), HttpStatus.OK);
         }
 
         List<Admin> admins = adminRepository.isExistsAdminByPerson(addAdminRequest.getPersonId());
         if (Objects.nonNull(admins) && admins.stream().anyMatch(admin -> admin.getAdminRole().getId().equalsIgnoreCase(adminRole.get().getId()))) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), true, "Admin exist with person id and role id", result), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), true, "Admin exist with person id and role id", result), HttpStatus.OK);
         }
         Admin newAdmin = new Admin();
         Optional<User> person = userRepository.findById(addAdminRequest.getPersonId());
         if (!person.isPresent()) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not find person by person id", null),
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not find person by person id", null),
                     HttpStatus.BAD_REQUEST);
         }
         newAdmin.setName(person.get().getFirstName() + " " + person.get().getLastName());
         newAdmin.setPerson(person.get());
         newAdmin.setAdminRole(adminRole.get());
         result = adminRepository.save(newAdmin);
-        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Admin Created", result), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Admin Created", result), HttpStatus.OK);
 
     }
 
@@ -666,7 +666,7 @@ public class PersonController {
 
             BasicDetails.add(adminBasicDetail);
         }
-        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Admin Created", BasicDetails), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Admin Created", BasicDetails), HttpStatus.OK);
     }
 
     @GetMapping("/byadmin/{adminId}")
@@ -676,8 +676,8 @@ public class PersonController {
                 List<User> users = userRepository.findAllByAdminId(adminId);
                 HashMap<String, Object> retObj = new HashMap<>();
                 List<PersonalDetail> personalDetails = new ArrayList<>();
-                List<AddressDetail> addressDetails = new ArrayList<>();
-                List<EducationDTO> educationDetails = new ArrayList<>();
+                List<AddressDBDetail> addressDetails = new ArrayList<>();
+                List<EducationDBDTO> educationDetails = new ArrayList<>();
                 users.forEach((user) -> {
                     PersonalDetail personalDetail = new PersonalDetail();
                     personalDetail.setBirthDate(user.getBirthDate().toString());
@@ -716,7 +716,7 @@ public class PersonController {
 
                     List<Address> address = user.getAddressList();
                     address.forEach((add) -> {
-                        AddressDetail addressDetail = new AddressDetail();
+                        AddressDBDetail addressDetail = new AddressDBDetail();
                         addressDetail.setPersonAddressId(add.getId());
                         addressDetail.setAddressText(add.getAddressText());
                         addressDetail.setType(add.getAddressType());
@@ -746,7 +746,7 @@ public class PersonController {
 
                     } else {
                         personEducationList.forEach((education) -> {
-                            EducationDTO educationDTO = new EducationDTO(
+                            EducationDBDTO educationDTO = new EducationDBDTO(
                                     education.getPersonEducationId(),
                                     education.getPerson().getId(),
                                     education.getDegreeId(),
@@ -775,13 +775,13 @@ public class PersonController {
                 retObj.put("personalDetail", personalDetails);
                 retObj.put("address", addressDetails);
                 retObj.put("education",educationDetails);
-                return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Success", retObj), HttpStatus.OK);
+                return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Success", retObj), HttpStatus.OK);
 
             } else {
-                return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Can not found admin", null), HttpStatus.OK);
+                return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "Can not found admin", null), HttpStatus.OK);
             }
         } catch (Exception e) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Something went wrong", e), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "Something went wrong", e), HttpStatus.OK);
         }
     }
 
@@ -789,7 +789,7 @@ public class PersonController {
     public ResponseEntity<?> getAdminsByType(@PathVariable String adminType) {
         AdminRole adminRole = adminRoleRepository.findByName(adminType);
         if (Objects.isNull(adminRole)) {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not found admin type", null), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not found admin type", null), HttpStatus.BAD_REQUEST);
         }
 
         List<Admin> admins = adminRepository.AdminByRoles(adminType);
@@ -802,6 +802,20 @@ public class PersonController {
             authAdminData.setAdminType(adminType);
             authAdminList.add(authAdminData);
         });
-        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Success", authAdminList), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Success", authAdminList), HttpStatus.OK);
+    }
+
+    @GetMapping("/{personId}")
+    public ResponseEntity<?> getPersonById(@PathVariable String personId){
+        if(Objects.nonNull(personId) && ! StringUtils.isEmpty(personId)){
+            if(userRepository.existsById(personId)){
+                PersonAllDetails personAllDetails = userService.getPersonAllServiceByPersonId(personId);
+                return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Success", personAllDetails), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(new ApiResponse(HttpStatus.NOT_FOUND.value(), true, "person Not Found", null), HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), true, "person Id can not be null or empty", null), HttpStatus.BAD_REQUEST);
+        }
     }
 }

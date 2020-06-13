@@ -9,6 +9,7 @@ import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
 import com.xmplify.starter_kit_springboot_singledb.payload.CommitteeDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.ListPersonBasicDetail;
 import com.xmplify.starter_kit_springboot_singledb.repository.CommitteeRepository;
+import com.xmplify.starter_kit_springboot_singledb.repository.CommitteeMemberRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.CommitteeTypeRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.UserRepository;
 import com.xmplify.starter_kit_springboot_singledb.service.UserService;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -30,7 +32,7 @@ import java.util.Objects;
 @RequestMapping("/api/committee")
 public class CommitteeController {
 
-    private final CommitteeRepository committeeRepository;
+    private final CommitteeMemberRepository committeeMemberRepository;
 
     private final
     CommitteeService committeeService;
@@ -50,8 +52,8 @@ public class CommitteeController {
     UserRepository userRepository;
 
     @Autowired
-    public CommitteeController(CommitteeRepository committeeRepository, CommitteeService committeeService, CommitteeMapper committeeMapper, UserService userService, Validators validators, CommitteeTypeRepository committeeTypeRepository, UserRepository userRepository) {
-        this.committeeRepository = committeeRepository;
+    public CommitteeController(CommitteeMemberRepository committeeMemberRepository, CommitteeService committeeService, CommitteeMapper committeeMapper, UserService userService, Validators validators, CommitteeTypeRepository committeeTypeRepository, UserRepository userRepository) {
+        this.committeeMemberRepository = committeeMemberRepository;
         this.committeeService = committeeService;
         this.committeeMapper = committeeMapper;
         this.userService = userService;
@@ -62,7 +64,7 @@ public class CommitteeController {
 
     @PostMapping("/addUpdateCommitteeMember")
     public ResponseEntity<?> addUpdateCommittee(@RequestBody CommitteeDTO committeeDTO){
-        if(!Objects.nonNull(committeeDTO)){
+        if(Objects.isNull(committeeDTO)){
             return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "BAD_REQUEST", "RequestBody not found"), HttpStatus.BAD_REQUEST);
         }
         if(Objects.nonNull(committeeDTO.getId())){
@@ -70,14 +72,36 @@ public class CommitteeController {
             if(!messages.isEmpty()){
                 return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "BAD_REQUEST", messages), HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "Updated",  committeeService.AddUpdateCommittee(committeeDTO)), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Updated",  committeeService.AddUpdateCommittee(committeeDTO)), HttpStatus.OK);
         } else {
             List<String> messages = validators.validateAddCommitteeDTO(committeeDTO);
             if(!messages.isEmpty()){
                 return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "BAD_REQUEST", messages), HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "Added", committeeService.AddUpdateCommittee(committeeDTO)), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Added", committeeService.AddUpdateCommittee(committeeDTO)), HttpStatus.OK);
 
+        }
+    }
+
+    @DeleteMapping("/removeCommittee/{committeeId}")
+    public ResponseEntity<?> deleteCommittee(@PathVariable String committeeId){
+        if(committeeMemberRepository.existsById(committeeId)){
+            committeeMemberRepository.delete(committeeMemberRepository.findById(committeeId).get());
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Deleted", "Successfully Deleted"), HttpStatus.OK);
+        }  else {
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "BAD_REQUEST", "Committee not found"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("/removeCommitteeType/{committeeTypeId}")
+    @Transactional
+    public ResponseEntity<?> deleteCommitteeTypeId(@PathVariable String committeeTypeId){
+        if(committeeTypeRepository.existsById(committeeTypeId)){
+            committeeMemberRepository.deleteByCommitteeTypeId(committeeTypeId);
+            committeeTypeRepository.delete(committeeTypeRepository.findById(committeeTypeId).get());
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Deleted", "Successfully Deleted"), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "BAD_REQUEST", "CommitteeType not found"), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -109,7 +133,7 @@ public class CommitteeController {
 
     @GetMapping("/committeeByType/{type}")
     public ResponseEntity<?> getCommitteeByType(@PathVariable String type,@PageableDefault(page = 0,size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable){
-        Page<CommitteeMember> committeeMemberPage =  committeeRepository.getCommitteeMemberByCommitteeTypeId(type,pageable);
+        Page<CommitteeMember> committeeMemberPage =  committeeMemberRepository.getCommitteeMemberByCommitteeTypeId(type,pageable);
         List<CommitteeDTO> committeeDTOS = new ArrayList<>();
         for(CommitteeMember committeeMembers : committeeMemberPage.getContent()){
             User user = userRepository.findById(committeeMembers.getUserId().getId()).get();

@@ -13,9 +13,11 @@ import com.xmplify.starter_kit_springboot_singledb.payload.AddressDetail;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonAllDetails;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddAddressFromUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddPersonDTO;
+import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDBDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonalDetail;
 import com.xmplify.starter_kit_springboot_singledb.repository.AddressRepository;
+import com.xmplify.starter_kit_springboot_singledb.repository.DegreeRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.EducationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +49,9 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	EducationRepository educationRepository;
 
+	@Autowired
+	DegreeRepository degreeRepository;
+
 	@Override
 	public List<User> findAll() {
 		return userRepository.findAll();
@@ -63,7 +68,7 @@ public class UserServiceImpl implements UserService {
 		}
 		List<PersonEducation> educations = new ArrayList<>();
 		if(Objects.nonNull(addPersonDTO.getEducation())) {
-			for (EducationDTO educationDTO : addPersonDTO.getEducation()) {
+			for (EducationDBDTO educationDTO : addPersonDTO.getEducation()) {
 				educations.add(educationMapper.educationDTOtoPersonEducation(educationDTO, savedUser));
 			}
 			savedUser.setEducations(educationRepository.saveAll(educations));
@@ -98,7 +103,7 @@ public class UserServiceImpl implements UserService {
 		List<EducationDTO> educationDTOList = new ArrayList<>();
 		for(PersonEducation personEducation : personEducationList){
 			EducationDTO educationDTO = new EducationDTO(personEducation.getPersonEducationId(),personEducation.getPerson().getId(),
-					personEducation.getDegreeId(),personEducation.getSchoolName(),personEducation.getResult(),
+					personEducation.getDegreeId(),degreeRepository.findById(personEducation.getDegreeId()).get().getName(),personEducation.getSchoolName(),personEducation.getResult(),
 					personEducation.getStartYear(),personEducation.getEndYear(), personEducation.getProofPhoto(),
 					personEducation.getMedium(),
 					Objects.nonNull(personEducation.getCreatedBy()) ? personEducation.getCreatedBy().getId() : "",
@@ -130,8 +135,8 @@ public class UserServiceImpl implements UserService {
 		List<AddressDetail> addressDetailList =  new ArrayList<>();
 		for(Address address : addresses){
 			AddressDetail addressDetail = new AddressDetail(address.getId(),address.getPersonId().getId(),address.getAddressType(),
-					address.getAddressText(),address.getCountry().getId(),address.getDistrict().getId(),
-					address.getState().getId(),"",
+					address.getAddressText(),address.getCountry().getId(),address.getCountry().getName(),address.getDistrict().getId(),address.getDistrict().getName(),
+					address.getState().getId(),address.getState().getName(),"",
 					Objects.nonNull(address.getCreatedBy()) ? address.getCreatedBy().getId() : "",
 					Objects.nonNull(address.getUpdatedBy()) ? address.getUpdatedBy().getId() : "",
 					Objects.nonNull(address.getCreatedAt()) ? address.getCreatedAt().toString() : "",
@@ -164,7 +169,8 @@ public class UserServiceImpl implements UserService {
 					user.getSurname(),
 					user.getStatus(),
 					user.getProfilePic(),
-					user.getHusbandVillageId(),
+					user.getVillage().getId(),
+					user.getVillage().getName(),
 					user.getEmail(),
 					user.getGender(),
 					user.getBirthDate().toString(),

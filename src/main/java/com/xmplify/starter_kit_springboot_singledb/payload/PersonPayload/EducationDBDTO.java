@@ -7,13 +7,12 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class EducationDTO {
+public class EducationDBDTO {
 
     private String personEducationId;
     private String personId;
 
     private String degreeId;
-    private String degreeName;
 
     private String schoolName;
 

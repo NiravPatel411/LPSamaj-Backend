@@ -8,7 +8,7 @@ import com.xmplify.starter_kit_springboot_singledb.payload.CommitteeDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddAddressFromUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddPersonDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.PersonDetailDTO;
-import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDTO;
+import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDBDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.activity.AddActivityRequest;
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ public class Validators {
     AccountRepository accountRepository;
 
     @Autowired
-    CommitteeRepository committeeRepository;
+    CommitteeMemberRepository committeeMemberRepository;
 
     @Autowired
     CommitteeTypeRepository committeeTypeRepository;
@@ -70,7 +70,7 @@ public class Validators {
         return response;
     }
 
-    private void validateEducation(List<EducationDTO> educationDTO, List<String> response) {
+    private void validateEducation(List<EducationDBDTO> educationDTO, List<String> response) {
         for(int i=0 ; i <educationDTO.size() ; i++){
             if(!validateCreatedBy(educationDTO.get(i).getCreatedBy())){
                 response.add("\n Can not find Admin by createdBy ("+educationDTO.get(i).getCreatedBy()+") of education["+i+"]");
@@ -209,12 +209,23 @@ public class Validators {
 
     public List<String> validateUpdateCommitteeDTO(CommitteeDTO committeeDTO) {
         List<String> response = new ArrayList<>();
-        if(!committeeRepository.existsById(committeeDTO.getId())){
+        if(!committeeMemberRepository.existsById(committeeDTO.getId())){
             response.add("Id does not exist in CommitteeMember");
         }
         validateCommitteeType(committeeDTO.getCommitteeTypeId(),response);
+        validateCommitteeMember(committeeDTO,response);
         validateUserId(committeeDTO.getPersonId(),response);
         return response;
+    }
+
+    private void validateCommitteeMember(CommitteeDTO committeeDTO, List<String> response) {
+        if(committeeTypeRepository.existsById(committeeDTO.getCommitteeTypeId())){
+            CommitteeType newCommitteeType = committeeTypeRepository.findById(committeeDTO.getCommitteeTypeId()).get();
+            CommitteeType oldCommitteeType = committeeMemberRepository.findById(committeeDTO.getId()).get().getCommitteeType();
+            if(!newCommitteeType.getId().equalsIgnoreCase(oldCommitteeType.getId())){
+                validateMember(committeeDTO,response);
+            }
+        }
     }
 
     private void validateUserId(String personId, List<String> response) {
@@ -239,8 +250,15 @@ public class Validators {
     public List<String> validateAddCommitteeDTO(CommitteeDTO committeeDTO) {
         List<String> response = new ArrayList<>();
         validateCommitteeType(committeeDTO.getCommitteeTypeId(),response);
+        validateMember(committeeDTO,response);
         validateUserId(committeeDTO.getPersonId(),response);
         return response;
+    }
+
+    private void validateMember(CommitteeDTO committeeDTO, List<String> response) {
+        if(committeeMemberRepository.existsByCommitteeTypeIdAndUserIdId(committeeDTO.getCommitteeTypeId(),committeeDTO.getPersonId())){
+            response.add("person already exist in this committee Type");
+        }
     }
 
     public List<String> validateAddCommitteeType(CommitteeType committeeType) {

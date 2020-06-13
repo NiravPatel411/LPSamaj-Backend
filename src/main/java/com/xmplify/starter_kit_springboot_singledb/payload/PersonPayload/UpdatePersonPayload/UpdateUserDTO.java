@@ -1,6 +1,6 @@
 package com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload;
 
-import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDTO;
+import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDBDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +24,6 @@ public class UpdateUserDTO {
     @Valid
     private List<UpdateAddressFromUserDTO> address;
 
-    private List<EducationDTO> education;
+    private List<EducationDBDTO> education;
 
 }

@@ -33,6 +33,8 @@ public class PersonalDetail {
 
     private String villageId;
 
+    private String villageName;
+
     private String email;
 
     private String gender;
