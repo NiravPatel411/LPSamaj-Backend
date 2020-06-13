@@ -1,4 +1,4 @@
-package com.xmplify.starter_kit_springboot_singledb.payload;
+package com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddressDetail {
+public class AddressDBDetail {
 
     private String personAddressId;
 
@@ -21,12 +21,11 @@ public class AddressDetail {
 
     private String countryId;
 
-    private String countryName;
 
     private String districtId;
-    private String districtName;
+
     private String stateId;
-    private String stateName;
+
 
     private String deletedBy;
 

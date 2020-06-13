@@ -2,7 +2,7 @@ package com.xmplify.starter_kit_springboot_singledb.mapper;
 
 import com.xmplify.starter_kit_springboot_singledb.model.PersonEducation;
 import com.xmplify.starter_kit_springboot_singledb.model.User;
-import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDTO;
+import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDBDTO;
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
 import com.xmplify.starter_kit_springboot_singledb.service.impl.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class EducationMapper {
     StateRepository stateRepository;
 
 
-    public PersonEducation educationDTOtoPersonEducation(EducationDTO educationDTO, User savedUser) {
+    public PersonEducation educationDTOtoPersonEducation(EducationDBDTO educationDTO, User savedUser) {
         PersonEducation personEducation = new PersonEducation(educationDTO.getPersonEducationId(),
                 savedUser,
                 educationDTO.getDegreeId(),

@@ -13,8 +13,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CommitteeRepository extends JpaRepository<CommitteeMember,String> {
+public interface CommitteeMemberRepository extends JpaRepository<CommitteeMember,String> {
 
     @Query("SELECT c FROM CommitteeMember c WHERE c.committeeType.id = :typeId")
     public Page<CommitteeMember> getCommitteeMemberByCommitteeTypeId(String typeId, Pageable pageable);
+
+    public boolean existsByCommitteeTypeIdAndUserIdId(String committeeType,String userId);
+
+    public void deleteByCommitteeTypeId(String CommitteeType);
 }

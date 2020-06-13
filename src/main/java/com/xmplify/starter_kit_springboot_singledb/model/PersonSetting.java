@@ -31,5 +31,6 @@ public class PersonSetting {
     private Integer profilePictureVisiblity;
     private Integer contactNumberVisibility;
     private Integer bloodDonate;
+    private Integer newsNotification;
 
 }
