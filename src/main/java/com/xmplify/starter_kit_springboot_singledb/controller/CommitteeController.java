@@ -82,7 +82,7 @@ public class CommitteeController {
         }
     }
 
-    @DeleteMapping("/removeCommitteeMember/{committeeMemberId}")
+    @DeleteMapping("/removeCommitteeMember/{committeeId}")
     public ResponseEntity<?> deleteCommittee(@PathVariable String committeeId){
         if(committeeMemberRepository.existsById(committeeId)){
             committeeMemberRepository.delete(committeeMemberRepository.findById(committeeId).get());
