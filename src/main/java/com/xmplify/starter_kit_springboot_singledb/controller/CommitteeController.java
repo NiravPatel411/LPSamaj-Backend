@@ -8,7 +8,6 @@ import com.xmplify.starter_kit_springboot_singledb.model.User;
 import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
 import com.xmplify.starter_kit_springboot_singledb.payload.CommitteeDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.ListPersonBasicDetail;
-import com.xmplify.starter_kit_springboot_singledb.repository.CommitteeRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.CommitteeMemberRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.CommitteeTypeRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.UserRepository;
@@ -83,7 +82,7 @@ public class CommitteeController {
         }
     }
 
-    @DeleteMapping("/removeCommittee/{committeeId}")
+    @DeleteMapping("/removeCommitteeMember/{committeeMemberId}")
     public ResponseEntity<?> deleteCommittee(@PathVariable String committeeId){
         if(committeeMemberRepository.existsById(committeeId)){
             committeeMemberRepository.delete(committeeMemberRepository.findById(committeeId).get());
