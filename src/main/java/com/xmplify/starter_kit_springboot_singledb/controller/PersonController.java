@@ -54,6 +54,9 @@ public class PersonController {
     RoleRepository roleRepository;
 
     @Autowired
+    PersonSettingsRepository settingsRepository;
+
+    @Autowired
     AdminRepository adminRepository;
 
     @Autowired
@@ -87,7 +90,7 @@ public class PersonController {
     EducationRepository educationRepository;
 
     @GetMapping("/")
-    public ResponseEntity<?> listUser(@PageableDefault(page = 0,size = GlobalConstants.DEFAULT_PAGE_SIZE)Pageable pageable) {
+    public ResponseEntity<?> listUser(@PageableDefault(page = 0, size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {
         Page<User> users = userRepository.findAll(pageable);
         List<ListPersonBasicDetail> listPersonBasicDetails = new ArrayList<>();
         users.getContent().forEach(user -> {
@@ -111,8 +114,8 @@ public class PersonController {
             listPersonBasicDetail.setHusbandSurname(user.getHusbandSurname() != null ? user.getHusbandSurname() : "");
 
 
-            listPersonBasicDetail.setCreatedDate(Objects.nonNull(user.getCreatedAt())?user.getCreatedAt().toString():"");
-            listPersonBasicDetail.setUpdatedDate(Objects.nonNull(user.getUpdatedAt())?user.getUpdatedAt().toString():"");
+            listPersonBasicDetail.setCreatedDate(Objects.nonNull(user.getCreatedAt()) ? user.getCreatedAt().toString() : "");
+            listPersonBasicDetail.setUpdatedDate(Objects.nonNull(user.getUpdatedAt()) ? user.getUpdatedAt().toString() : "");
             listPersonBasicDetail.setCreatedBy(user.getCreatedBy() != null ? user.getCreatedBy().getId() : null);
             listPersonBasicDetail.setUpdatedBy(user.getUpdatedBy() != null ? user.getUpdatedBy().getId() : null);
             listPersonBasicDetail.setIsDeleted(user.getIsDeleted());
@@ -129,7 +132,7 @@ public class PersonController {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<?> filterUser(FilterUserDTO filterUser, @PageableDefault(page = 0,size = GlobalConstants.DEFAULT_PAGE_SIZE)Pageable pageable) {
+    public ResponseEntity<?> filterUser(FilterUserDTO filterUser, @PageableDefault(page = 0, size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {
         //Page<User> users = userRepository.findAll(textInAllColumns(filterUser.getSearchText(), filterUser.getfields()), pageable);
         Page<User> users = userRepository.findAll(CreateSpecification(filterUser), pageable);
         List<ListPersonBasicDetail> listPersonBasicDetails = new ArrayList<>();
@@ -168,7 +171,7 @@ public class PersonController {
     }
 
 
-    private Specification<User> CreateSpecification(FilterUserDTO filterUser){
+    private Specification<User> CreateSpecification(FilterUserDTO filterUser) {
         return new Specification<User>() {
             @Override
             public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
@@ -184,9 +187,9 @@ public class PersonController {
                     }
                     String finalText = text;
                     Predicate searchTextPredicate = cb.or(root.getModel().getDeclaredSingularAttributes().stream()
-                                    .filter(a -> filterUser.getfields().contains(a.getName()))
-                                    .map(a -> cb.like(root.get(a.getName()), finalText))
-                                    .toArray(Predicate[]::new));
+                            .filter(a -> filterUser.getfields().contains(a.getName()))
+                            .map(a -> cb.like(root.get(a.getName()), finalText))
+                            .toArray(Predicate[]::new));
                     predicates.add(searchTextPredicate);
                 }
 
@@ -195,27 +198,27 @@ public class PersonController {
                     predicates.add(maritalStatusPredicate);
                 }
 
-                if(Objects.nonNull(filterUser.getVillageIds()) && filterUser.getVillageIds().length > 0){
-                   CriteriaBuilder.In<String> inClause = cb.in(root.join("village").get("id"));
-                   for(String villageId : filterUser.getVillageIds()){
-                       inClause.value(villageId);
-                   }
-                   predicates.add(inClause);
+                if (Objects.nonNull(filterUser.getVillageIds()) && filterUser.getVillageIds().length > 0) {
+                    CriteriaBuilder.In<String> inClause = cb.in(root.join("village").get("id"));
+                    for (String villageId : filterUser.getVillageIds()) {
+                        inClause.value(villageId);
+                    }
+                    predicates.add(inClause);
                 }
 
-                if(Objects.nonNull(filterUser.getDegreeIds()) && filterUser.getDegreeIds().length > 0){
+                if (Objects.nonNull(filterUser.getDegreeIds()) && filterUser.getDegreeIds().length > 0) {
                     CriteriaBuilder.In<String> educationIn = cb.in(root.join("educations").get("degreeId"));
-                    for(String degreeId : filterUser.getDegreeIds()){
+                    for (String degreeId : filterUser.getDegreeIds()) {
                         educationIn.value(degreeId);
                     }
                     predicates.add(educationIn);
                 }
 
-                if(Objects.nonNull(filterUser.getGreaterThanBOD()) && Objects.nonNull(filterUser.getLessThanBOD())){
+                if (Objects.nonNull(filterUser.getGreaterThanBOD()) && Objects.nonNull(filterUser.getLessThanBOD())) {
                     LocalDate greaterThan = Instant.ofEpochMilli(filterUser.getGreaterThanBOD()).atZone(ZoneId.systemDefault()).toLocalDate();
                     LocalDate lessThan = Instant.ofEpochMilli(filterUser.getLessThanBOD()).atZone(ZoneId.systemDefault()).toLocalDate();
 
-                    Predicate bodPredicate= cb.between(root.get("birthDate"),greaterThan,lessThan );
+                    Predicate bodPredicate = cb.between(root.get("birthDate"), greaterThan, lessThan);
                     predicates.add(bodPredicate);
                 }
                 return cb.and(predicates.toArray(new Predicate[predicates.size()]));
@@ -228,7 +231,7 @@ public class PersonController {
 
         if (result.hasErrors()) {
             List<String> errors = new ArrayList<>();
-            getError(result,errors);
+            getError(result, errors);
             return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Validation error", errors), HttpStatus.BAD_REQUEST);
         }
         if (updateUserDTO.getPersonDetail().getPersonId() != null && userRepository.existsById(updateUserDTO.getPersonDetail().getPersonId())) {
@@ -484,7 +487,7 @@ public class PersonController {
         address.setStatus(updateUserDTO.getStatus());
         address.setMobileLocalId(updateUserDTO.getMobileLocalId());
         address.setIsDeleted(updateUserDTO.getIsDeleted());
-        Address address1 =  addressRepository.save(address);
+        Address address1 = addressRepository.save(address);
         address1.setMobileLocalId(updateUserDTO.getMobileLocalId());
         return address1;
     }
@@ -759,9 +762,9 @@ public class PersonController {
                                     education.getCreatedBy() != null ? education.getCreatedBy().getId() : "",
                                     education.getUpdatedBy() != null ? education.getUpdatedBy().getId() : "",
                                     education.getDeletedBy() != null ? education.getDeletedBy().getId() : "",
-                                    education.getCreatedAt() != null ? education.getCreatedAt().toString(): "",
-                                    education.getUpdatedAt() != null ? education.getUpdatedAt().toString(): "",
-                                    education.getDeletedAt() != null ? education.getDeletedAt().toString(): "",
+                                    education.getCreatedAt() != null ? education.getCreatedAt().toString() : "",
+                                    education.getUpdatedAt() != null ? education.getUpdatedAt().toString() : "",
+                                    education.getDeletedAt() != null ? education.getDeletedAt().toString() : "",
                                     String.valueOf(education.getIsDeleted()),
                                     education.getMobileLocalId(),
                                     education.getStatus(), GlobalConstants.SYNC_STATUS
@@ -774,7 +777,7 @@ public class PersonController {
 
                 retObj.put("personalDetail", personalDetails);
                 retObj.put("address", addressDetails);
-                retObj.put("education",educationDetails);
+                retObj.put("education", educationDetails);
                 return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Success", retObj), HttpStatus.OK);
 
             } else {
@@ -806,9 +809,9 @@ public class PersonController {
     }
 
     @GetMapping("/{personId}")
-    public ResponseEntity<?> getPersonById(@PathVariable String personId){
-        if(Objects.nonNull(personId) && ! StringUtils.isEmpty(personId)){
-            if(userRepository.existsById(personId)){
+    public ResponseEntity<?> getPersonById(@PathVariable String personId) {
+        if (Objects.nonNull(personId) && !StringUtils.isEmpty(personId)) {
+            if (userRepository.existsById(personId)) {
                 PersonAllDetails personAllDetails = userService.getPersonAllServiceByPersonId(personId);
                 return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Success", personAllDetails), HttpStatus.OK);
             } else {
@@ -818,4 +821,93 @@ public class PersonController {
             return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), true, "person Id can not be null or empty", null), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping("/updateUserSetting")
+    public ResponseEntity<?> updateUserSetting(@RequestBody PersonSettingDTO settingDTO) {
+
+        if (settingDTO.getType() == null || settingDTO.getType().isEmpty()) {
+            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Invalid setting type", null), HttpStatus.OK);
+        }
+
+        PersonSetting setting = settingsRepository.findByPersonId(settingDTO.getPersonId());
+        if (setting == null) {
+            Optional<User> user = userRepository.findById(settingDTO.getPersonId());
+
+            if (user.isPresent()) {
+                PersonSetting personSetting = new PersonSetting();
+                personSetting.setPerson(user.get());
+                settingsRepository.save(personSetting);
+
+            } else {
+                return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Invalid login", null), HttpStatus.OK);
+            }
+        }
+        PersonSetting personSetting = settingsRepository.findByPersonId(settingDTO.getPersonId());
+
+
+        String type = settingDTO.getType();
+
+        switch (type) {
+            case GlobalConstants.BLOOD_DONATE:
+                personSetting.setBloodDonate(settingDTO.getValue());
+                break;
+            case GlobalConstants.ADMIN_CAN_UPDATE:
+                personSetting.setAdminCanUpdate(settingDTO.getValue());
+                break;
+            case GlobalConstants.NEWS_NOTIFICATION:
+                personSetting.setNewsNotification(settingDTO.getValue());
+                break;
+            case GlobalConstants.CONTACT_NUMBER_VISIBILITY:
+                personSetting.setContactNumberVisibility(settingDTO.getValue());
+                break;
+            case GlobalConstants.PROFILE_PICTURE_VISIBLITY:
+                personSetting.setProfilePictureVisiblity(settingDTO.getValue());
+                break;
+        }
+
+
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", settingsRepository.save(personSetting)), HttpStatus.OK);
+    }
+
+    @GetMapping("/getBloodDonor")
+    public ResponseEntity<?> getBloodDonor(FilterBloodGroupDTO filterUser, @PageableDefault(page = 0, size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {/*
+        //Page<User> users = userRepository.findAll(textInAllColumns(filterUser.getSearchText(), filterUser.getfields()), pageable);
+        Page<User> users = userRepository.findAll(CreateSpecification(filterUser), pageable);
+        List<ListPersonBasicDetail> listPersonBasicDetails = new ArrayList<>();
+        users.forEach(user -> {
+            ListPersonBasicDetail listPersonBasicDetail = new ListPersonBasicDetail();
+
+            listPersonBasicDetail.setEmail(user.getEmail());
+            listPersonBasicDetail.setFirstName(user.getFirstName());
+            listPersonBasicDetail.setGender(user.getGender());
+            listPersonBasicDetail.setLastName(user.getLastName());
+            listPersonBasicDetail.setMobileno(user.getMobileno());
+            listPersonBasicDetail.setPersonId(user.getId());
+            listPersonBasicDetail.setProfilePic(user.getProfilePic());
+            listPersonBasicDetail.setSurname(user.getSurname());
+
+            listPersonBasicDetail.setHusbandVillageName(user.getHusbandVillageId() != null ? user.getHusbandVillageId() : "");
+            listPersonBasicDetail.setHusbandFirstName(user.getHusbandFirstName() != null ? user.getHusbandFirstName() : "");
+            listPersonBasicDetail.setHusbandLastName(user.getHusbandLastName() != null ? user.getHusbandLastName() : "");
+            listPersonBasicDetail.setHusbandSurname(user.getHusbandSurname() != null ? user.getHusbandSurname() : "");
+
+
+            listPersonBasicDetail.setCreatedDate(user.getCreatedAt().toString());
+//            listPersonBasicDetail.setUpdatedDate(user.getUpdatedAt().toString());
+            listPersonBasicDetail.setCreatedBy(user.getCreatedBy() != null ? user.getCreatedBy().getId() : null);
+//            listPersonBasicDetail.setUpdatedBy(user.getUpdatedBy().getId());
+            listPersonBasicDetail.setIsDeleted(user.getIsDeleted());
+            listPersonBasicDetail.setStatus(user.getStatus());
+            if (user.getVillage() != null) {
+                listPersonBasicDetail.setVillageName(user.getVillage().getName());
+            }
+
+            listPersonBasicDetails.add(listPersonBasicDetail);
+        });
+
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", listPersonBasicDetails), HttpStatus.OK);
+    */
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "nnnn", null), HttpStatus.OK);
+    }
+
 }

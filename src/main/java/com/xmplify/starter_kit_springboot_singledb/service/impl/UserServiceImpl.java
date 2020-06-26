@@ -1,14 +1,11 @@
 package com.xmplify.starter_kit_springboot_singledb.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import com.xmplify.starter_kit_springboot_singledb.mapper.EducationMapper;
 import com.xmplify.starter_kit_springboot_singledb.mapper.UserMapper;
 import com.xmplify.starter_kit_springboot_singledb.model.Address;
 import com.xmplify.starter_kit_springboot_singledb.model.PersonEducation;
+import com.xmplify.starter_kit_springboot_singledb.model.PersonSetting;
+import com.xmplify.starter_kit_springboot_singledb.model.User;
 import com.xmplify.starter_kit_springboot_singledb.payload.AddressDetail;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonAllDetails;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddAddressFromUserDTO;
@@ -16,18 +13,18 @@ import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPers
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDBDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonalDetail;
-import com.xmplify.starter_kit_springboot_singledb.repository.AddressRepository;
-import com.xmplify.starter_kit_springboot_singledb.repository.DegreeRepository;
-import com.xmplify.starter_kit_springboot_singledb.repository.EducationRepository;
+import com.xmplify.starter_kit_springboot_singledb.repository.*;
+import com.xmplify.starter_kit_springboot_singledb.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.xmplify.starter_kit_springboot_singledb.model.User;
-import com.xmplify.starter_kit_springboot_singledb.repository.UserRepository;
-import com.xmplify.starter_kit_springboot_singledb.service.UserService;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -51,6 +48,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	DegreeRepository degreeRepository;
+
+	@Autowired
+	PersonSettingsRepository settingsRepository;
 
 	@Override
 	public List<User> findAll() {
@@ -92,6 +92,9 @@ public class UserServiceImpl implements UserService {
 
 		List<EducationDTO> educationDTOS = getEducations(id);
 		personAllDetails.setEducationDetails(educationDTOS);
+
+		PersonSetting personSetting = settingsRepository.findByPersonId(id);
+		personAllDetails.setPersonSetting(personSetting);
 		return personAllDetails;
 	}
 

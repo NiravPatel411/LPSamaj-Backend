@@ -14,7 +14,7 @@ public class GlobalConstants {
     public static final String NEWS_MEDIA_TYPE = "news";
     public static final String ACTIVITY_MEDIA_TYPE = "activity";
     public static final String UPLOAD_IMAGE = "/WEB-INF/";
-    public static final String UPLOAD_NEWS_MEDIA_FULL_PATH = UPLOAD_IMAGE+"image/news/";
+    public static final String UPLOAD_NEWS_MEDIA_FULL_PATH = UPLOAD_IMAGE + "image/news/";
     public static final String UPLOAD_NEWS_MEDIA_URL_PATH = "/image/news/";
     public static final String IMAGE = "Image";
     public static final String BACK_SLASH = "/";
@@ -42,4 +42,14 @@ public class GlobalConstants {
     public static final String MOBILENO = "mobileno";
     public static final String GENDER = "gender";
     public static final String MARITAL_STATUS = "maritalStatus";
+
+    // setting type
+
+    public static final String BLOOD_DONATE = "BLOOD_DONATE";
+    public static final String NEWS_NOTIFICATION = "NEWS_NOTIFICATION";
+    public static final String CONTACT_NUMBER_VISIBILITY = "CONTACT_NUMBER_VISIBILITY";
+    public static final String PROFILE_PICTURE_VISIBLITY = "PROFILE_PICTURE_VISIBLITY";
+    public static final String ADMIN_CAN_UPDATE = "ADMIN_CAN_UPDATE";
+
+
 }
