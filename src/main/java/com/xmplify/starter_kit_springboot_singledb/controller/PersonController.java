@@ -27,12 +27,19 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -227,7 +234,7 @@ public class PersonController {
     }
 
     @PostMapping(value = "/add")
-    public ResponseEntity<?> registerUser(@Valid @ModelAttribute UpdateUserDTO updateUserDTO, BindingResult result) {
+    public ResponseEntity<?> registerUser(@Valid @ModelAttribute UpdateUserDTO updateUserDTO, BindingResult result, HttpServletRequest request) {
 
         if (result.hasErrors()) {
             List<String> errors = new ArrayList<>();
@@ -235,7 +242,7 @@ public class PersonController {
             return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Validation error", errors), HttpStatus.BAD_REQUEST);
         }
         if (updateUserDTO.getPersonDetail().getPersonId() != null && userRepository.existsById(updateUserDTO.getPersonDetail().getPersonId())) {
-            ResponseEntity<?> responseEntity = this.updateUser(updateUserDTO, result);
+            ResponseEntity<?> responseEntity = this.updateUser(updateUserDTO, result,request);
             return responseEntity;
         } else {
             AddPersonDTO addPersonDTO = userMapper.updateUserDTOToAddUserDTO(updateUserDTO);
@@ -244,7 +251,7 @@ public class PersonController {
                 return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, messages.toString(), null),
                         HttpStatus.BAD_REQUEST);
             }
-            User savedUser = userService.save(addPersonDTO);
+            User savedUser = userService.save(addPersonDTO,request);
             return new ResponseEntity<>(new ApiResponse(HttpStatus.CREATED.value(), true, "User created", userMapper.userToAddPersonResponse(savedUser, addPersonDTO)), HttpStatus.CREATED);
 
         }
@@ -267,7 +274,7 @@ public class PersonController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateUser(@Valid @ModelAttribute UpdateUserDTO updateUserDTO, BindingResult result) {
+    public ResponseEntity<?> updateUser(@Valid @ModelAttribute UpdateUserDTO updateUserDTO, BindingResult result, HttpServletRequest request) {
         List<String> errors = new ArrayList<>();
         if (result.hasErrors()) {
             for (Object object : result.getAllErrors()) {
@@ -309,7 +316,7 @@ public class PersonController {
         }
 
         if (updateUserDTO.getPersonDetail().isSync()) {
-            String resp = updatePersonDetail(updateUserDTO);
+            String resp = updatePersonDetail(updateUserDTO,request);
             if (!StringUtils.isEmpty(resp)) {
                 return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, resp, null), HttpStatus.BAD_REQUEST);
             }
@@ -379,6 +386,7 @@ public class PersonController {
             getPersonDetail.setPersonId(updatedUser.get().getId());
             // user.setProfilePic(addPersonDTO.getPersonDetail().getProfilePic());
             getPersonDetail.setSurname(updatedUser.get().getSurname());
+
 
 
             getPersonDetail.setHusbandVillageId(updatedUser.get().getHusbandVillageId() != null ? updatedUser.get().getHusbandVillageId() : "");
@@ -492,9 +500,10 @@ public class PersonController {
         return address1;
     }
 
-    private String updatePersonDetail(UpdateUserDTO updateUserDTO) {
+    private String updatePersonDetail(UpdateUserDTO updateUserDTO, HttpServletRequest request) {
 
         UpdatePersonDetailDTO personDetail = updateUserDTO.getPersonDetail();
+        User oldUser = userRepository.findById(updateUserDTO.getPersonDetail().getPersonId()).get();
         User person = new User();
 
         Optional<Admin> admin = adminRepository.findById(personDetail.getAdminId());
@@ -541,7 +550,6 @@ public class PersonController {
         person.setMaritalStatus(personDetail.getMaritualStatus());
         person.setMobileno(personDetail.getMobileno());
         person.setBloodGroup(personDetail.getBloodGroup());
-        person.setProfilePic(personDetail.getProfilePic());
         person.setSurname(personDetail.getSurname());
         person.setHusbandFirstName(personDetail.getHusbandFirstName());
         person.setHusbandLastName(personDetail.getHusbandLastName());
@@ -556,6 +564,34 @@ public class PersonController {
         person.setUpdatedBy(userUpdated.get());
         person.setStatus(personDetail.getStatus());
         person.setIsDeleted(personDetail.getIsDeleted());
+
+        if(Objects.nonNull(personDetail.getProfilePic())) {
+
+            if (Objects.nonNull(oldUser.getProfilePic()) && !StringUtils.isEmpty(oldUser.getProfilePic())) {
+                ServletContext context = request.getServletContext();
+                String fullPath = context.getRealPath(GlobalConstants.UPLOAD_IMAGE + GlobalConstants.IMAGE + GlobalConstants.BACK_SLASH + GlobalConstants.PROFILE_MEDIA_TYPE + GlobalConstants.BACK_SLASH);
+                File file = new File(fullPath + oldUser.getProfilePic());
+                file.delete();
+            }
+            try {
+                ServletContext context = request.getServletContext();
+                String fullPath = context.getRealPath(GlobalConstants.UPLOAD_IMAGE + GlobalConstants.IMAGE + GlobalConstants.BACK_SLASH + GlobalConstants.PROFILE_MEDIA_TYPE + GlobalConstants.BACK_SLASH);
+                MultipartFile file = personDetail.getProfilePic();
+                if (!file.isEmpty()) {
+                    byte[] bytes = file.getBytes();
+                    Path path = Paths.get(fullPath);
+                    if (!Files.exists(path)) {
+                        Files.createDirectories(path);
+                    }
+                    String storePath = UUID.randomUUID() + "." + file.getOriginalFilename().split("\\.(?=[^\\.]+$)")[1];
+                    Path filePath = Paths.get(path + GlobalConstants.BACK_SLASH + storePath);
+                    Files.write(filePath, bytes);
+                    person.setProfilePic(storePath);
+                }
+            }catch (Exception e){
+                //log
+            }
+        }
 
         User userRes = userRepository.saveAndFlush(person);
 

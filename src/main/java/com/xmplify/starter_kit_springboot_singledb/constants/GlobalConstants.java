@@ -12,6 +12,7 @@ public class GlobalConstants {
     public static final String ADDRESS = "Address";
     public static final String EDUCATION = "Education";
     public static final String NEWS_MEDIA_TYPE = "news";
+    public static final String PROFILE_MEDIA_TYPE = "profile";
     public static final String ACTIVITY_MEDIA_TYPE = "activity";
     public static final String UPLOAD_IMAGE = "/WEB-INF/";
     public static final String UPLOAD_NEWS_MEDIA_FULL_PATH = UPLOAD_IMAGE + "image/news/";

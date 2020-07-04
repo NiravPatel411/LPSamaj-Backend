@@ -104,6 +104,11 @@ public class User extends AditableEntity {
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL, mappedBy = "person")
     private Set<PersonWorking> personWorkings;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @JoinColumn(name = "personSetting_Id")
+    private PersonSetting personSetting;
+
     @OneToOne
     @JoinColumn(name = "admin_id")
     @JsonIgnore

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -59,8 +60,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public User save(AddPersonDTO addPersonDTO) {
-		User user = userMapper.personDetailDTOtoUser(addPersonDTO.getPersonDetail());
+	public User save(AddPersonDTO addPersonDTO, HttpServletRequest request) {
+		User user = userMapper.personDetailDTOtoUser(addPersonDTO.getPersonDetail(),request);
 		User savedUser = userRepository.save(user);
 		List<Address> addresses = new ArrayList<>();
 		for(AddAddressFromUserDTO address : addPersonDTO.getAddress()) {

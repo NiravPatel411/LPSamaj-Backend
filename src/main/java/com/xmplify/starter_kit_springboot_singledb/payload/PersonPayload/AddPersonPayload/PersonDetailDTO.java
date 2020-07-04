@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 
@@ -23,7 +24,7 @@ public class PersonDetailDTO {
     private String surname;
 
     //@NotNull(message = "profilePic can not be null or empty")
-    private String profilePic;
+    private MultipartFile profilePic;
 
     @NotNull(message = "villageId can not be null or empty")
     private String villageId;
