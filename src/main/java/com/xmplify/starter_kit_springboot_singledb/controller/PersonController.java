@@ -11,6 +11,7 @@ import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdateP
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdatePersonDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdateUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
+import com.xmplify.starter_kit_springboot_singledb.security.SecurityUtils;
 import com.xmplify.starter_kit_springboot_singledb.service.UserService;
 import com.xmplify.starter_kit_springboot_singledb.service.impl.Validators;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -944,6 +945,50 @@ public class PersonController {
         return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", listPersonBasicDetails), HttpStatus.OK);
     */
         return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "nnnn", null), HttpStatus.OK);
+    }
+
+
+    @PostMapping("/updatePersonAdmin")
+    public ResponseEntity<?> updatePersonAdmin(@RequestBody UpdatePersonAdminDTO updatePersonAdmin) {
+
+        if (Objects.nonNull(updatePersonAdmin) && Objects.nonNull(updatePersonAdmin.getAdminId())
+                && Objects.nonNull(updatePersonAdmin.getPersonId())
+                && !StringUtils.isEmpty(updatePersonAdmin.getAdminId())
+                && !StringUtils.isEmpty(updatePersonAdmin.getPersonId())
+        ) {
+            if (userRepository.existsById(updatePersonAdmin.getPersonId())) {
+                userRepository.updateAdmin(updatePersonAdmin.getAdminId(), updatePersonAdmin.getPersonId());
+                return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Success", null), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(new ApiResponse(HttpStatus.NOT_FOUND.value(), true, "person Not Found", null), HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), true, "person Id and admin id can not be null or empty", null), HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDTO changePasswordDTO) {
+
+        if (Objects.nonNull(changePasswordDTO)
+                && Objects.nonNull(changePasswordDTO.getNewPassword())
+                && !StringUtils.isEmpty(changePasswordDTO.getNewPassword())
+        ) {
+            if (userRepository.existsById(SecurityUtils.getCurrentUserId())) {
+
+
+                userRepository.changePassword(SecurityUtils.getCurrentUserId(), passwordEncoder.encode(changePasswordDTO.getNewPassword()));
+                return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Success", null), HttpStatus.OK);
+
+            } else {
+                return new ResponseEntity<>(new ApiResponse(HttpStatus.NOT_FOUND.value(), false, "person Not Found", null), HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "person Id and admin id can not be null or empty", null), HttpStatus.BAD_REQUEST);
+        }
+
     }
 
 }

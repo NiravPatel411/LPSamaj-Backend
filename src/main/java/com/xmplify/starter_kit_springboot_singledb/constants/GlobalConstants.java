@@ -51,6 +51,7 @@ public class GlobalConstants {
     public static final String CONTACT_NUMBER_VISIBILITY = "CONTACT_NUMBER_VISIBILITY";
     public static final String PROFILE_PICTURE_VISIBLITY = "PROFILE_PICTURE_VISIBLITY";
     public static final String ADMIN_CAN_UPDATE = "ADMIN_CAN_UPDATE";
+    public static final String SHOW_YOUR_DETAIL_TO_ALL_USER = "SHOW_YOUR_DETAIL_TO_ALL_USER";
 
 
 }
