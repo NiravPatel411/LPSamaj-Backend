@@ -5,9 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.mail.search.SearchTerm;
-import javax.persistence.GeneratedValue;
-
 @Getter
 @Setter
 @AllArgsConstructor

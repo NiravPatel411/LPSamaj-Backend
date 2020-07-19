@@ -9,12 +9,12 @@ import java.util.List;
 public interface AccountRepository extends JpaRepository<Account, String> {
 
     @Query(value = "select year(date) as 'year' from account group by year(date) order by date desc ", nativeQuery = true)
-    public List<String> getListOfYear();
+    List<String> getListOfYear();
 
     @Query(value = "SELECT * FROM `account` WHERE year(date)=:selectedYear order by date desc", nativeQuery = true)
-    public List<Account> getAccountByYear(String selectedYear);
+    List<Account> getAccountByYear(String selectedYear);
 
     @Query(value = "SELECT * FROM `account` WHERE year(date)<:selectedYear", nativeQuery = true)
-    public List<Account> getAccountByBeforeYear(String selectedYear);
+    List<Account> getAccountByBeforeYear(String selectedYear);
 
 }

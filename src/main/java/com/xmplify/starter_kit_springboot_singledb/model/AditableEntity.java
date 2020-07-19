@@ -5,20 +5,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.Where;
-import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.EntityListeners;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @MappedSuperclass
@@ -28,22 +26,22 @@ import java.util.Date;
 @AllArgsConstructor
 @EntityListeners({AuditingEntityListener.class})
 @Where(clause = "isDeleted = 0")
-public class AditableEntity implements Serializable{
+public class AditableEntity implements Serializable {
 
-     @CreatedDate
-     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-     @Column(nullable = false, updatable = false)
-     private Date createdAt;
+    @CreatedDate
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(nullable = false, updatable = false)
+    private Date createdAt;
 
-     @LastModifiedDate
-     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-     private Date updatedAt;
+    @LastModifiedDate
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updatedAt;
 
-     @ManyToOne
-     private Admin createdBy;
+    @ManyToOne
+    private Admin createdBy;
 
-     @ManyToOne
-     private Admin updatedBy;
+    @ManyToOne
+    private Admin updatedBy;
 
     @ManyToOne
     private Admin deletedBy;

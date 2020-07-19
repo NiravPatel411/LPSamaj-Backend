@@ -12,7 +12,7 @@ import com.xmplify.starter_kit_springboot_singledb.repository.MediaRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.NewsRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.NewsTypeRepository;
 import com.xmplify.starter_kit_springboot_singledb.security.SecurityUtils;
-import com.xmplify.starter_kit_springboot_singledb.service.impl.NewsService;
+import com.xmplify.starter_kit_springboot_singledb.service.NewsService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -218,9 +218,9 @@ public class NewsController {
                     byte[] bytes = file.getBytes();
                     ServletContext context = request.getServletContext();
                     String fullPath = context.getRealPath(
-                            GlobalConstants.UPLOAD_IMAGE +
-                            newsResult.getNewsType().getType() + GlobalConstants.BACK_SLASH +
-                            GlobalConstants.NEWS_MEDIA_TYPE + GlobalConstants.BACK_SLASH);
+                            GlobalConstants.UPLOAD_DIR +
+                                    newsResult.getNewsType().getType() + GlobalConstants.BACK_SLASH +
+                                    GlobalConstants.NEWS_EVENT + GlobalConstants.BACK_SLASH);
                     Path path = Paths.get(fullPath);
                     if (!Files.exists(path)) {
                         Files.createDirectories(path);
@@ -298,50 +298,50 @@ public class NewsController {
         if (!news.isPresent()) {
             return new ResponseEntity(new ApiResponse(HttpStatus.NOT_FOUND.value(), false, "Can not found News by newsId", null), HttpStatus.OK);
         }
-            News oldNews = news.get();
-            News newNews = new News();
-            newNews.setId(oldNews.getId());
-            newNews.setDescription(updateNewsRequest.getDescription());
-            newNews.setExtraData(updateNewsRequest.getExtraData());
-            newNews.setNewsType(newsType.get());
-            newNews.setAdminId(admin.get());
-            newNews.setTitle(updateNewsRequest.getTitle());
-            newNews.setUpdatedBy(admin.get());
-            News newsResult = newsRepository.save(newNews);
+        News oldNews = news.get();
+        News newNews = new News();
+        newNews.setId(oldNews.getId());
+        newNews.setDescription(updateNewsRequest.getDescription());
+        newNews.setExtraData(updateNewsRequest.getExtraData());
+        newNews.setNewsType(newsType.get());
+        newNews.setAdminId(admin.get());
+        newNews.setTitle(updateNewsRequest.getTitle());
+        newNews.setUpdatedBy(admin.get());
+        News newsResult = newsRepository.save(newNews);
 
-            // TODO: 11-04-2020 remove this below ids media
-            System.out.println("NewsController :updateNews : " + updateNewsRequest.getDeletedMediaIds());
+        // TODO: 11-04-2020 remove this below ids media
+        System.out.println("NewsController :updateNews : " + updateNewsRequest.getDeletedMediaIds());
 
-            ret.setAdminId(admin.get().getId());
-            ret.setDescription(newsResult.getDescription());
-            ret.setNewsTypeId(newsType.get().getId());
-            ret.setNewsTypeName(newsType.get().getType());
-            ret.setTitle(newsResult.getTitle());
-            ret.setExtraData(newsResult.getExtraData());
-            ret.setId(newsResult.getId());
-            ret.setAdminSurname(newsResult.getAdminId().getPerson().getSurname());
-            ret.setAdminLastName(newsResult.getAdminId().getPerson().getLastName());
-            ret.setAdminFirstName(newsResult.getAdminId().getPerson().getFirstName());
-            ret.setCreatedAt(newsResult.getCreatedAt() != null ? newsResult.getCreatedAt().toString() : "");
-            ret.setUpdatedAt(newsResult.getUpdatedAt() != null ? newsResult.getUpdatedAt().toString() : "");
-            ServletContext context1 = request.getServletContext();
-            String fullPath1 = context1.getRealPath(
-                    GlobalConstants.UPLOAD_IMAGE +
-                            newsResult.getNewsType().getType() + GlobalConstants.BACK_SLASH +
-                            GlobalConstants.NEWS_MEDIA_TYPE + GlobalConstants.BACK_SLASH);
-            if( Objects.nonNull(updateNewsRequest.getDeletedMediaIds())){
-                for(String mediaId : updateNewsRequest.getDeletedMediaIds()) {
-                    Optional<Media> media = mediaRepository.findById(mediaId);
-                    if(media.isPresent()){
-                        File file = new File(fullPath1+media.get().getStorePath());
-                        file.delete();
-                    }
-                    mediaRepository.delete(media.get());
+        ret.setAdminId(admin.get().getId());
+        ret.setDescription(newsResult.getDescription());
+        ret.setNewsTypeId(newsType.get().getId());
+        ret.setNewsTypeName(newsType.get().getType());
+        ret.setTitle(newsResult.getTitle());
+        ret.setExtraData(newsResult.getExtraData());
+        ret.setId(newsResult.getId());
+        ret.setAdminSurname(newsResult.getAdminId().getPerson().getSurname());
+        ret.setAdminLastName(newsResult.getAdminId().getPerson().getLastName());
+        ret.setAdminFirstName(newsResult.getAdminId().getPerson().getFirstName());
+        ret.setCreatedAt(newsResult.getCreatedAt() != null ? newsResult.getCreatedAt().toString() : "");
+        ret.setUpdatedAt(newsResult.getUpdatedAt() != null ? newsResult.getUpdatedAt().toString() : "");
+        ServletContext context1 = request.getServletContext();
+        String fullPath1 = context1.getRealPath(
+                GlobalConstants.UPLOAD_DIR +
+                        newsResult.getNewsType().getType() + GlobalConstants.BACK_SLASH +
+                        GlobalConstants.NEWS_EVENT + GlobalConstants.BACK_SLASH);
+        if (Objects.nonNull(updateNewsRequest.getDeletedMediaIds())) {
+            for (String mediaId : updateNewsRequest.getDeletedMediaIds()) {
+                Optional<Media> media = mediaRepository.findById(mediaId);
+                if (media.isPresent()) {
+                    File file = new File(fullPath1 + media.get().getStorePath());
+                    file.delete();
                 }
+                mediaRepository.delete(media.get());
             }
+        }
         List<AllMedia> allMedia = new ArrayList<>();
 
-        if(updateNewsRequest.getNewsMedia() == null){
+        if (updateNewsRequest.getNewsMedia() == null) {
             ret.setAllMedia(null);
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", ret), HttpStatus.OK);
         }
@@ -351,11 +351,11 @@ public class NewsController {
             AllMedia retMedia = new AllMedia();
             Media media = new Media();
             //List<Media> oldMedias = mediaRepository.findAllByRelatedId(updateNewsRequest.getNewsId());
-            if(Objects.nonNull(updateNewsMedia.getMediaId())) {
+            if (Objects.nonNull(updateNewsMedia.getMediaId())) {
                 Optional<Media> oldMedia = mediaRepository.findById(updateNewsMedia.getMediaId());
-                if(oldMedia.isPresent()){
+                if (oldMedia.isPresent()) {
                     media.setId(oldMedia.get().getId());
-                    File file = new File(GlobalConstants.UPLOAD_NEWS_MEDIA_FULL_PATH+news.get().getId()+"_"+i+"."+updateNewsMedia.getMedia().getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]);
+                    File file = new File(GlobalConstants.UPLOAD_NEWS_MEDIA_FULL_PATH + news.get().getId() + "_" + i + "." + updateNewsMedia.getMedia().getOriginalFilename().split("\\.(?=[^\\.]+$)")[1]);
                     file.delete();
                 }
             }
@@ -371,9 +371,9 @@ public class NewsController {
                 byte[] bytes = file.getBytes();
                 ServletContext context = request.getServletContext();
                 String fullPath = context.getRealPath(
-                        GlobalConstants.UPLOAD_IMAGE +
+                        GlobalConstants.UPLOAD_DIR +
                                 newsResult.getNewsType().getType() + GlobalConstants.BACK_SLASH +
-                                GlobalConstants.NEWS_MEDIA_TYPE + GlobalConstants.BACK_SLASH);
+                                GlobalConstants.NEWS_EVENT + GlobalConstants.BACK_SLASH);
                 Path path = Paths.get(fullPath);
                 if (!Files.exists(path)) {
                     Files.createDirectories(path);
@@ -426,26 +426,26 @@ public class NewsController {
     }
 
     @GetMapping("/delete/{newsId}")
-    public ResponseEntity<?> deleteNews(@PathVariable String newsId, HttpServletRequest request){
+    public ResponseEntity<?> deleteNews(@PathVariable String newsId, HttpServletRequest request) {
         Optional<News> news = newsRepository.findById(newsId);
-        if(!news.isPresent()){
+        if (!news.isPresent()) {
             return new ResponseEntity(new ApiResponse(HttpStatus.NOT_FOUND.value(), true, newsId + " can not found", null), HttpStatus.OK);
         }
-        newsService.deleteNews(news.get(),request);
-        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, newsId + " deleted successfully",null), HttpStatus.OK);
+        newsService.deleteNews(news.get(), request);
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, newsId + " deleted successfully", null), HttpStatus.OK);
     }
 
     @GetMapping("/byNewsTypeId/{newsTypeId}")
-    public ResponseEntity<?> getAllNewsByNewsTypeId(@PathVariable String newsTypeId, HttpServletRequest request,@PageableDefault(page = 0,size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {
-        if(newsTypeId.equalsIgnoreCase(GlobalConstants.ALL_DATA)){
+    public ResponseEntity<?> getAllNewsByNewsTypeId(@PathVariable String newsTypeId, HttpServletRequest request, @PageableDefault(page = 0, size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {
+        if (newsTypeId.equalsIgnoreCase(GlobalConstants.ALL_DATA)) {
             List<AllNews> ret = newsService.getAllNews(pageable);
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", ret), HttpStatus.OK);
         } else {
             if (GlobalConstants.MASTER_ADMIN.equalsIgnoreCase(SecurityUtils.getCurrentUserRole()) || GlobalConstants.ROLE_NORMAL.equalsIgnoreCase(SecurityUtils.getCurrentUserRole())) {
-                List<AllNews> ret = newsService.getAllNewsByType(newsTypeId,pageable);
+                List<AllNews> ret = newsService.getAllNewsByType(newsTypeId, pageable);
                 return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", ret), HttpStatus.OK);
             } else if (GlobalConstants.NEWS_ADMIN.equalsIgnoreCase(SecurityUtils.getCurrentUserRole())) {
-                List<AllNews> ret = newsService.getAllNewsByTypeAndAdmin(newsTypeId,SecurityUtils.getCurrentUserRole(),SecurityUtils.getCurrentUserId(),pageable);
+                List<AllNews> ret = newsService.getAllNewsByTypeAndAdmin(newsTypeId, SecurityUtils.getCurrentUserRole(), SecurityUtils.getCurrentUserId(), pageable);
                 return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", ret), HttpStatus.OK);
             } else {
                 return new ResponseEntity(new ApiResponse(HttpStatus.NON_AUTHORITATIVE_INFORMATION.value(), true, "Can not access", null), HttpStatus.OK);
@@ -492,7 +492,7 @@ public class NewsController {
                     ServletContext context = request.getServletContext();
                     String fullPath = GlobalConstants.BACK_SLASH +
                             allNews.getNewsTypeName() + GlobalConstants.BACK_SLASH +
-                            GlobalConstants.NEWS_MEDIA_TYPE + GlobalConstants.BACK_SLASH;
+                            GlobalConstants.NEWS_EVENT + GlobalConstants.BACK_SLASH;
 
                     String storePath = media.getStorePath();
 

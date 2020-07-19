@@ -1,17 +1,16 @@
 package com.xmplify.starter_kit_springboot_singledb.security;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
-import com.xmplify.starter_kit_springboot_singledb.model.Admin;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xmplify.starter_kit_springboot_singledb.model.User;
 import com.xmplify.starter_kit_springboot_singledb.payload.AuthAdmin;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xmplify.starter_kit_springboot_singledb.model.User;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class UserPrincipal implements UserDetails {
     private String id;
@@ -25,7 +24,7 @@ public class UserPrincipal implements UserDetails {
 
     @JsonIgnore
     private String password;
-    
+
     @JsonIgnore
     private String mobileno;
 
@@ -37,7 +36,7 @@ public class UserPrincipal implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrincipal(String id, String firstName, String lastName, String email, String password,String mobileno, Collection<? extends GrantedAuthority> authorities,AuthAdmin authAdmin) {
+    public UserPrincipal(String id, String firstName, String lastName, String email, String password, String mobileno, Collection<? extends GrantedAuthority> authorities, AuthAdmin authAdmin) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;

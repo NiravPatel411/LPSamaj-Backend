@@ -38,13 +38,12 @@ public class EducationController {
 
 
     @GetMapping("/person/{personId}")
-    public ResponseEntity<?> getEducationByPerson(@PathVariable String personId){
+    public ResponseEntity<?> getEducationByPerson(@PathVariable String personId) {
         Optional<User> user = userRepository.findById(personId);
-        if(user.isPresent()){
+        if (user.isPresent()) {
             List<PersonEducation> Educations = user.get().getEducations();
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", Educations), HttpStatus.OK);
-        }
-        else{
+        } else {
             return new ResponseEntity(new ApiResponse(HttpStatus.NOT_FOUND.value(), true, "Error", null), HttpStatus.NOT_FOUND);
         }
     }

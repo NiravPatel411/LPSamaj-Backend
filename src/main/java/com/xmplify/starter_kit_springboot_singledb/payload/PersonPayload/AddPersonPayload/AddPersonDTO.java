@@ -21,5 +21,5 @@ public class AddPersonDTO {
     private List<AddAddressFromUserDTO> address;
 
     private List<EducationDBDTO> education;
-    
+
 }

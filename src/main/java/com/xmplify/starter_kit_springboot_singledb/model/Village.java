@@ -1,20 +1,24 @@
 package com.xmplify.starter_kit_springboot_singledb.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "village")
 @NoArgsConstructor
 @Setter
 @Getter
+@Table(name = "village", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {
+                "shortForm"
+        })
+})
 public class Village {
 
     @Id
@@ -25,8 +29,15 @@ public class Village {
     @Size(max = 15)
     private String name;
 
+    @NotNull
+    private String shortForm;
+
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "district_id")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private District district;
+
+    public Village(String villageId) {
+        this.id = villageId;
+    }
 }

@@ -8,7 +8,8 @@ import lombok.Setter;
 import javax.validation.constraints.NotNull;
 
 @Getter
-@Setter@AllArgsConstructor
+@Setter
+@AllArgsConstructor
 @NoArgsConstructor
 public class AddNewsType {
 

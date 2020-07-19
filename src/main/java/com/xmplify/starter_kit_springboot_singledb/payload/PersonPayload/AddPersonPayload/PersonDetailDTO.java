@@ -1,5 +1,7 @@
 package com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload;
 
+import com.xmplify.starter_kit_springboot_singledb.model.User;
+import com.xmplify.starter_kit_springboot_singledb.payload.PersonSettingDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

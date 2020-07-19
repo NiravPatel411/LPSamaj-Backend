@@ -2,8 +2,6 @@ package com.xmplify.starter_kit_springboot_singledb.payload;
 
 import lombok.*;
 
-import javax.persistence.Column;
-
 @Getter
 @Setter
 @AllArgsConstructor

@@ -1,4 +1,4 @@
-package com.xmplify.starter_kit_springboot_singledb.service.impl;
+package com.xmplify.starter_kit_springboot_singledb.service;
 
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.model.Activity;
@@ -40,7 +40,7 @@ public class ActivityService {
     @Transactional
     public boolean addUpdateActivity(Activity activity, AddActivityRequest activityRequest, HttpServletRequest context) throws IOException {
         Activity savedActivity = activityRepository.save(activity);
-        if(Objects.nonNull(activityRequest) && Objects.nonNull(activityRequest.getActivityMedia())) {
+        if (Objects.nonNull(activityRequest) && Objects.nonNull(activityRequest.getActivityMedia())) {
             for (AddEditMedia editMedia : activityRequest.getActivityMedia()) {
                 Media media = new Media();
 
@@ -48,9 +48,9 @@ public class ActivityService {
                 byte[] bytes = file.getBytes();
                 ServletContext servletContext = context.getServletContext();
                 String fullPath = servletContext.getRealPath(
-                        GlobalConstants.UPLOAD_IMAGE +
+                        GlobalConstants.UPLOAD_DIR +
                                 GlobalConstants.IMAGE + GlobalConstants.BACK_SLASH +
-                                GlobalConstants.ACTIVITY_MEDIA_TYPE + GlobalConstants.BACK_SLASH);
+                                GlobalConstants.ACTIVITY_EVENT + GlobalConstants.BACK_SLASH);
 
 
                 Path path = Paths.get(fullPath);
@@ -64,23 +64,23 @@ public class ActivityService {
 
                 media.setMediaType(editMedia.getMediaType());
                 media.setRelatedId(savedActivity.getId());
-                media.setRelatedType(GlobalConstants.ACTIVITY_MEDIA_TYPE);
+                media.setRelatedType(GlobalConstants.ACTIVITY_EVENT);
                 media.setStorePath(storePath);
                 mediaRepository.save(media);
             }
 
         }
 
-        if(Objects.nonNull(activityRequest) && Objects.nonNull(activityRequest.getDeletedMediaIds())){
+        if (Objects.nonNull(activityRequest) && Objects.nonNull(activityRequest.getDeletedMediaIds())) {
             ServletContext servletContext = context.getServletContext();
             String fullPath1 = servletContext.getRealPath(
-                    GlobalConstants.UPLOAD_IMAGE +
+                    GlobalConstants.UPLOAD_DIR +
                             GlobalConstants.IMAGE + GlobalConstants.BACK_SLASH +
-                            GlobalConstants.ACTIVITY_MEDIA_TYPE + GlobalConstants.BACK_SLASH);
-            for(String mediaId : activityRequest.getDeletedMediaIds()) {
+                            GlobalConstants.ACTIVITY_EVENT + GlobalConstants.BACK_SLASH);
+            for (String mediaId : activityRequest.getDeletedMediaIds()) {
                 Optional<Media> media = mediaRepository.findById(mediaId);
-                if(media.isPresent()){
-                    File file = new File(fullPath1+media.get().getStorePath());
+                if (media.isPresent()) {
+                    File file = new File(fullPath1 + media.get().getStorePath());
                     file.delete();
                 }
                 mediaRepository.delete(media.get());
@@ -91,7 +91,7 @@ public class ActivityService {
 
     public List<AllActivity> getAllActivityDTOWithMedia(List<Activity> content) {
         List<AllActivity> allActivityList = new ArrayList<>();
-        for(Activity activity : content){
+        for (Activity activity : content) {
             AllActivity allActivity = new AllActivity(activity.getId(),
                     activity.getAim(),
                     activity.getDescription(),
@@ -106,7 +106,7 @@ public class ActivityService {
                     activity.getCreatedAt().toString(),
                     activity.getUpdatedAt().toString(),
                     null
-                    );
+            );
             getAllMediaByActivity(allActivity);
             allActivityList.add(allActivity);
         }
@@ -116,10 +116,10 @@ public class ActivityService {
     private void getAllMediaByActivity(AllActivity allActivity) {
         List<Media> mediaList = mediaRepository.findAllByRelatedId(allActivity.getId());
         List<AllMedia> allMediaList = new ArrayList<>();
-        for(Media media : mediaList){
+        for (Media media : mediaList) {
             String fullPath = GlobalConstants.BACK_SLASH +
                     GlobalConstants.IMAGE + GlobalConstants.BACK_SLASH +
-                    GlobalConstants.ACTIVITY_MEDIA_TYPE + GlobalConstants.BACK_SLASH;
+                    GlobalConstants.ACTIVITY_EVENT + GlobalConstants.BACK_SLASH;
 
             String storePath = media.getStorePath();
             AllMedia allMedia = new AllMedia(
@@ -128,7 +128,7 @@ public class ActivityService {
                     media.getRelatedType(),
                     media.getRelatedId(),
                     ServletUriComponentsBuilder.fromCurrentContextPath().path(fullPath + storePath).toUriString(),
-                    media.getCreatedAt() != null ? media.getCreatedAt().toString() : "",
+                    media.getCreatedAt() != null ? media.getCreatedAt() : "",
                     0
             );
             allMediaList.add(allMedia);

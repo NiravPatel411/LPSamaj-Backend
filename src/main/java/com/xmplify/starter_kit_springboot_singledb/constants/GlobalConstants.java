@@ -1,6 +1,14 @@
 package com.xmplify.starter_kit_springboot_singledb.constants;
 
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
 public class GlobalConstants {
+    public static final Object UNDER_SCORE = "_";
+    public static final String DOT = ".";
+    public static DateTimeFormatter DATE_FORMAT;
+    public static List<String> HOBBIES;
 
     public static final String STATUS_ACTIVE = "Active";
     public static final String REQUEST_SUCCESS = "Success";
@@ -10,12 +18,12 @@ public class GlobalConstants {
     public static final String ROLE_NORMAL = "NORMAL_USER";
     public static final String BASIC_DETAIL = "Basic_Detail";
     public static final String ADDRESS = "Address";
-    public static final String EDUCATION = "Education";
-    public static final String NEWS_MEDIA_TYPE = "news";
-    public static final String PROFILE_MEDIA_TYPE = "profile";
-    public static final String ACTIVITY_MEDIA_TYPE = "activity";
-    public static final String UPLOAD_IMAGE = "/WEB-INF/";
-    public static final String UPLOAD_NEWS_MEDIA_FULL_PATH = UPLOAD_IMAGE + "image/news/";
+    public static final String EDUCATION = "EducationDTO";
+    public static final String NEWS_EVENT = "news";
+    public static final String PROFILE_EVENT = "profile";
+    public static final String ACTIVITY_EVENT = "activity";
+    public static final String UPLOAD_DIR = "/WEB-INF/";
+    public static final String UPLOAD_NEWS_MEDIA_FULL_PATH = UPLOAD_DIR + "image/news/";
     public static final String UPLOAD_NEWS_MEDIA_URL_PATH = "/image/news/";
     public static final String IMAGE = "Image";
     public static final String BACK_SLASH = "/";
@@ -46,11 +54,70 @@ public class GlobalConstants {
 
     // setting type
 
-    public static final String BLOOD_DONATE = "BLOOD_DONATE";
-    public static final String NEWS_NOTIFICATION = "NEWS_NOTIFICATION";
-    public static final String CONTACT_NUMBER_VISIBILITY = "CONTACT_NUMBER_VISIBILITY";
-    public static final String PROFILE_PICTURE_VISIBLITY = "PROFILE_PICTURE_VISIBLITY";
-    public static final String ADMIN_CAN_UPDATE = "ADMIN_CAN_UPDATE";
+
+
+
+
+
+
+
+
+    //HOBBIES
+    static {
+        HOBBIES = new ArrayList<>();
+        HOBBIES.add("Reading");
+        HOBBIES.add("Watching TV");
+        HOBBIES.add("Family Time");
+        HOBBIES.add("Going to Movies");
+        HOBBIES.add("Fishing");
+        HOBBIES.add("Computer");
+        HOBBIES.add("Gardening");
+        HOBBIES.add("Renting Movies");
+        HOBBIES.add("Walking");
+        HOBBIES.add("Exercise");
+        HOBBIES.add("Listening to Music");
+        HOBBIES.add("Entertaining");
+        HOBBIES.add("Hunting");
+        HOBBIES.add("Team Sports");
+        HOBBIES.add("Shopping");
+        HOBBIES.add("Traveling");
+        HOBBIES.add("Sleeping");
+        HOBBIES.add("Socializing");
+        HOBBIES.add("Sewing");
+        HOBBIES.add("Golf");
+        HOBBIES.add("Church Activities");
+        HOBBIES.add("Relaxing");
+        HOBBIES.add("Playing Music");
+        HOBBIES.add("Housework");
+        HOBBIES.add("Crafts");
+        HOBBIES.add("Watching Sports");
+        HOBBIES.add("Bicycling");
+        HOBBIES.add("Playing Cards");
+        HOBBIES.add("Hiking");
+        HOBBIES.add("Cooking");
+        HOBBIES.add("Eating Out");
+        HOBBIES.add("Dating Online");
+        HOBBIES.add("Swimming");
+        HOBBIES.add("Camping");
+        HOBBIES.add("Skiing");
+        HOBBIES.add("Working on Cars");
+        HOBBIES.add("Writing");
+        HOBBIES.add("Boating");
+        HOBBIES.add("Motorcycling");
+        HOBBIES.add("Animal Care");
+        HOBBIES.add("Bowling");
+        HOBBIES.add("Painting");
+        HOBBIES.add("Running");
+        HOBBIES.add("Dancing");
+        HOBBIES.add("Horseback Riding");
+        HOBBIES.add("Tennis");
+        HOBBIES.add("Theater");
+        HOBBIES.add("Billiards");
+        HOBBIES.add("Beach");
+        HOBBIES.add("Volunteer Work");
+
+        DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    }
 
 
 }

@@ -14,7 +14,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Setter
 @Getter
-public class News extends AditableEntity{
+public class News extends AditableEntity {
 
     @Id
     @GeneratedValue(generator = "uuid")

@@ -1,4 +1,4 @@
-package com.xmplify.starter_kit_springboot_singledb.service.impl;
+package com.xmplify.starter_kit_springboot_singledb.service;
 
 import com.xmplify.starter_kit_springboot_singledb.mapper.CommitteeMapper;
 import com.xmplify.starter_kit_springboot_singledb.model.CommitteeMember;

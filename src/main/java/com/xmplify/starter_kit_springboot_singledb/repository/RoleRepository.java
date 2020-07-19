@@ -1,15 +1,11 @@
 package com.xmplify.starter_kit_springboot_singledb.repository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
+import com.xmplify.starter_kit_springboot_singledb.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.xmplify.starter_kit_springboot_singledb.model.Role;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, String> {
@@ -19,5 +15,5 @@ public interface RoleRepository extends JpaRepository<Role, String> {
 
     Optional<Role> findByNameContainingIgnoreCase(String name);
 
-   // Optional<Set<Role>> findByName(Iterable<String> roleName);
+    // Optional<Set<Role>> findByName(Iterable<String> roleName);
 }

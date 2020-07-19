@@ -1,10 +1,9 @@
 package com.xmplify.starter_kit_springboot_singledb.security;
-import java.io.IOException;
-import java.util.Date;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xmplify.starter_kit_springboot_singledb.payload.JwtCustomPayload;
+import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import java.io.IOException;
+import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
@@ -30,7 +24,7 @@ public class JwtTokenProvider {
 
     @Value("${app.jwtExpirationInMs}")
     private int jwtExpirationInMs;
-    
+
     @Value("${secureKey}")
     private String key;
 
@@ -62,7 +56,7 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        JwtCustomPayload jwtCustomPayload = objectMapper.readValue(claims.getSubject() , JwtCustomPayload.class);
+        JwtCustomPayload jwtCustomPayload = objectMapper.readValue(claims.getSubject(), JwtCustomPayload.class);
         return jwtCustomPayload.getUserId();
     }
 
@@ -72,7 +66,7 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        JwtCustomPayload jwtCustomPayload = objectMapper.readValue(claims.getSubject() , JwtCustomPayload.class);
+        JwtCustomPayload jwtCustomPayload = objectMapper.readValue(claims.getSubject(), JwtCustomPayload.class);
         return jwtCustomPayload.getRoleType();
     }
 

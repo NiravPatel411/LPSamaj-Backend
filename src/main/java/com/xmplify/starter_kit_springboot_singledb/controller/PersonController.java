@@ -1,22 +1,28 @@
 package com.xmplify.starter_kit_springboot_singledb.controller;
 
+import com.xmplify.starter_kit_springboot_singledb.DTOs.Address.AddressDTO;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.PersonBasicDetailDTO1;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonBasicDetailDTO;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail;
+import com.xmplify.starter_kit_springboot_singledb.constants.FamilyCode;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
+import com.xmplify.starter_kit_springboot_singledb.constants.SettingConstants;
 import com.xmplify.starter_kit_springboot_singledb.mapper.UserMapper;
 import com.xmplify.starter_kit_springboot_singledb.model.*;
 import com.xmplify.starter_kit_springboot_singledb.payload.*;
-import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddPersonDTO;
-import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddressDBDetail;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDBDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdateAddressFromUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdatePersonDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdateUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
+import com.xmplify.starter_kit_springboot_singledb.service.FileService;
+import com.xmplify.starter_kit_springboot_singledb.service.RoleService;
 import com.xmplify.starter_kit_springboot_singledb.service.UserService;
-import com.xmplify.starter_kit_springboot_singledb.service.impl.Validators;
+import com.xmplify.starter_kit_springboot_singledb.service.Validators;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +35,6 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -40,9 +42,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -96,166 +96,52 @@ public class PersonController {
     @Autowired
     EducationRepository educationRepository;
 
+    @Autowired
+    RoleService roleService;
+
+    @Autowired
+    FileService fileService;
+
+    @Autowired
+    FamilyCode familyCodeService;
+
     @GetMapping("/")
     public ResponseEntity<?> listUser(@PageableDefault(page = 0, size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {
-        Page<User> users = userRepository.findAll(pageable);
-        List<ListPersonBasicDetail> listPersonBasicDetails = new ArrayList<>();
-        users.getContent().forEach(user -> {
-
-            ListPersonBasicDetail listPersonBasicDetail = new ListPersonBasicDetail();
-            listPersonBasicDetail.setEmail(user.getEmail());
-            listPersonBasicDetail.setFirstName(user.getFirstName());
-            listPersonBasicDetail.setGender(user.getGender());
-            listPersonBasicDetail.setLastName(user.getLastName());
-            listPersonBasicDetail.setMobileno(user.getMobileno());
-            listPersonBasicDetail.setPersonId(user.getId());
-            //listPersonBasicDetail.setProfilePic(user.getProfilePic());
-
-            //todo : remove temp string in setProfilePic
-            listPersonBasicDetail.setProfilePic("");
-            listPersonBasicDetail.setSurname(user.getSurname());
-
-            listPersonBasicDetail.setHusbandVillageName(user.getHusbandVillageId() != null ? user.getHusbandVillageId() : "");
-            listPersonBasicDetail.setHusbandFirstName(user.getHusbandFirstName() != null ? user.getHusbandFirstName() : "");
-            listPersonBasicDetail.setHusbandLastName(user.getHusbandLastName() != null ? user.getHusbandLastName() : "");
-            listPersonBasicDetail.setHusbandSurname(user.getHusbandSurname() != null ? user.getHusbandSurname() : "");
-
-
-            listPersonBasicDetail.setCreatedDate(Objects.nonNull(user.getCreatedAt()) ? user.getCreatedAt().toString() : "");
-            listPersonBasicDetail.setUpdatedDate(Objects.nonNull(user.getUpdatedAt()) ? user.getUpdatedAt().toString() : "");
-            listPersonBasicDetail.setCreatedBy(user.getCreatedBy() != null ? user.getCreatedBy().getId() : null);
-            listPersonBasicDetail.setUpdatedBy(user.getUpdatedBy() != null ? user.getUpdatedBy().getId() : null);
-            listPersonBasicDetail.setIsDeleted(user.getIsDeleted());
-            listPersonBasicDetail.setStatus(user.getStatus());
-            if (user.getVillage() != null) {
-                listPersonBasicDetail.setVillageName(user.getVillage().getName());
-                listPersonBasicDetail.setHusbandVillageName(user.getVillage() != null ? user.getVillage().getName() : "");
-            }
-
-            listPersonBasicDetails.add(listPersonBasicDetail);
-        });
-
-        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", listPersonBasicDetails), HttpStatus.OK);
+        Page<User> users = userService.findAll(pageable);
+        List<PersonBasicDetailDTO1> personBasicDetailDTOS = userMapper.toPersonBasicDetailDTO(users.getContent());
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", personBasicDetailDTOS), HttpStatus.OK);
     }
 
     @GetMapping("/filter")
     public ResponseEntity<?> filterUser(FilterUserDTO filterUser, @PageableDefault(page = 0, size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {
-        //Page<User> users = userRepository.findAll(textInAllColumns(filterUser.getSearchText(), filterUser.getfields()), pageable);
-        Page<User> users = userRepository.findAll(CreateSpecification(filterUser), pageable);
-        List<ListPersonBasicDetail> listPersonBasicDetails = new ArrayList<>();
-        users.forEach(user -> {
-            ListPersonBasicDetail listPersonBasicDetail = new ListPersonBasicDetail();
-
-            listPersonBasicDetail.setEmail(user.getEmail());
-            listPersonBasicDetail.setFirstName(user.getFirstName());
-            listPersonBasicDetail.setGender(user.getGender());
-            listPersonBasicDetail.setLastName(user.getLastName());
-            listPersonBasicDetail.setMobileno(user.getMobileno());
-            listPersonBasicDetail.setPersonId(user.getId());
-            listPersonBasicDetail.setProfilePic(user.getProfilePic());
-            listPersonBasicDetail.setSurname(user.getSurname());
-
-            listPersonBasicDetail.setHusbandVillageName(user.getHusbandVillageId() != null ? user.getHusbandVillageId() : "");
-            listPersonBasicDetail.setHusbandFirstName(user.getHusbandFirstName() != null ? user.getHusbandFirstName() : "");
-            listPersonBasicDetail.setHusbandLastName(user.getHusbandLastName() != null ? user.getHusbandLastName() : "");
-            listPersonBasicDetail.setHusbandSurname(user.getHusbandSurname() != null ? user.getHusbandSurname() : "");
-
-
-            listPersonBasicDetail.setCreatedDate(user.getCreatedAt().toString());
-//            listPersonBasicDetail.setUpdatedDate(user.getUpdatedAt().toString());
-            listPersonBasicDetail.setCreatedBy(user.getCreatedBy() != null ? user.getCreatedBy().getId() : null);
-//            listPersonBasicDetail.setUpdatedBy(user.getUpdatedBy().getId());
-            listPersonBasicDetail.setIsDeleted(user.getIsDeleted());
-            listPersonBasicDetail.setStatus(user.getStatus());
-            if (user.getVillage() != null) {
-                listPersonBasicDetail.setVillageName(user.getVillage().getName());
-            }
-
-            listPersonBasicDetails.add(listPersonBasicDetail);
-        });
-
-        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", listPersonBasicDetails), HttpStatus.OK);
+        Page<User> users = userService.findAll(filterUser, pageable);
+        List<PersonBasicDetailDTO1> personBasicDetailDTOS = userMapper.toPersonBasicDetailDTO(users.getContent());
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", personBasicDetailDTOS), HttpStatus.OK);
     }
 
-
-    private Specification<User> CreateSpecification(FilterUserDTO filterUser) {
-        return new Specification<User>() {
-            @Override
-            public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                final Collection<Predicate> predicates = new ArrayList<>();
-                if (!StringUtils.isEmpty(filterUser.getGender())) {
-                    final Predicate genderPredicate = cb.equal(root.get(GlobalConstants.GENDER), filterUser.getGender());
-                    predicates.add(genderPredicate);
-                }
-                if (!StringUtils.isEmpty(filterUser.getSearchText())) {
-                    String text = filterUser.getSearchText();
-                    if (!text.contains("%")) {
-                        text = "%" + text + "%";
-                    }
-                    String finalText = text;
-                    Predicate searchTextPredicate = cb.or(root.getModel().getDeclaredSingularAttributes().stream()
-                            .filter(a -> filterUser.getfields().contains(a.getName()))
-                            .map(a -> cb.like(root.get(a.getName()), finalText))
-                            .toArray(Predicate[]::new));
-                    predicates.add(searchTextPredicate);
-                }
-
-                if (!StringUtils.isEmpty(filterUser.getMaritalStatus())) {
-                    final Predicate maritalStatusPredicate = cb.equal(root.get(GlobalConstants.MARITAL_STATUS), filterUser.getMaritalStatus());
-                    predicates.add(maritalStatusPredicate);
-                }
-
-                if (Objects.nonNull(filterUser.getVillageIds()) && filterUser.getVillageIds().length > 0) {
-                    CriteriaBuilder.In<String> inClause = cb.in(root.join("village").get("id"));
-                    for (String villageId : filterUser.getVillageIds()) {
-                        inClause.value(villageId);
-                    }
-                    predicates.add(inClause);
-                }
-
-                if (Objects.nonNull(filterUser.getDegreeIds()) && filterUser.getDegreeIds().length > 0) {
-                    CriteriaBuilder.In<String> educationIn = cb.in(root.join("educations").get("degreeId"));
-                    for (String degreeId : filterUser.getDegreeIds()) {
-                        educationIn.value(degreeId);
-                    }
-                    predicates.add(educationIn);
-                }
-
-                if (Objects.nonNull(filterUser.getGreaterThanBOD()) && Objects.nonNull(filterUser.getLessThanBOD())) {
-                    LocalDate greaterThan = Instant.ofEpochMilli(filterUser.getGreaterThanBOD()).atZone(ZoneId.systemDefault()).toLocalDate();
-                    LocalDate lessThan = Instant.ofEpochMilli(filterUser.getLessThanBOD()).atZone(ZoneId.systemDefault()).toLocalDate();
-
-                    Predicate bodPredicate = cb.between(root.get("birthDate"), greaterThan, lessThan);
-                    predicates.add(bodPredicate);
-                }
-                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-            }
-        };
-    }
-
-    @PostMapping(value = "/add")
-    public ResponseEntity<?> registerUser(@Valid @ModelAttribute UpdateUserDTO updateUserDTO, BindingResult result, HttpServletRequest request) {
-
-        if (result.hasErrors()) {
-            List<String> errors = new ArrayList<>();
-            getError(result, errors);
-            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Validation error", errors), HttpStatus.BAD_REQUEST);
-        }
-        if (updateUserDTO.getPersonDetail().getPersonId() != null && userRepository.existsById(updateUserDTO.getPersonDetail().getPersonId())) {
-            ResponseEntity<?> responseEntity = this.updateUser(updateUserDTO, result,request);
-            return responseEntity;
-        } else {
-            AddPersonDTO addPersonDTO = userMapper.updateUserDTOToAddUserDTO(updateUserDTO);
-            List<String> messages = validators.validateAddPersonDTO(addPersonDTO);
-            if (!messages.isEmpty()) {
-                return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, messages.toString(), null),
-                        HttpStatus.BAD_REQUEST);
-            }
-            User savedUser = userService.save(addPersonDTO,request);
-            return new ResponseEntity<>(new ApiResponse(HttpStatus.CREATED.value(), true, "User created", userMapper.userToAddPersonResponse(savedUser, addPersonDTO)), HttpStatus.CREATED);
-
-        }
-    }
+//    @PostMapping(value = "/add")
+//    public ResponseEntity<?> registerUser(@Valid @ModelAttribute UpdateUserDTO updateUserDTO, BindingResult result, HttpServletRequest request) {
+//
+//        if (result.hasErrors()) {
+//            List<String> errors = new ArrayList<>();
+//            getError(result, errors);
+//            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Validation error", errors), HttpStatus.BAD_REQUEST);
+//        }
+//        if (updateUserDTO.getPersonDetail().getPersonId() != null && userRepository.existsById(updateUserDTO.getPersonDetail().getPersonId())) {
+//            ResponseEntity<?> responseEntity = this.updateUser(updateUserDTO, result, request);
+//            return responseEntity;
+//        } else {
+//            AddPersonDTO addPersonDTO = userMapper.updateUserDTOToAddUserDTO(updateUserDTO);
+//            List<String> messages = validators.validateAddPersonDTO(addPersonDTO);
+//            if (!messages.isEmpty()) {
+//                return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, messages.toString(), null),
+//                        HttpStatus.BAD_REQUEST);
+//            }
+//            User savedUser = userService.save(addPersonDTO, request);
+//            return new ResponseEntity<>(new ApiResponse(HttpStatus.CREATED.value(), true, "User created", userMapper.userToAddPersonResponse(savedUser, addPersonDTO)), HttpStatus.CREATED);
+//
+//        }
+//    }
 
     private void getError(BindingResult result, List<String> errors) {
         for (Object object : result.getAllErrors()) {
@@ -316,7 +202,7 @@ public class PersonController {
         }
 
         if (updateUserDTO.getPersonDetail().isSync()) {
-            String resp = updatePersonDetail(updateUserDTO,request);
+            String resp = updatePersonDetail(updateUserDTO, request);
             if (!StringUtils.isEmpty(resp)) {
                 return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, resp, null), HttpStatus.BAD_REQUEST);
             }
@@ -388,7 +274,6 @@ public class PersonController {
             getPersonDetail.setSurname(updatedUser.get().getSurname());
 
 
-
             getPersonDetail.setHusbandVillageId(updatedUser.get().getHusbandVillageId() != null ? updatedUser.get().getHusbandVillageId() : "");
             getPersonDetail.setHusbandFirstName(updatedUser.get().getHusbandFirstName() != null ? updatedUser.get().getHusbandFirstName() : "");
             getPersonDetail.setHusbandLastName(updatedUser.get().getHusbandLastName() != null ? updatedUser.get().getHusbandLastName() : "");
@@ -452,7 +337,6 @@ public class PersonController {
     }
 
     private PersonEducation updateEducation(EducationDBDTO educationDTO, User user, Admin createdBy, Admin updatedBy) {
-
 
         PersonEducation personEducation = new PersonEducation();
         if (educationRepository.existsById(educationDTO.getPersonEducationId())) {
@@ -558,24 +442,23 @@ public class PersonController {
 //            person.setHusbandVillage(husbandvillage.get());
         }
         person.setVillage(village.get());
-        person.setMobileLocalId(personDetail.getMobileLocalId());
 
         person.setCreatedBy(userCreated.get());
         person.setUpdatedBy(userUpdated.get());
         person.setStatus(personDetail.getStatus());
         person.setIsDeleted(personDetail.getIsDeleted());
 
-        if(Objects.nonNull(personDetail.getProfilePic())) {
+        if (Objects.nonNull(personDetail.getProfilePic())) {
 
             if (Objects.nonNull(oldUser.getProfilePic()) && !StringUtils.isEmpty(oldUser.getProfilePic())) {
                 ServletContext context = request.getServletContext();
-                String fullPath = context.getRealPath(GlobalConstants.UPLOAD_IMAGE + GlobalConstants.IMAGE + GlobalConstants.BACK_SLASH + GlobalConstants.PROFILE_MEDIA_TYPE + GlobalConstants.BACK_SLASH);
+                String fullPath = context.getRealPath(GlobalConstants.UPLOAD_DIR + GlobalConstants.IMAGE + GlobalConstants.BACK_SLASH + GlobalConstants.PROFILE_EVENT + GlobalConstants.BACK_SLASH);
                 File file = new File(fullPath + oldUser.getProfilePic());
                 file.delete();
             }
             try {
                 ServletContext context = request.getServletContext();
-                String fullPath = context.getRealPath(GlobalConstants.UPLOAD_IMAGE + GlobalConstants.IMAGE + GlobalConstants.BACK_SLASH + GlobalConstants.PROFILE_MEDIA_TYPE + GlobalConstants.BACK_SLASH);
+                String fullPath = context.getRealPath(GlobalConstants.UPLOAD_DIR + GlobalConstants.IMAGE + GlobalConstants.BACK_SLASH + GlobalConstants.PROFILE_EVENT + GlobalConstants.BACK_SLASH);
                 MultipartFile file = personDetail.getProfilePic();
                 if (!file.isEmpty()) {
                     byte[] bytes = file.getBytes();
@@ -588,7 +471,7 @@ public class PersonController {
                     Files.write(filePath, bytes);
                     person.setProfilePic(storePath);
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 //log
             }
         }
@@ -652,176 +535,19 @@ public class PersonController {
 
     @GetMapping("/admin/")
     public ResponseEntity<?> getAllAdmin() {
-        List<Admin> admins = adminRepository.findAll();
-        List<AdminBasicDetail> BasicDetails = new ArrayList<>();
-        List<Address> addresses = new ArrayList<>();
-        for (Admin admin : admins) {
-            AdminBasicDetail adminBasicDetail = new AdminBasicDetail();
-            adminBasicDetail.setAdminId(admin.getId());
-            if (admin.getPerson() != null) {
-                if (admin.getPerson().getId() != null) {
-                    adminBasicDetail.setPersonId(admin.getPerson().getId());
-                }
-                if (admin.getPerson().getFirstName() != null) {
-                    adminBasicDetail.setFirstName(admin.getPerson().getFirstName());
-                }
-                if (admin.getPerson().getLastName() != null) {
-                    adminBasicDetail.setLastName(admin.getPerson().getLastName());
-                }
-                if (admin.getPerson().getEmail() != null) {
-                    adminBasicDetail.setEmail(admin.getPerson().getEmail());
-                }
-                if (admin.getPerson().getGender() != null) {
-                    adminBasicDetail.setGender(admin.getPerson().getGender());
-                }
-                if (admin.getPerson().getMobileno() != null) {
-                    adminBasicDetail.setMobileno(admin.getPerson().getMobileno());
-                }
-                if (admin.getPerson().getProfilePic() != null) {
-                    adminBasicDetail.setProfilePic(admin.getPerson().getProfilePic());
-                }
-                if (admin.getPerson().getSurname() != null) {
-                    adminBasicDetail.setSurname(admin.getPerson().getSurname());
-                }
-                if (admin.getPerson().getHusbandFirstName() != null) {
-                    adminBasicDetail.setHusbandFirstName(admin.getPerson().getHusbandFirstName());
-                }
-                if (admin.getPerson().getHusbandLastName() != null) {
-                    adminBasicDetail.setHusbandLastName(admin.getPerson().getHusbandLastName());
-                }
-                if (admin.getPerson().getHusbandLastName() != null) {
-                    adminBasicDetail.setHusbandLastName(admin.getPerson().getHusbandLastName());
-                }
-                /*if (admin.getPerson().getHusbandVillage() != null && admin.getPerson().getHusbandVillage().getName() != null) {
-                    adminBasicDetail.setHusbandVillageName(admin.getPerson().getHusbandVillage().getName());
-                }*/
-                if (admin.getPerson().getVillage() != null && admin.getPerson().getVillage().getName() != null) {
-                    adminBasicDetail.setVillageName(admin.getPerson().getVillage().getName());
-                }
-                if (admin.getAdminRole() != null && admin.getAdminRole().getId() != null) {
-                    adminBasicDetail.setAdminType(admin.getAdminRole().getName());
-                }
-            }
-
-            BasicDetails.add(adminBasicDetail);
-        }
+        List<Admin> admins = userService.findAllAdmin();
+        List<AdminBasicDetail> BasicDetails = userMapper.adminToAdminBasicDetail(admins);
         return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Admin Created", BasicDetails), HttpStatus.OK);
     }
 
     @GetMapping("/byadmin/{adminId}")
     public ResponseEntity<?> getpersonsByAdmin(@PathVariable String adminId) {
-        try {
-            if (adminRepository.existsById(adminId)) {
-                List<User> users = userRepository.findAllByAdminId(adminId);
-                HashMap<String, Object> retObj = new HashMap<>();
-                List<PersonalDetail> personalDetails = new ArrayList<>();
-                List<AddressDBDetail> addressDetails = new ArrayList<>();
-                List<EducationDBDTO> educationDetails = new ArrayList<>();
-                users.forEach((user) -> {
-                    PersonalDetail personalDetail = new PersonalDetail();
-                    personalDetail.setBirthDate(user.getBirthDate().toString());
-                    personalDetail.setBloodGroup(user.getBloodGroup());
-                    personalDetail.setContactNo(user.getMobileno());
-                    personalDetail.setEmail(user.getEmail());
-                    personalDetail.setFirstName(user.getFirstName());
-                    personalDetail.setGender(user.getGender());
-                    personalDetail.setLastName(user.getLastName());
-                    personalDetail.setMaritalStatus(user.getMaritalStatus());
-                    personalDetail.setCreatedAt(user.getMobileno());
-                    personalDetail.setPersonId(user.getId());
-
-                    //todo : remove temp string in setProfilePic
-                    personalDetail.setProfilePic("");
-                    personalDetail.setSurname(user.getSurname());
-                    personalDetail.setVillageId(user.getVillageId());
-
-                    personalDetail.setHusbandVillageId(user.getHusbandVillageId() != null ? user.getHusbandVillageId() : "");
-                    personalDetail.setHusbandFirstName(user.getHusbandFirstName() != null ? user.getHusbandFirstName() : "");
-                    personalDetail.setHusbandLastName(user.getHusbandLastName() != null ? user.getHusbandLastName() : "");
-                    personalDetail.setHusbandSurname(user.getHusbandSurname() != null ? user.getHusbandSurname() : "");
-
-                    personalDetail.setIsSync(GlobalConstants.SYNC_STATUS);
-
-                    personalDetail.setIsDelete(String.valueOf(user.getIsDeleted()));
-                    personalDetail.setDeletedBy(String.valueOf(user.getDeletedBy() != null ? user.getDeletedBy().getId() : ""));
-                    personalDetail.setDeletedAt(String.valueOf(user.getDeletedAt()));
-                    personalDetail.setStatus(String.valueOf(user.getStatus()));
-                    personalDetail.setUpdatedAt(String.valueOf(user.getUpdatedAt().toString()));
-                    personalDetail.setUpdatedBy(String.valueOf(user.getUpdatedBy() != null ? user.getUpdatedBy().getId() : ""));
-                    personalDetail.setCreatedBy(String.valueOf(user.getCreatedBy() != null ? user.getCreatedBy().getId() : ""));
-                    personalDetail.setCreatedAt(String.valueOf(user.getCreatedAt().toString()));
-                    personalDetails.add(personalDetail);
-
-
-                    List<Address> address = user.getAddressList();
-                    address.forEach((add) -> {
-                        AddressDBDetail addressDetail = new AddressDBDetail();
-                        addressDetail.setPersonAddressId(add.getId());
-                        addressDetail.setAddressText(add.getAddressText());
-                        addressDetail.setType(add.getAddressType());
-                        addressDetail.setCountryId(add.getCountryId());
-                        addressDetail.setDistrictId(add.getDistrictId());
-                        addressDetail.setStateId(add.getStateId());
-                        addressDetail.setPersonId(add.getPersonId().getId());
-
-                        addressDetail.setIsDelete(String.valueOf(add.getIsDeleted()));
-
-                        addressDetail.setUpdatedAt(String.valueOf(add.getUpdatedAt().toString()));
-                        addressDetail.setUpdatedBy(String.valueOf(add.getUpdatedBy().getId()));
-
-                        addressDetail.setCreatedBy(String.valueOf(add.getCreatedBy() != null ? add.getCreatedBy().getId() : null));
-                        addressDetail.setCreatedAt(String.valueOf(add.getCreatedAt().toString()));
-                        addressDetail.setDeletedBy(String.valueOf(add.getDeletedBy() != null ? add.getDeletedBy().getId() : ""));
-                        addressDetail.setDeletedAt(String.valueOf(add.getDeletedAt() != null ? add.getDeletedAt() : ""));
-
-
-                        addressDetail.setIsSync(GlobalConstants.SYNC_STATUS);
-                        addressDetails.add(addressDetail);
-                    });
-
-                    List<PersonEducation> personEducationList = educationRepository.findAllByPersonId(user.getId());
-
-                    if (personEducationList.isEmpty()) {
-
-                    } else {
-                        personEducationList.forEach((education) -> {
-                            EducationDBDTO educationDTO = new EducationDBDTO(
-                                    education.getPersonEducationId(),
-                                    education.getPerson().getId(),
-                                    education.getDegreeId(),
-                                    education.getSchoolName(),
-                                    education.getResult() != null ? education.getResult() : "",
-                                    education.getStartYear(),
-                                    education.getEndYear(),
-                                    education.getProofPhoto() != null ? education.getProofPhoto() : "",
-                                    education.getMedium(),
-                                    education.getCreatedBy() != null ? education.getCreatedBy().getId() : "",
-                                    education.getUpdatedBy() != null ? education.getUpdatedBy().getId() : "",
-                                    education.getDeletedBy() != null ? education.getDeletedBy().getId() : "",
-                                    education.getCreatedAt() != null ? education.getCreatedAt().toString() : "",
-                                    education.getUpdatedAt() != null ? education.getUpdatedAt().toString() : "",
-                                    education.getDeletedAt() != null ? education.getDeletedAt().toString() : "",
-                                    String.valueOf(education.getIsDeleted()),
-                                    education.getMobileLocalId(),
-                                    education.getStatus(), GlobalConstants.SYNC_STATUS
-                            );
-                            educationDetails.add(educationDTO);
-                                }
-                        );
-                    }
-                });
-
-                retObj.put("personalDetail", personalDetails);
-                retObj.put("address", addressDetails);
-                retObj.put("education", educationDetails);
-                return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Success", retObj), HttpStatus.OK);
-
-            } else {
-                return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "Can not found admin", null), HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "Something went wrong", e), HttpStatus.OK);
+        if (!validators.isExistAdmin(adminId)) {
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "Can not found admin", null), HttpStatus.OK);
         }
+        List<User> users = userService.findAllUserByAdminId(adminId);
+        List<PersonBasicDetailDTO1> personBasicDetailDTOS = userMapper.toPersonBasicDetailDTO(users);
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Success", personBasicDetailDTOS), HttpStatus.OK);
     }
 
     @GetMapping("/getAdminsByType/{adminType}")
@@ -865,42 +591,32 @@ public class PersonController {
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Invalid setting type", null), HttpStatus.OK);
         }
 
-        PersonSetting setting = settingsRepository.findByPersonId(settingDTO.getPersonId());
-        if (setting == null) {
-            Optional<User> user = userRepository.findById(settingDTO.getPersonId());
-
-            if (user.isPresent()) {
-                PersonSetting personSetting = new PersonSetting();
-                personSetting.setPerson(user.get());
-                settingsRepository.save(personSetting);
-
-            } else {
-                return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Invalid login", null), HttpStatus.OK);
-            }
+        Optional<PersonSetting> setting = settingsRepository.findById(settingDTO.getId());
+        if (!setting.isPresent()) {
+            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Invalid Setting Id", null), HttpStatus.OK);
         }
-        PersonSetting personSetting = settingsRepository.findByPersonId(settingDTO.getPersonId());
 
+        PersonSetting personSetting = setting.get();
 
         String type = settingDTO.getType();
 
         switch (type) {
-            case GlobalConstants.BLOOD_DONATE:
+            case SettingConstants.BLOOD_DONATE:
                 personSetting.setBloodDonate(settingDTO.getValue());
                 break;
-            case GlobalConstants.ADMIN_CAN_UPDATE:
+            case SettingConstants.ADMIN_CAN_UPDATE:
                 personSetting.setAdminCanUpdate(settingDTO.getValue());
                 break;
-            case GlobalConstants.NEWS_NOTIFICATION:
+            case SettingConstants.NEWS_NOTIFICATION:
                 personSetting.setNewsNotification(settingDTO.getValue());
                 break;
-            case GlobalConstants.CONTACT_NUMBER_VISIBILITY:
+            case SettingConstants.CONTACT_NUMBER_VISIBILITY:
                 personSetting.setContactNumberVisibility(settingDTO.getValue());
                 break;
-            case GlobalConstants.PROFILE_PICTURE_VISIBLITY:
+            case SettingConstants.PROFILE_PICTURE_VISIBLITY:
                 personSetting.setProfilePictureVisiblity(settingDTO.getValue());
                 break;
         }
-
 
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", settingsRepository.save(personSetting)), HttpStatus.OK);
     }
@@ -909,9 +625,9 @@ public class PersonController {
     public ResponseEntity<?> getBloodDonor(FilterBloodGroupDTO filterUser, @PageableDefault(page = 0, size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {/*
         //Page<User> users = userRepository.findAll(textInAllColumns(filterUser.getSearchText(), filterUser.getfields()), pageable);
         Page<User> users = userRepository.findAll(CreateSpecification(filterUser), pageable);
-        List<ListPersonBasicDetail> listPersonBasicDetails = new ArrayList<>();
+        List<PersonBasicDetailDTO1> listPersonBasicDetails = new ArrayList<>();
         users.forEach(user -> {
-            ListPersonBasicDetail listPersonBasicDetail = new ListPersonBasicDetail();
+            PersonBasicDetailDTO1 listPersonBasicDetail = new PersonBasicDetailDTO1();
 
             listPersonBasicDetail.setEmail(user.getEmail());
             listPersonBasicDetail.setFirstName(user.getFirstName());
@@ -946,4 +662,46 @@ public class PersonController {
         return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "nnnn", null), HttpStatus.OK);
     }
 
+    @PostMapping(value = "/add")
+    @Transactional
+    public ResponseEntity<?> addPerson(@Valid @ModelAttribute PersonBasicDetailDTO personBasicDetailDTO, HttpServletRequest request){
+        List<String> messages = validators.validatePersonBasicDetailDTO(personBasicDetailDTO);
+        if(!messages.isEmpty()){
+            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid Requst Reason : ",messages), HttpStatus.BAD_REQUEST);
+        }
+
+
+        PersonalDetail personalDetail = personBasicDetailDTO.getPersonDetail();
+        List<AddressDTO> addressDTO = personBasicDetailDTO.getAddresses();
+
+        MultipartFile multipartFile = personalDetail.getProfilePic();
+        String fileStorePath = fileService.uploadFile(multipartFile,request.getServletContext(),GlobalConstants.IMAGE,GlobalConstants.PROFILE_EVENT);
+        if(Objects.isNull(fileStorePath)){
+            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Problem to store Image see more logs",null), HttpStatus.OK);
+        }
+        personalDetail.setProfileURL(fileStorePath);
+        return userService.addPerson(personalDetail, addressDTO);
+    }
+
+
+    @GetMapping("/getFamilyCode/{villageId}")
+    @Synchronized
+    public ResponseEntity<?> getFamilyCode(@PathVariable String villageId){
+        if(!validators.validateVillageId(villageId)){
+            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "InValid VillageId",null), HttpStatus.OK);
+        }
+
+        Village village = villageRepository.findById(villageId).get();
+        String currentFamilyCode = village.getShortForm() + GlobalConstants.UNDER_SCORE + familyCodeService.getValue();
+        if(userRepository.existsByfamilyCode(currentFamilyCode)){
+            familyCodeService.increment();
+            familyCodeService.getValue();
+            String newFamilyCode = village.getShortForm() + GlobalConstants.UNDER_SCORE + familyCodeService.getValue();
+            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), true, "Family code will be expire if SomeOne Used",newFamilyCode), HttpStatus.OK);
+        } else {
+            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), true, "Family code will be expire if SomeOne Used",currentFamilyCode), HttpStatus.OK);
+        }
+
+
+    }
 }

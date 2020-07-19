@@ -6,10 +6,10 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface NewsTypeRepository extends JpaRepository<NewsType,String> {
+public interface NewsTypeRepository extends JpaRepository<NewsType, String> {
 
     //    List<NewsType> findAllByIdOrderByPriority_numberDesc();
     @Query("SELECT n FROM NewsType n order by n.priority_number desc")
-    public List<NewsType> findAllByOrOrderByPriority_number();
+    List<NewsType> findAllByOrOrderByPriority_number();
 
 }

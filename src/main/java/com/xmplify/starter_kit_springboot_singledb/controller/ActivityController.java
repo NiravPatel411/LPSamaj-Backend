@@ -10,8 +10,8 @@ import com.xmplify.starter_kit_springboot_singledb.repository.ActivityRepository
 import com.xmplify.starter_kit_springboot_singledb.repository.AdminRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.MediaRepository;
 import com.xmplify.starter_kit_springboot_singledb.security.SecurityUtils;
-import com.xmplify.starter_kit_springboot_singledb.service.impl.ActivityService;
-import com.xmplify.starter_kit_springboot_singledb.service.impl.Validators;
+import com.xmplify.starter_kit_springboot_singledb.service.ActivityService;
+import com.xmplify.starter_kit_springboot_singledb.service.Validators;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,13 +48,13 @@ public class ActivityController {
 
 
     @GetMapping("/")
-    public ResponseEntity<?> getAllActivity(@PageableDefault(page = 0,size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {
+    public ResponseEntity<?> getAllActivity(@PageableDefault(page = 0, size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {
         if (GlobalConstants.MASTER_ADMIN.equalsIgnoreCase(SecurityUtils.getCurrentUserRole()) || GlobalConstants.ROLE_NORMAL.equalsIgnoreCase(SecurityUtils.getCurrentUserRole())) {
             Page<Activity> activityList = activityRepository.findAllByOrderByCreatedAtDesc(pageable);
             List<AllActivity> allActivityList = activityService.getAllActivityDTOWithMedia(activityList.getContent());
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", allActivityList), HttpStatus.OK);
-        } else if (GlobalConstants.ACTIVITY_ADMIN.equalsIgnoreCase(SecurityUtils.getCurrentUserRole())){
-            Page<Activity> activityList = activityRepository.findAllByAdminIdIdOrderByUpdatedAtDesc(SecurityUtils.getCurrentUserId(),pageable);
+        } else if (GlobalConstants.ACTIVITY_ADMIN.equalsIgnoreCase(SecurityUtils.getCurrentUserRole())) {
+            Page<Activity> activityList = activityRepository.findAllByAdminIdIdOrderByUpdatedAtDesc(SecurityUtils.getCurrentUserId(), pageable);
             List<AllActivity> allActivityList = activityService.getAllActivityDTOWithMedia(activityList.getContent());
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", allActivityList), HttpStatus.OK);
         } else {
@@ -65,26 +65,26 @@ public class ActivityController {
     @PostMapping("/addEditActivity")
     public ResponseEntity<?> addActivityData(@ModelAttribute AddActivityRequest request, HttpServletRequest context) throws IOException {
         List<String> dtoMessage = validators.validateAddActivityRequestDTO(request);
-        if(!dtoMessage.isEmpty()){
+        if (!dtoMessage.isEmpty()) {
             return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, dtoMessage.toString(), null),
                     HttpStatus.BAD_REQUEST);
         }
         Activity activity = activityMapper.convertDTOToActivity(request);
         if (activity.getId() != null && !activity.getId().isEmpty()) {
             List<String> messages = validators.validateUpdateActivityRequst(activity);
-            if(!messages.isEmpty()){
+            if (!messages.isEmpty()) {
                 return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, messages.toString(), null),
                         HttpStatus.BAD_REQUEST);
             }
-            boolean result = activityService.addUpdateActivity(activity,request,context);
+            boolean result = activityService.addUpdateActivity(activity, request, context);
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Activity updated sucessfully", ""), HttpStatus.OK);
         } else {
             List<String> messages = validators.validateAddActivityRequst(activity);
-            if(!messages.isEmpty()){
+            if (!messages.isEmpty()) {
                 return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, messages.toString(), null),
                         HttpStatus.BAD_REQUEST);
             }
-            boolean result = activityService.addUpdateActivity(activity,request,context);
+            boolean result = activityService.addUpdateActivity(activity, request, context);
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Activity added sucessfully", ""), HttpStatus.OK);
         }
     }

@@ -1,9 +1,9 @@
 package com.xmplify.starter_kit_springboot_singledb.payload;
 
-import javax.validation.constraints.NotBlank;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.validation.constraints.NotBlank;
 
 @Setter
 @Getter

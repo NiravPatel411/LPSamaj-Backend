@@ -26,7 +26,7 @@ public class ActivityMapper {
                 request.getConclusion(),
                 request.getPlace(),
                 admin.isPresent() ? admin.get() : null
-                );
+        );
         activity.setCreatedBy(admin.isPresent() ? admin.get() : null);
         activity.setUpdatedBy(admin.isPresent() ? admin.get() : null);
         return activity;

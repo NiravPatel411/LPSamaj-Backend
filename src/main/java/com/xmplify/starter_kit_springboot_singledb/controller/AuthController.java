@@ -1,17 +1,16 @@
 package com.xmplify.starter_kit_springboot_singledb.controller;
-import java.net.URI;
-import java.util.*;
-import java.util.stream.Stream;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
-import com.xmplify.starter_kit_springboot_singledb.model.*;
+import com.xmplify.starter_kit_springboot_singledb.model.Admin;
+import com.xmplify.starter_kit_springboot_singledb.model.AdminRole;
+import com.xmplify.starter_kit_springboot_singledb.model.Role;
 import com.xmplify.starter_kit_springboot_singledb.payload.*;
 import com.xmplify.starter_kit_springboot_singledb.repository.AdminRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.AdminRoleRepository;
+import com.xmplify.starter_kit_springboot_singledb.repository.RoleRepository;
+import com.xmplify.starter_kit_springboot_singledb.repository.UserRepository;
+import com.xmplify.starter_kit_springboot_singledb.security.JwtTokenProvider;
 import com.xmplify.starter_kit_springboot_singledb.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,11 +23,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.xmplify.starter_kit_springboot_singledb.repository.RoleRepository;
-import com.xmplify.starter_kit_springboot_singledb.repository.UserRepository;
-import com.xmplify.starter_kit_springboot_singledb.security.JwtTokenProvider;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -58,7 +56,7 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) throws JsonProcessingException {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        request.setAttribute("signInAs",loginRequest.getSignInAs());
+        request.setAttribute("signInAs", loginRequest.getSignInAs());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsernameOrMobileno(),
@@ -70,37 +68,37 @@ public class AuthController {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         Map<String, Object> returnUserObject = new HashMap<>();
         List<Admin> admins = adminRepository.isExistsAdminByPerson(userPrincipal.getId());
-        if(Objects.nonNull(admins) && (! GlobalConstants.ROLE_NORMAL.equalsIgnoreCase(loginRequest.getSignInAs()))){
-            if(admins.stream().anyMatch(a -> a.getAdminRole().getName().equalsIgnoreCase(loginRequest.getSignInAs()))){
+        if (Objects.nonNull(admins) && (!GlobalConstants.ROLE_NORMAL.equalsIgnoreCase(loginRequest.getSignInAs()))) {
+            if (admins.stream().anyMatch(a -> a.getAdminRole().getName().equalsIgnoreCase(loginRequest.getSignInAs()))) {
                 returnUserObject.put("userDetail", UserDto.create(userRepository.findById(userPrincipal.getId()).get(), loginRequest.getSignInAs()));
                 AuthAdmin authAdmin = new AuthAdmin();
                 Admin admin = null;
-                for(Admin ad : admins){
-                    if(ad.getAdminRole().getName().equalsIgnoreCase(loginRequest.getSignInAs())){
+                for (Admin ad : admins) {
+                    if (ad.getAdminRole().getName().equalsIgnoreCase(loginRequest.getSignInAs())) {
                         admin = ad;
                         break;
                     }
                 }
-                if(Objects.isNull(admin)){
-                    return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "NOT ACCESS with "+loginRequest.getSignInAs()+" role",null), HttpStatus.OK);
+                if (Objects.isNull(admin)) {
+                    return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "NOT ACCESS with " + loginRequest.getSignInAs() + " role", null), HttpStatus.OK);
                 }
                 authAdmin.setAdminId(admin.getId());
                 authAdmin.setAdminName(admin.getName());
                 authAdmin.setPersonId(admin.getPerson().getId());
                 authAdmin.setAdminType(loginRequest.getSignInAs());
 
-                returnUserObject.put("adminDetail",authAdmin);
-            }else {
-                return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "NOT ACCESS with "+loginRequest.getSignInAs()+" role",null), HttpStatus.OK);
+                returnUserObject.put("adminDetail", authAdmin);
+            } else {
+                return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "NOT ACCESS with " + loginRequest.getSignInAs() + " role", null), HttpStatus.OK);
             }
         } else {
-            if(GlobalConstants.ROLE_NORMAL.equalsIgnoreCase(loginRequest.getSignInAs())) {
+            if (GlobalConstants.ROLE_NORMAL.equalsIgnoreCase(loginRequest.getSignInAs())) {
                 returnUserObject.put("userDetail", UserDto.create(userRepository.findById(userPrincipal.getId()).get(), loginRequest.getSignInAs()));
-            }else {
-                return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "NOT ACCESS with "+loginRequest.getSignInAs()+" role",null), HttpStatus.OK);
+            } else {
+                return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "NOT ACCESS with " + loginRequest.getSignInAs() + " role", null), HttpStatus.OK);
             }
         }
-        returnUserObject.put("tokenDetail",new JwtAuthenticationResponse(jwt));
+        returnUserObject.put("tokenDetail", new JwtAuthenticationResponse(jwt));
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "LOGIN_SUCCESS", returnUserObject), HttpStatus.OK);
     }
 
@@ -134,7 +132,7 @@ public class AuthController {
     }*/
 
     @PostMapping("/addRole")
-    public ResponseEntity<?> addRole(@RequestBody List<String> role){
+    public ResponseEntity<?> addRole(@RequestBody List<String> role) {
         List<Role> roles = new ArrayList<>();
         role.stream().forEach((name) -> {
             Role obj = new Role();
@@ -147,7 +145,7 @@ public class AuthController {
     }
 
     @PostMapping("/addAdminRole")
-    public ResponseEntity<?> addAdminRole(@RequestBody List<String> role){
+    public ResponseEntity<?> addAdminRole(@RequestBody List<String> role) {
         List<AdminRole> roles = new ArrayList<>();
         role.stream().forEach((name) -> {
             AdminRole obj = new AdminRole();
@@ -160,7 +158,7 @@ public class AuthController {
     }
 
     @GetMapping("/adminTypes")
-    public ResponseEntity<?> getAllAdminTypes(){
+    public ResponseEntity<?> getAllAdminTypes() {
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", adminRoleRepository.findAll()), HttpStatus.OK);
     }
 }

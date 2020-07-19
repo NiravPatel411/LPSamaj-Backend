@@ -8,13 +8,13 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 @SpringBootApplication
 public class StarterKitSpringbootSingledbApplication extends SpringBootServletInitializer {
 
-	public static void main(String[] args) {
-		SpringApplication.run(StarterKitSpringbootSingledbApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(StarterKitSpringbootSingledbApplication.class, args);
+    }
 
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-		return builder.sources(StarterKitSpringbootSingledbApplication.class);
-	}
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        return builder.sources(StarterKitSpringbootSingledbApplication.class);
+    }
 
 }

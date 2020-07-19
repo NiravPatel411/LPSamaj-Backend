@@ -20,7 +20,7 @@ public class UpdateUserDTO {
     @Valid
     private UpdatePersonDetailDTO personDetail;
 
-    @NotNull (message = "address can not be null")
+    @NotNull(message = "address can not be null")
     @Valid
     private List<UpdateAddressFromUserDTO> address;
 

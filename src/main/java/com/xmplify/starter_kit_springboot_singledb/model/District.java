@@ -30,9 +30,12 @@ public class District {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private State state;
 
-    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL, mappedBy = "district")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "district")
     @JsonIgnore
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Set<Village> village;
 
+    public District(String districtId) {
+        this.id = districtId;
+    }
 }

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface MediaRepository extends JpaRepository<Media,String> {
+public interface MediaRepository extends JpaRepository<Media, String> {
 
-    public List<Media> findAllByRelatedId(String id);
+    List<Media> findAllByRelatedId(String id);
 
 }

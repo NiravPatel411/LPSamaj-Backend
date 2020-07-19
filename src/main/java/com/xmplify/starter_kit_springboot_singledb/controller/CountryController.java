@@ -2,8 +2,9 @@ package com.xmplify.starter_kit_springboot_singledb.controller;
 
 import com.xmplify.starter_kit_springboot_singledb.model.Country;
 import com.xmplify.starter_kit_springboot_singledb.model.State;
-import com.xmplify.starter_kit_springboot_singledb.model.Village;
-import com.xmplify.starter_kit_springboot_singledb.payload.*;
+import com.xmplify.starter_kit_springboot_singledb.payload.AddCountryDTO;
+import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
+import com.xmplify.starter_kit_springboot_singledb.payload.StatesByCountryDTO;
 import com.xmplify.starter_kit_springboot_singledb.repository.CoutryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public class CountryController {
     }
 
     @PostMapping("/addAll")
-    public  ResponseEntity<?> addAllCountry(@RequestBody  List<String> countryRequest){
+    public ResponseEntity<?> addAllCountry(@RequestBody List<String> countryRequest) {
         List<Country> countries = new ArrayList<>();
         countryRequest.stream().forEach((name) -> {
             Country country = new Country();
@@ -37,53 +38,52 @@ public class CountryController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addCountry(@RequestBody AddCountryDTO addCountryDTO){
-        if(coutryRepository.existsByName(addCountryDTO.getCountryName())){
+    public ResponseEntity<?> addCountry(@RequestBody AddCountryDTO addCountryDTO) {
+        if (coutryRepository.existsByName(addCountryDTO.getCountryName())) {
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Country Already exist", null), HttpStatus.OK);
         }
         Country country = new Country();
         country.setName(addCountryDTO.getCountryName());
-        return  new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "country Added", coutryRepository.save(country)), HttpStatus.OK);
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "country Added", coutryRepository.save(country)), HttpStatus.OK);
     }
 
     @GetMapping("/{countryId}")
-    public ResponseEntity<?> getcountryById(@PathVariable String countryId){
-        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(),true,"SUCCESS",coutryRepository.findById(countryId)),HttpStatus.OK);
+    public ResponseEntity<?> getcountryById(@PathVariable String countryId) {
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", coutryRepository.findById(countryId)), HttpStatus.OK);
     }
 
     @PostMapping("/update/{countryId}")
-    public ResponseEntity<?> updateCountry(@PathVariable String countryId, @RequestBody AddCountryDTO addCountryDTO){
-        if(Objects.isNull(addCountryDTO.getCountryName()) && StringUtils.isEmpty(addCountryDTO.getCountryName())){
-            return new ResponseEntity<>(new ApiResponse(HttpStatus.ALREADY_REPORTED.value(),false,"Country name should not be blank or null.",null),HttpStatus.OK);
+    public ResponseEntity<?> updateCountry(@PathVariable String countryId, @RequestBody AddCountryDTO addCountryDTO) {
+        if (Objects.isNull(addCountryDTO.getCountryName()) && StringUtils.isEmpty(addCountryDTO.getCountryName())) {
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.ALREADY_REPORTED.value(), false, "Country name should not be blank or null.", null), HttpStatus.OK);
         }
-        if(! coutryRepository.existsById(countryId)) {
+        if (!coutryRepository.existsById(countryId)) {
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Country not found", null), HttpStatus.OK);
         }
 
-        if(coutryRepository.existsByName(addCountryDTO.getCountryName())){
+        if (coutryRepository.existsByName(addCountryDTO.getCountryName())) {
             Country sameNameCountry = coutryRepository.findByName(addCountryDTO.getCountryName());
-            if(! sameNameCountry.getId().equals(countryId)) {
+            if (!sameNameCountry.getId().equals(countryId)) {
                 return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Country Already exist with another Id", null), HttpStatus.OK);
             }
         }
 
         Optional<Country> country = coutryRepository.findById(countryId);
 
-        if(! country.isPresent())
-        {
+        if (!country.isPresent()) {
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Country not found", null), HttpStatus.OK);
         }
 
         Country countryObj = country.get();
         countryObj.setName(addCountryDTO.getCountryName());
-        return  new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "country updated", coutryRepository.save(countryObj)), HttpStatus.OK);
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "country updated", coutryRepository.save(countryObj)), HttpStatus.OK);
     }
 
 
     @GetMapping("/states/{countryId}")
-    public ResponseEntity getAllStatesByCountryId(@PathVariable String countryId){
+    public ResponseEntity getAllStatesByCountryId(@PathVariable String countryId) {
         Optional<Country> countries = coutryRepository.findById(countryId);
-        if(countries.isPresent()){
+        if (countries.isPresent()) {
             Set<State> states = countries.get().getStates();
             List<StatesByCountryDTO> statesByCountryDTOs = new ArrayList<>();
             states.stream().forEach((state) -> {
@@ -93,8 +93,7 @@ public class CountryController {
                 statesByCountryDTOs.add(statesByCountryDTO);
             });
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", statesByCountryDTOs), HttpStatus.OK);
-        }
-        else{
+        } else {
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Country not found", null), HttpStatus.OK);
         }
     }

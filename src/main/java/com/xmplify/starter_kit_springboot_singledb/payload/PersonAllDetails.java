@@ -1,6 +1,5 @@
 package com.xmplify.starter_kit_springboot_singledb.payload;
 
-import com.xmplify.starter_kit_springboot_singledb.model.PersonSetting;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDTO;
 import lombok.*;
 
@@ -16,5 +15,5 @@ public class PersonAllDetails {
     private PersonalDetail personalDetails;
     private List<AddressDetail> addressDetails;
     private List<EducationDTO> educationDetails;
-    private PersonSetting personSetting;
+    private PersonSettingResponseDTO personSetting;
 }

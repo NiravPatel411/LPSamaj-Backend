@@ -10,7 +10,7 @@ import java.util.Objects;
 public class CommitteeMapper {
 
     public CommitteeMember convertCommitteeDTOToCommitteeMember(CommitteeDTO committeeDTO) {
-        if(Objects.nonNull(committeeDTO.getId())) {
+        if (Objects.nonNull(committeeDTO.getId())) {
             return new CommitteeMember(committeeDTO.getId(), null, null, committeeDTO.getDesignation());
         } else {
             return new CommitteeMember(null, null, null, committeeDTO.getDesignation());

@@ -14,7 +14,7 @@ public class AdditionalResourceWebConfiguration implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
         // Register resource handler for images
-            registry.addResourceHandler("/Image/**").addResourceLocations("/WEB-INF/Image/")
+        registry.addResourceHandler("/Image/**").addResourceLocations("/WEB-INF/Image/")
                 .setCacheControl(CacheControl.maxAge(2, TimeUnit.HOURS).cachePublic());
 
         registry.addResourceHandler("/swagger-ui.html**").addResourceLocations("classpath:/META-INF/resources/swagger-ui.html");

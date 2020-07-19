@@ -15,7 +15,8 @@ import java.util.stream.Stream;
  */
 public final class SecurityUtils {
 
-    private SecurityUtils() {}
+    private SecurityUtils() {
+    }
 
     /**
      * Get the login of the current user.
@@ -29,7 +30,7 @@ public final class SecurityUtils {
 
     public static String getCurrentUserRole() {
         Optional<UserDetails> userDetails = getCurrentUser();
-        if(userDetails.isPresent()){
+        if (userDetails.isPresent()) {
             UserPrincipal userPrincipal = (UserPrincipal) userDetails.get();
             return userPrincipal.getRole();
         } else {
@@ -39,7 +40,7 @@ public final class SecurityUtils {
 
     public static String getCurrentUserId() {
         Optional<UserDetails> userDetails = getCurrentUser();
-        if(userDetails.isPresent()){
+        if (userDetails.isPresent()) {
             UserPrincipal userPrincipal = (UserPrincipal) userDetails.get();
             return userPrincipal.getId();
         } else {
@@ -65,9 +66,9 @@ public final class SecurityUtils {
     public static Optional<String> getCurrentUserJWT() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         return Optional
-            .ofNullable(securityContext.getAuthentication())
-            .filter(authentication -> authentication.getCredentials() instanceof String)
-            .map(authentication -> (String) authentication.getCredentials());
+                .ofNullable(securityContext.getAuthentication())
+                .filter(authentication -> authentication.getCredentials() instanceof String)
+                .map(authentication -> (String) authentication.getCredentials());
     }
 
     /**

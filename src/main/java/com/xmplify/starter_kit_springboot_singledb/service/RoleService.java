@@ -1,4 +1,4 @@
-package com.xmplify.starter_kit_springboot_singledb.service.impl;
+package com.xmplify.starter_kit_springboot_singledb.service;
 
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.model.Role;
@@ -27,6 +27,7 @@ public class RoleService {
             return userRole.get();
         }
     }
+
 
     public Set<Role> toSet(Role normalUserRole) {
         Set<Role> role = new HashSet<>();

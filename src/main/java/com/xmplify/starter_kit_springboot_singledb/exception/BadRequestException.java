@@ -1,4 +1,5 @@
 package com.xmplify.starter_kit_springboot_singledb.exception;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 

@@ -31,14 +31,14 @@ public class WorkingController {
     }
 
     @GetMapping("/{WorkingId}")
-    public ResponseEntity<?> getEducationById(@PathVariable String WorkingId){
+    public ResponseEntity<?> getEducationById(@PathVariable String WorkingId) {
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", this.workingRepository.findById(WorkingId)), HttpStatus.OK);
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> saveEducation(@RequestBody WorkingDTO workingDTO){
+    public ResponseEntity<?> saveEducation(@RequestBody WorkingDTO workingDTO) {
         Optional<User> user = userRepository.findById(workingDTO.getPersonId());
-        if(user.isPresent()){
+        if (user.isPresent()) {
             PersonWorking personWorking = new PersonWorking();
             personWorking.setAddress(workingDTO.getAddress());
             personWorking.setClassType(workingDTO.getClass_type());
@@ -52,20 +52,18 @@ public class WorkingController {
             personWorking.setSector(workingDTO.getSector());
             personWorking.setStartDate(workingDTO.getStartDate());
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", workingRepository.save(personWorking)), HttpStatus.OK);
-        }
-        else{
+        } else {
             return new ResponseEntity(new ApiResponse(HttpStatus.NOT_FOUND.value(), true, "ERROR", null), HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping("/person/{personId}")
-    public ResponseEntity<?> getEducationByPerson(@PathVariable String personId){
+    public ResponseEntity<?> getEducationByPerson(@PathVariable String personId) {
         Optional<User> user = userRepository.findById(personId);
-        if(user.isPresent()){
+        if (user.isPresent()) {
             Set<PersonWorking> personWorkings = user.get().getPersonWorkings();
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", personWorkings), HttpStatus.OK);
-        }
-        else{
+        } else {
             return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "ERROR", null), HttpStatus.OK);
         }
     }

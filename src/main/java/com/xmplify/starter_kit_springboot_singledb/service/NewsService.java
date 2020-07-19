@@ -1,4 +1,4 @@
-package com.xmplify.starter_kit_springboot_singledb.service.impl;
+package com.xmplify.starter_kit_springboot_singledb.service;
 
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.model.Admin;
@@ -41,11 +41,11 @@ public class NewsService {
         List<Media> media = mediaRepository.findAllByRelatedId(news.getId());
         ServletContext context = request.getServletContext();
         String fullPath = context.getRealPath(
-                GlobalConstants.UPLOAD_IMAGE +
+                GlobalConstants.UPLOAD_DIR +
                         news.getNewsType().getType() + GlobalConstants.BACK_SLASH +
-                        GlobalConstants.NEWS_MEDIA_TYPE + GlobalConstants.BACK_SLASH);
-        for(Media med : media) {
-            File file = new File(fullPath+med.getStorePath());
+                        GlobalConstants.NEWS_EVENT + GlobalConstants.BACK_SLASH);
+        for (Media med : media) {
+            File file = new File(fullPath + med.getStorePath());
             file.delete();
         }
         newsRepository.delete(news);
@@ -53,12 +53,12 @@ public class NewsService {
 
     public List<AllNews> getAllNews(Pageable pageable) {
         Page<News> newsList = newsRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return  getAllNewsFromNews(newsList.getContent());
+        return getAllNewsFromNews(newsList.getContent());
     }
 
     private List<AllNews> getAllNewsFromNews(List<News> newsList) {
         List<AllNews> allNewsList = new ArrayList<>();
-        for(News news : newsList){
+        for (News news : newsList) {
             AllNews allNews = new AllNews(news.getId(),
                     news.getNewsType().getId(),
                     news.getNewsType().getType(),
@@ -70,7 +70,7 @@ public class NewsService {
                     news.getAdminId().getPerson().getSurname(),
                     news.getExtraData(),
                     news.getCreatedAt() != null ? news.getCreatedAt().toString() : "",
-                    news.getUpdatedAt() != null ? news.getUpdatedAt().toString() : "",null);
+                    news.getUpdatedAt() != null ? news.getUpdatedAt().toString() : "", null);
             getAllMediaByNews(allNews);
             allNewsList.add(allNews);
         }
@@ -80,10 +80,10 @@ public class NewsService {
     private void getAllMediaByNews(AllNews allNews) {
         List<Media> mediaList = mediaRepository.findAllByRelatedId(allNews.getId());
         List<AllMedia> allMediaList = new ArrayList<>();
-        for(Media media : mediaList){
+        for (Media media : mediaList) {
             String fullPath = GlobalConstants.BACK_SLASH +
                     allNews.getNewsTypeName() + GlobalConstants.BACK_SLASH +
-                    GlobalConstants.NEWS_MEDIA_TYPE + GlobalConstants.BACK_SLASH;
+                    GlobalConstants.NEWS_EVENT + GlobalConstants.BACK_SLASH;
 
             String storePath = media.getStorePath();
             AllMedia allMedia = new AllMedia(
@@ -92,7 +92,7 @@ public class NewsService {
                     media.getRelatedType(),
                     media.getRelatedId(),
                     ServletUriComponentsBuilder.fromCurrentContextPath().path(fullPath + storePath).toUriString(),
-                    media.getCreatedAt() != null ? media.getCreatedAt().toString() : "",
+                    media.getCreatedAt() != null ? media.getCreatedAt() : "",
                     0
             );
             allMediaList.add(allMedia);
@@ -101,22 +101,22 @@ public class NewsService {
     }
 
     public List<AllNews> getAllNewsByType(String newsTypeId, Pageable pageable) {
-        Page<News> newsList = newsRepository.findByNewsTypeId(newsTypeId,pageable);
-        return  getAllNewsFromNews(newsList.getContent());
+        Page<News> newsList = newsRepository.findByNewsTypeId(newsTypeId, pageable);
+        return getAllNewsFromNews(newsList.getContent());
     }
 
     public List<AllNews> getAllNewsByTypeAndAdmin(String newsTypeId, String role, String currentUserId, Pageable pageable) {
         String adminId = null;
         List<Admin> admins = adminRepository.isExistsAdminByPerson(currentUserId);
-        if(Objects.nonNull(admins) && admins.stream().anyMatch(a -> a.getAdminRole().getName().equalsIgnoreCase(role))){
-            for(Admin ad : admins){
-                if(ad.getAdminRole().getName().equalsIgnoreCase(role)){
-                   adminId = ad.getId();
-                   break;
+        if (Objects.nonNull(admins) && admins.stream().anyMatch(a -> a.getAdminRole().getName().equalsIgnoreCase(role))) {
+            for (Admin ad : admins) {
+                if (ad.getAdminRole().getName().equalsIgnoreCase(role)) {
+                    adminId = ad.getId();
+                    break;
                 }
             }
         }
-        Page<News> newsList = newsRepository.findByNewsTypeId(newsTypeId,adminId,pageable);
+        Page<News> newsList = newsRepository.findByNewsTypeId(newsTypeId, adminId, pageable);
         return getAllNewsFromNews(newsList.getContent());
     }
 }

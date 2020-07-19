@@ -1,8 +1,11 @@
 package com.xmplify.starter_kit_springboot_singledb.mapper;
 
+import com.xmplify.starter_kit_springboot_singledb.DTOs.PersonBasicDetailDTO1;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.model.Address;
+import com.xmplify.starter_kit_springboot_singledb.model.Admin;
 import com.xmplify.starter_kit_springboot_singledb.model.User;
+import com.xmplify.starter_kit_springboot_singledb.payload.AdminBasicDetail;
 import com.xmplify.starter_kit_springboot_singledb.payload.GetAddressDetail;
 import com.xmplify.starter_kit_springboot_singledb.payload.GetPersonDetail;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddAddressFromUserDTO;
@@ -12,13 +15,12 @@ import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdateP
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdatePersonDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdateUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
-import com.xmplify.starter_kit_springboot_singledb.service.impl.RoleService;
+import com.xmplify.starter_kit_springboot_singledb.service.GlobalService;
+import com.xmplify.starter_kit_springboot_singledb.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import sun.misc.UUDecoder;
-import sun.rmi.runtime.Log;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -56,6 +58,9 @@ public class UserMapper {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    GlobalService globalService;
+
 
     public AddPersonDTO updateUserDTOToAddUserDTO(UpdateUserDTO updatePersonDTO) {
         AddPersonDTO addPersonDTO = new AddPersonDTO();
@@ -67,7 +72,7 @@ public class UserMapper {
 
     private List<AddAddressFromUserDTO> updateAddressFromUserDTOToAddAddressFromUserDTO(List<UpdateAddressFromUserDTO> address) {
         List<AddAddressFromUserDTO> addAddressFromUserDTOS = new ArrayList<>();
-        for(UpdateAddressFromUserDTO updateAddressFromUserDTO : address){
+        for (UpdateAddressFromUserDTO updateAddressFromUserDTO : address) {
             addAddressFromUserDTOS.add(new AddAddressFromUserDTO(
                     updateAddressFromUserDTO.getAddressType(),
                     updateAddressFromUserDTO.getAddressText(),
@@ -122,7 +127,9 @@ public class UserMapper {
 
     public User personDetailDTOtoUser(PersonDetailDTO personDetail, HttpServletRequest request) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        User user =  new User(null,
+        User user = new User(null,
+                "",
+                "",
                 personDetail.getFirstName(),
                 personDetail.getLastName(),
                 personDetail.getSurname(),
@@ -135,7 +142,7 @@ public class UserMapper {
                 personDetail.getHusbandSurname() != null ? personDetail.getHusbandSurname() : "",
                 personDetail.getEmail(),
                 personDetail.getGender(),
-                LocalDate.parse(personDetail.getBirthDate(),df),
+                LocalDate.parse(personDetail.getBirthDate(), df),
                 personDetail.getBloodGroup(),
                 personDetail.getMaritualStatus(),
                 passwordEncoder.encode(personDetail.getPassword()),
@@ -147,23 +154,24 @@ public class UserMapper {
                 null,
                 adminRepository.findById(personDetail.getAdminId()).get(),
                 personDetail.getAdminId(),
-                personDetail.getMobileLocalId(),
+                null,
                 null
         );
+
         user.setUpdatedBy(Objects.nonNull(personDetail.getUpdatedBy()) ?
                 adminRepository.findById(personDetail.getUpdatedBy()).isPresent() ?
                         adminRepository.findById(personDetail.getUpdatedBy()).get() :
                         null :
                 null);
-        user.setCreatedBy(Objects.nonNull(personDetail.getCreatedBy())?
-                adminRepository.findById(personDetail.getCreatedBy()).isPresent()?
-                        adminRepository.findById(personDetail.getCreatedBy()).get():
-                        null:
+        user.setCreatedBy(Objects.nonNull(personDetail.getCreatedBy()) ?
+                adminRepository.findById(personDetail.getCreatedBy()).isPresent() ?
+                        adminRepository.findById(personDetail.getCreatedBy()).get() :
+                        null :
                 null);
         try {
             if (Objects.nonNull(personDetail.getProfilePic())) {
                 ServletContext context = request.getServletContext();
-                String fullPath = context.getRealPath(GlobalConstants.UPLOAD_IMAGE + GlobalConstants.IMAGE + GlobalConstants.BACK_SLASH + GlobalConstants.PROFILE_MEDIA_TYPE + GlobalConstants.BACK_SLASH);
+                String fullPath = context.getRealPath(GlobalConstants.UPLOAD_DIR + GlobalConstants.IMAGE + GlobalConstants.BACK_SLASH + GlobalConstants.PROFILE_EVENT + GlobalConstants.BACK_SLASH);
                 MultipartFile file = personDetail.getProfilePic();
                 if (!file.isEmpty()) {
                     byte[] bytes = file.getBytes();
@@ -177,14 +185,14 @@ public class UserMapper {
                     user.setProfilePic(storePath);
                 }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             //Logs
         }
         return user;
     }
 
     public Address addAddressFromUserDTOtoAddress(AddAddressFromUserDTO address, User user) {
-        Address newAddress =  new Address(
+        Address newAddress = new Address(
                 null,
                 user,
                 address.getAddressType(),
@@ -198,10 +206,10 @@ public class UserMapper {
                 address.getMobileLocalId()
         );
 //        newAddress.setCreatedBy(adminRepository.findById(address.getCreatedBy()).get());
-        newAddress.setCreatedBy(Objects.nonNull(address.getCreatedBy())?
-                adminRepository.findById(address.getCreatedBy()).isPresent()?
-                        adminRepository.findById(address.getCreatedBy()).get():
-                        null:
+        newAddress.setCreatedBy(Objects.nonNull(address.getCreatedBy()) ?
+                adminRepository.findById(address.getCreatedBy()).isPresent() ?
+                        adminRepository.findById(address.getCreatedBy()).get() :
+                        null :
                 null);
         newAddress.setUpdatedBy(Objects.nonNull(address.getCreatedBy()) ?
                 adminRepository.findById(address.getUpdatedBy()).isPresent() ?
@@ -216,7 +224,7 @@ public class UserMapper {
         GetPersonDetail getPersonDetail = getPersonDetailFromUser(fromDbUser);
         getPersonDetail.setMobileLocalId(addPersonDTO.getPersonDetail().getMobileLocalId());
         List<GetAddressDetail> getAddressDetails = new ArrayList<>();
-        for(Address address : fromDbUser.getAddressList()) {
+        for (Address address : fromDbUser.getAddressList()) {
             GetAddressDetail getAddressDetail = getAddressDetails(address);
             getAddressDetail.setMobileLocalId(address.getMobileLocalId());
             getAddressDetails.add(getAddressDetail);
@@ -238,10 +246,10 @@ public class UserMapper {
                 address.getState().getName(),
                 address.getState().getId(),
                 "",
-                Objects.nonNull(address.getCreatedAt())?address.getCreatedAt().toString():"",
-                Objects.nonNull(address.getUpdatedAt())?address.getUpdatedAt().toString():"",
-                Objects.nonNull(address.getCreatedBy())?address.getCreatedBy().getId() : "",
-                Objects.nonNull(address.getUpdatedBy())?address.getUpdatedBy().getId() : "",
+                Objects.nonNull(address.getCreatedAt()) ? address.getCreatedAt().toString() : "",
+                Objects.nonNull(address.getUpdatedAt()) ? address.getUpdatedAt().toString() : "",
+                Objects.nonNull(address.getCreatedBy()) ? address.getCreatedBy().getId() : "",
+                Objects.nonNull(address.getUpdatedBy()) ? address.getUpdatedBy().getId() : "",
                 address.getIsDeleted(),
                 address.getStatus());
     }
@@ -266,13 +274,97 @@ public class UserMapper {
                 fromDbUser.getGender(),
                 fromDbUser.getMobileno(),
                 fromDbUser.getBloodGroup(),
-                Objects.nonNull(fromDbUser.getCreatedAt())?fromDbUser.getCreatedAt().toString():"",
-                Objects.nonNull(fromDbUser.getUpdatedAt())?fromDbUser.getUpdatedAt().toString():"",
-                Objects.nonNull(fromDbUser.getCreatedBy())?fromDbUser.getCreatedBy().getId() : "",
-                Objects.nonNull(fromDbUser.getUpdatedBy())?fromDbUser.getUpdatedBy().getId() : "",
+                Objects.nonNull(fromDbUser.getCreatedAt()) ? fromDbUser.getCreatedAt().toString() : "",
+                Objects.nonNull(fromDbUser.getUpdatedAt()) ? fromDbUser.getUpdatedAt().toString() : "",
+                Objects.nonNull(fromDbUser.getCreatedBy()) ? fromDbUser.getCreatedBy().getId() : "",
+                Objects.nonNull(fromDbUser.getUpdatedBy()) ? fromDbUser.getUpdatedBy().getId() : "",
                 fromDbUser.getIsDeleted(),
                 fromDbUser.getStatus(),
                 null
         );
+    }
+
+    public List<PersonBasicDetailDTO1> toPersonBasicDetailDTO(List<User> users) {
+        List<PersonBasicDetailDTO1> personBasicDetailDTOS = new ArrayList<>();
+        users.forEach(user -> {
+            personBasicDetailDTOS.add(toPersonBasicDetailDTO(user));
+        });
+        return personBasicDetailDTOS;
+    }
+
+    private PersonBasicDetailDTO1 toPersonBasicDetailDTO(User user) {
+        PersonBasicDetailDTO1 personBasicDetailDTO = new PersonBasicDetailDTO1(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getSurname(),
+                user.getProfilePic(),
+                user.getHusbandVillageId() != null ? user.getHusbandVillageId() : "",
+                user.getHusbandFirstName() != null ? user.getHusbandFirstName() : "",
+                user.getHusbandLastName() != null ? user.getHusbandLastName() : "",
+                user.getHusbandSurname() != null ? user.getHusbandSurname() : "",
+                user.getVillage() != null ? user.getVillage().getName() : "",
+                user.getEmail(),
+                user.getGender(),
+                user.getMobileno(),
+                setCreatedDate(user),
+                setUpdatedDate(user),
+                setCreatedBy(user),
+                setUpdatedBy(user),
+                user.getIsDeleted(),
+                user.getStatus()
+        );
+
+        if (user.getVillage() != null) {
+            personBasicDetailDTO.setVillageName(user.getVillage().getName());
+            personBasicDetailDTO.setHusbandVillageName(user.getVillage() != null ? user.getVillage().getName() : "");
+        }
+        return personBasicDetailDTO;
+    }
+
+    private String setUpdatedBy(User user) {
+        return user.getUpdatedBy() != null ? user.getUpdatedBy().getId() : null;
+    }
+
+    private String setCreatedBy(User user) {
+        return user.getCreatedBy() != null ? user.getCreatedBy().getId() : null;
+    }
+
+    private String setUpdatedDate(User user) {
+        return Objects.nonNull(user.getUpdatedAt()) ? user.getUpdatedAt().toString() : "";
+    }
+
+    private String setCreatedDate(User user) {
+        return Objects.nonNull(user.getCreatedAt()) ? user.getCreatedAt().toString() : "";
+    }
+
+    public List<AdminBasicDetail> adminToAdminBasicDetail(List<Admin> admins) {
+        List<AdminBasicDetail> adminBasicDetailList = new ArrayList<>();
+        for (Admin admin : admins) {
+            adminBasicDetailList.add(adminToAdminBasicDetail(admin));
+        }
+        return adminBasicDetailList;
+    }
+
+    private AdminBasicDetail adminToAdminBasicDetail(Admin admin) {
+        AdminBasicDetail adminBasicDetail = new AdminBasicDetail(
+                admin.getId(),
+                admin.getPerson().getId(),
+                admin.getPerson().getFirstName(),
+                admin.getPerson().getLastName(),
+                admin.getPerson().getSurname(),
+                admin.getAdminRole().getName(),
+                admin.getPerson().getProfilePic(), //TODO : use profile pic utility
+                admin.getPerson().getVillage().getName(),
+                admin.getPerson().getEmail(),
+                admin.getPerson().getGender(),
+                admin.getPerson().getMobileno(),
+                "",//TODO : Add Husbund village Name
+                admin.getPerson().getHusbandFirstName(),
+                admin.getPerson().getHusbandLastName(),
+                admin.getPerson().getHusbandLastName() //TODO : change LastName to surName
+
+        );
+        return adminBasicDetail;
     }
 }

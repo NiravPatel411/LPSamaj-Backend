@@ -14,13 +14,13 @@ import java.util.List;
 public interface NewsRepository extends JpaRepository<News, String> {
 
     @Query("SELECT n FROM News n where n.newsType.id = :newsTypeId order by n.createdAt desc")
-    public Page<News> findByNewsTypeId(String newsTypeId, Pageable pageable);
+    Page<News> findByNewsTypeId(String newsTypeId, Pageable pageable);
 
     @Query("SELECT n FROM News n where n.newsType.id = :newsTypeId and n.adminId.id = :adminId order by n.createdAt desc")
-    public  Page<News> findByNewsTypeId(String newsTypeId,String adminId, Pageable pageable);
+    Page<News> findByNewsTypeId(String newsTypeId, String adminId, Pageable pageable);
 
     @Query("SELECT n FROM News n where n.adminId.id = :adminId")
-    public List<News> getByAdminId(String adminId);
+    List<News> getByAdminId(String adminId);
 
     Page<News> findAllByOrderByCreatedAtDesc(Pageable pageable);
 }

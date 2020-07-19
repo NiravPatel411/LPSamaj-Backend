@@ -1,13 +1,15 @@
 package com.xmplify.starter_kit_springboot_singledb.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "PersonSetting")
@@ -21,16 +23,13 @@ public class PersonSetting {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String personSettingId;
-
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    @JoinColumn(name = "person_id")
-    private User person;
-
     private Integer adminCanUpdate;
     private Integer profilePictureVisiblity;
     private Integer contactNumberVisibility;
     private Integer bloodDonate;
     private Integer newsNotification;
 
+    public static PersonSetting getDefaultSetting(){
+        return  new PersonSetting(null,1,1,1,1,1);
+    }
 }

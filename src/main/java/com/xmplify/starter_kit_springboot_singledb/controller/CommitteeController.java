@@ -1,5 +1,6 @@
 package com.xmplify.starter_kit_springboot_singledb.controller;
 
+import com.xmplify.starter_kit_springboot_singledb.DTOs.PersonBasicDetailDTO1;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.mapper.CommitteeMapper;
 import com.xmplify.starter_kit_springboot_singledb.model.CommitteeMember;
@@ -7,13 +8,12 @@ import com.xmplify.starter_kit_springboot_singledb.model.CommitteeType;
 import com.xmplify.starter_kit_springboot_singledb.model.User;
 import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
 import com.xmplify.starter_kit_springboot_singledb.payload.CommitteeDTO;
-import com.xmplify.starter_kit_springboot_singledb.payload.ListPersonBasicDetail;
 import com.xmplify.starter_kit_springboot_singledb.repository.CommitteeMemberRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.CommitteeTypeRepository;
 import com.xmplify.starter_kit_springboot_singledb.repository.UserRepository;
+import com.xmplify.starter_kit_springboot_singledb.service.CommitteeService;
 import com.xmplify.starter_kit_springboot_singledb.service.UserService;
-import com.xmplify.starter_kit_springboot_singledb.service.impl.CommitteeService;
-import com.xmplify.starter_kit_springboot_singledb.service.impl.Validators;
+import com.xmplify.starter_kit_springboot_singledb.service.Validators;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,24 +31,18 @@ import java.util.Objects;
 @RequestMapping("/api/committee")
 public class CommitteeController {
 
-    private final CommitteeMemberRepository committeeMemberRepository;
-
-    private final
-    CommitteeService committeeService;
-
-    private final
-    CommitteeMapper committeeMapper;
-
-    private final UserService userService;
-
-    private final
-    Validators validators;
-
-    private final
-    CommitteeTypeRepository committeeTypeRepository;
-
     final
     UserRepository userRepository;
+    private final CommitteeMemberRepository committeeMemberRepository;
+    private final
+    CommitteeService committeeService;
+    private final
+    CommitteeMapper committeeMapper;
+    private final UserService userService;
+    private final
+    Validators validators;
+    private final
+    CommitteeTypeRepository committeeTypeRepository;
 
     @Autowired
     public CommitteeController(CommitteeMemberRepository committeeMemberRepository, CommitteeService committeeService, CommitteeMapper committeeMapper, UserService userService, Validators validators, CommitteeTypeRepository committeeTypeRepository, UserRepository userRepository) {
@@ -62,19 +56,19 @@ public class CommitteeController {
     }
 
     @PostMapping("/addUpdateCommitteeMember")
-    public ResponseEntity<?> addUpdateCommittee(@RequestBody CommitteeDTO committeeDTO){
-        if(Objects.isNull(committeeDTO)){
+    public ResponseEntity<?> addUpdateCommittee(@RequestBody CommitteeDTO committeeDTO) {
+        if (Objects.isNull(committeeDTO)) {
             return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "BAD_REQUEST", "RequestBody not found"), HttpStatus.BAD_REQUEST);
         }
-        if(Objects.nonNull(committeeDTO.getId())){
+        if (Objects.nonNull(committeeDTO.getId())) {
             List<String> messages = validators.validateUpdateCommitteeDTO(committeeDTO);
-            if(!messages.isEmpty()){
+            if (!messages.isEmpty()) {
                 return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "BAD_REQUEST", messages), HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Updated",  committeeService.AddUpdateCommittee(committeeDTO)), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Updated", committeeService.AddUpdateCommittee(committeeDTO)), HttpStatus.OK);
         } else {
             List<String> messages = validators.validateAddCommitteeDTO(committeeDTO);
-            if(!messages.isEmpty()){
+            if (!messages.isEmpty()) {
                 return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "BAD_REQUEST", messages), HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Added", committeeService.AddUpdateCommittee(committeeDTO)), HttpStatus.OK);
@@ -83,19 +77,19 @@ public class CommitteeController {
     }
 
     @DeleteMapping("/removeCommitteeMember/{committeeId}")
-    public ResponseEntity<?> deleteCommittee(@PathVariable String committeeId){
-        if(committeeMemberRepository.existsById(committeeId)){
+    public ResponseEntity<?> deleteCommittee(@PathVariable String committeeId) {
+        if (committeeMemberRepository.existsById(committeeId)) {
             committeeMemberRepository.delete(committeeMemberRepository.findById(committeeId).get());
             return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Deleted", "Successfully Deleted"), HttpStatus.OK);
-        }  else {
+        } else {
             return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "BAD_REQUEST", "Committee not found"), HttpStatus.BAD_REQUEST);
         }
     }
 
     @DeleteMapping("/removeCommitteeType/{committeeTypeId}")
     @Transactional
-    public ResponseEntity<?> deleteCommitteeTypeId(@PathVariable String committeeTypeId){
-        if(committeeTypeRepository.existsById(committeeTypeId)){
+    public ResponseEntity<?> deleteCommitteeTypeId(@PathVariable String committeeTypeId) {
+        if (committeeTypeRepository.existsById(committeeTypeId)) {
             committeeMemberRepository.deleteByCommitteeTypeId(committeeTypeId);
             committeeTypeRepository.delete(committeeTypeRepository.findById(committeeTypeId).get());
             return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Deleted", "Successfully Deleted"), HttpStatus.OK);
@@ -105,20 +99,20 @@ public class CommitteeController {
     }
 
     @PostMapping("/addCommitteeType")
-    public ResponseEntity<?> addCommitteeType(@RequestBody CommitteeType committeeType){
-        if(Objects.isNull(committeeType)){
+    public ResponseEntity<?> addCommitteeType(@RequestBody CommitteeType committeeType) {
+        if (Objects.isNull(committeeType)) {
             return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "BAD_REQUEST", "RequestBody not found"), HttpStatus.BAD_REQUEST);
         }
 
-        if(Objects.nonNull(committeeType.getId())){
+        if (Objects.nonNull(committeeType.getId())) {
             List<String> messages = validators.validateUpdateCommitteeType(committeeType);
-            if(!messages.isEmpty()){
+            if (!messages.isEmpty()) {
                 return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "BAD_REQUEST", messages), HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Added", committeeTypeRepository.save(committeeType)), HttpStatus.OK);
         } else {
             List<String> messages = validators.validateAddCommitteeType(committeeType);
-            if(!messages.isEmpty()){
+            if (!messages.isEmpty()) {
                 return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "BAD_REQUEST", messages), HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Added", committeeTypeRepository.save(committeeType)), HttpStatus.OK);
@@ -126,48 +120,48 @@ public class CommitteeController {
     }
 
     @GetMapping("/committeeType")
-    public ResponseEntity<?> getAllCommitteeType(){
+    public ResponseEntity<?> getAllCommitteeType() {
         return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Success", committeeTypeRepository.findAll()), HttpStatus.OK);
     }
 
     @GetMapping("/committeeByType/{type}")
-    public ResponseEntity<?> getCommitteeByType(@PathVariable String type,@PageableDefault(page = 0,size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable){
-        Page<CommitteeMember> committeeMemberPage =  committeeMemberRepository.getCommitteeMemberByCommitteeTypeId(type,pageable);
+    public ResponseEntity<?> getCommitteeByType(@PathVariable String type, @PageableDefault(page = 0, size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {
+        Page<CommitteeMember> committeeMemberPage = committeeMemberRepository.getCommitteeMemberByCommitteeTypeId(type, pageable);
         List<CommitteeDTO> committeeDTOS = new ArrayList<>();
-        for(CommitteeMember committeeMembers : committeeMemberPage.getContent()){
+        for (CommitteeMember committeeMembers : committeeMemberPage.getContent()) {
             User user = userRepository.findById(committeeMembers.getUserId().getId()).get();
-                ListPersonBasicDetail listPersonBasicDetail = new ListPersonBasicDetail();
+            PersonBasicDetailDTO1 personBasicDetailDTO = new PersonBasicDetailDTO1();
 
-                listPersonBasicDetail.setEmail(user.getEmail());
-                listPersonBasicDetail.setFirstName(user.getFirstName());
-                listPersonBasicDetail.setGender(user.getGender());
-                listPersonBasicDetail.setLastName(user.getLastName());
-                listPersonBasicDetail.setMobileno(user.getMobileno());
-                listPersonBasicDetail.setPersonId(user.getId());
-                listPersonBasicDetail.setProfilePic(user.getProfilePic());
-                listPersonBasicDetail.setSurname(user.getSurname());
+            personBasicDetailDTO.setEmail(user.getEmail());
+            personBasicDetailDTO.setFirstName(user.getFirstName());
+            personBasicDetailDTO.setGender(user.getGender());
+            personBasicDetailDTO.setLastName(user.getLastName());
+            personBasicDetailDTO.setMobileno(user.getMobileno());
+            personBasicDetailDTO.setPersonId(user.getId());
+            personBasicDetailDTO.setProfilePic(user.getProfilePic());
+            personBasicDetailDTO.setSurname(user.getSurname());
 
-                listPersonBasicDetail.setHusbandVillageName(user.getHusbandVillageId() != null ? user.getHusbandVillageId() : "");
-                listPersonBasicDetail.setHusbandFirstName(user.getHusbandFirstName() != null ? user.getHusbandFirstName() : "");
-                listPersonBasicDetail.setHusbandLastName(user.getHusbandLastName() != null ? user.getHusbandLastName() : "");
-                listPersonBasicDetail.setHusbandSurname(user.getHusbandSurname() != null ? user.getHusbandSurname() : "");
+            personBasicDetailDTO.setHusbandVillageName(user.getHusbandVillageId() != null ? user.getHusbandVillageId() : "");
+            personBasicDetailDTO.setHusbandFirstName(user.getHusbandFirstName() != null ? user.getHusbandFirstName() : "");
+            personBasicDetailDTO.setHusbandLastName(user.getHusbandLastName() != null ? user.getHusbandLastName() : "");
+            personBasicDetailDTO.setHusbandSurname(user.getHusbandSurname() != null ? user.getHusbandSurname() : "");
 
 
-                listPersonBasicDetail.setCreatedDate(user.getCreatedAt().toString());
-//            listPersonBasicDetail.setUpdatedDate(user.getUpdatedAt().toString());
-                listPersonBasicDetail.setCreatedBy(user.getCreatedBy() != null ? user.getCreatedBy().getId() : null);
-//            listPersonBasicDetail.setUpdatedBy(user.getUpdatedBy().getId());
-                listPersonBasicDetail.setIsDeleted(user.getIsDeleted());
-                listPersonBasicDetail.setStatus(user.getStatus());
-                if (user.getVillage() != null) {
-                    listPersonBasicDetail.setVillageName(user.getVillage().getName());
-                }
+            personBasicDetailDTO.setCreatedDate(user.getCreatedAt().toString());
+//            personBasicDetailDTO.setUpdatedDate(user.getUpdatedAt().toString());
+            personBasicDetailDTO.setCreatedBy(user.getCreatedBy() != null ? user.getCreatedBy().getId() : null);
+//            personBasicDetailDTO.setUpdatedBy(user.getUpdatedBy().getId());
+            personBasicDetailDTO.setIsDeleted(user.getIsDeleted());
+            personBasicDetailDTO.setStatus(user.getStatus());
+            if (user.getVillage() != null) {
+                personBasicDetailDTO.setVillageName(user.getVillage().getName());
+            }
 
 
             CommitteeDTO committeeDTO = new CommitteeDTO(committeeMembers.getId(),
                     committeeMembers.getCommitteeType().getId(),
                     committeeMembers.getUserId().getId(),
-                    listPersonBasicDetail,
+                    personBasicDetailDTO,
                     committeeMembers.getDesignation());
             committeeDTOS.add(committeeDTO);
         }

@@ -1,18 +1,10 @@
 package com.xmplify.starter_kit_springboot_singledb.payload;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xmplify.starter_kit_springboot_singledb.model.Role;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.NaturalId;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Setter
 @Getter
@@ -49,5 +41,5 @@ public class SignUpRequest {
     private List<String> roleType;
 
     private String adminId;
-    
+
 }
