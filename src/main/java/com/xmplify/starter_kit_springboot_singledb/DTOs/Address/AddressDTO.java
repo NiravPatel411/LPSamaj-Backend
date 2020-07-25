@@ -24,6 +24,7 @@ public class AddressDTO {
     private String districtId;
     private String stateName;
     private String stateId;
+
     private String createdDate;
     private String updatedDate;
     private String createdBy;

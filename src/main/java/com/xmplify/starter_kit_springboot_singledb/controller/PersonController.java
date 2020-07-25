@@ -390,6 +390,7 @@ public class PersonController {
 
         UpdatePersonDetailDTO personDetail = updateUserDTO.getPersonDetail();
         User oldUser = userRepository.findById(updateUserDTO.getPersonDetail().getPersonId()).get();
+
         User person = new User();
 
         Optional<Admin> admin = adminRepository.findById(personDetail.getAdminId());

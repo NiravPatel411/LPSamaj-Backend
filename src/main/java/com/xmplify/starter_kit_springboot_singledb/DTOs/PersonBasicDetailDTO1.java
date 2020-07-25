@@ -21,6 +21,7 @@ public class PersonBasicDetailDTO1 {
     private String husbandSurname;
     private String villageName;
     private String email;
+    private String familyCode;
     private String gender;
     private String mobileno;
     private String createdDate;
