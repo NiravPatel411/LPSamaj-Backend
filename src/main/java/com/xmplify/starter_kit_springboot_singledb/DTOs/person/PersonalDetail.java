@@ -2,18 +2,12 @@ package com.xmplify.starter_kit_springboot_singledb.DTOs.person;
 
 import com.xmplify.starter_kit_springboot_singledb.DTOs.Setting.PersonSettingDTO;
 import com.xmplify.starter_kit_springboot_singledb.model.User;
-import com.xmplify.starter_kit_springboot_singledb.model.Village;
-import com.xmplify.starter_kit_springboot_singledb.payload.PersonSettingResponseDTO;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.Objects;
-import java.util.Optional;
 
 @Setter
 @Getter
@@ -53,9 +47,8 @@ public class PersonalDetail {
     private PersonSettingDTO personSetting;
 
 
-
     public static PersonalDetail create(User savedUser, String deleveryPath) {
-        PersonalDetail personalDetail =  new PersonalDetail(
+        PersonalDetail personalDetail = new PersonalDetail(
                 savedUser.getId(),
                 savedUser.getFamilyCode(),
                 savedUser.getUserName(),
@@ -79,11 +72,11 @@ public class PersonalDetail {
                 savedUser.getAdminId(),
                 savedUser.getHobby(),
                 Objects.nonNull(savedUser.getCreatedBy()) ? savedUser.getCreatedBy().getId() : "",
-                Objects.nonNull(savedUser.getCreatedBy()) ? savedUser.getCreatedBy().getName(): "",
-                Objects.nonNull(savedUser.getUpdatedBy()) ? savedUser.getUpdatedBy().getId(): "",
-                Objects.nonNull(savedUser.getUpdatedBy()) ? savedUser.getUpdatedBy().getName(): "",
-                Objects.nonNull(savedUser.getCreatedAt()) ? savedUser.getCreatedAt().toString(): "",
-                Objects.nonNull(savedUser.getUpdatedAt()) ? savedUser.getUpdatedAt().toString(): "",
+                Objects.nonNull(savedUser.getCreatedBy()) ? savedUser.getCreatedBy().getName() : "",
+                Objects.nonNull(savedUser.getUpdatedBy()) ? savedUser.getUpdatedBy().getId() : "",
+                Objects.nonNull(savedUser.getUpdatedBy()) ? savedUser.getUpdatedBy().getName() : "",
+                Objects.nonNull(savedUser.getCreatedAt()) ? savedUser.getCreatedAt().toString() : "",
+                Objects.nonNull(savedUser.getUpdatedAt()) ? savedUser.getUpdatedAt().toString() : "",
                 String.valueOf(savedUser.getIsDeleted()),
                 PersonSettingDTO.create(savedUser.getPersonSetting())
         );

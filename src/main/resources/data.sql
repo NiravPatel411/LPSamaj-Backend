@@ -35,21 +35,21 @@
   INSERT INTO `36lpsamaj`.`person_setting` (`person_setting_id`, `admin_can_update`, `blood_donate`, `contact_number_visibility`, `news_notification`, `profile_picture_visiblity`) VALUES ('4', '1', '1', '1', '1', '1');
  -- User
    INSERT INTO `36lpsamaj`.`users`
-   (`id`, `is_deleted`, `status`, `birth_date`, `email`, `first_name`, `gender`, `last_name`, `marital_status`, `mobileno`,`password`,`created_at`,`person_setting_id`) VALUES
-   ('1', '0', 'Active', '1994-04-11', 'nnmgpatel@mail.com', 'Nirav', 'male', 'Patel', 'Married', '9409324429','$2a$10$s1Fz9XJFbpJQTeTCjRdlE.oIzrvePZ5yihqTJaKuwNGC1X4HJ6b5e','9999-12-31 23:59:59','1');
+   (`id`,`user_name`, `is_deleted`, `status`, `birth_date`, `email`, `first_name`, `gender`, `last_name`, `marital_status`, `mobileno`,`password`,`created_at`,`person_setting_id`) VALUES
+   ('1','User#Nirav', '0', 'Active', '1994-04-11', 'nnmgpatel@mail.com', 'Nirav', 'male', 'Patel', 'Married', '9409324429','$2a$10$s1Fz9XJFbpJQTeTCjRdlE.oIzrvePZ5yihqTJaKuwNGC1X4HJ6b5e','9999-12-31 23:59:59','1');
 
 
    INSERT INTO `36lpsamaj`.`users`
-   (`id`, `is_deleted`, `status`, `birth_date`, `email`, `first_name`, `gender`, `last_name`, `marital_status`, `mobileno`,`password`,`created_at`,`person_setting_id`) VALUES
-   ('2', '0', 'Active', '1994-04-11', 'chiragpatel106@mail.com', 'Chirag', 'male', 'Patel', 'Married', '9924463385','$2a$10$s1Fz9XJFbpJQTeTCjRdlE.oIzrvePZ5yihqTJaKuwNGC1X4HJ6b5e','9999-12-31 23:59:59','2');
+   (`id`,`user_name`, `is_deleted`, `status`, `birth_date`, `email`, `first_name`, `gender`, `last_name`, `marital_status`, `mobileno`,`password`,`created_at`,`person_setting_id`) VALUES
+   ('2', 'User#Chirag','0', 'Active', '1994-04-11', 'chiragpatel106@mail.com', 'Chirag', 'male', 'Patel', 'Married', '9924463385','$2a$10$s1Fz9XJFbpJQTeTCjRdlE.oIzrvePZ5yihqTJaKuwNGC1X4HJ6b5e','9999-12-31 23:59:59','2');
 
    INSERT INTO `36lpsamaj`.`users`
-   (`id`, `is_deleted`, `status`, `birth_date`, `email`, `first_name`, `gender`, `last_name`, `marital_status`, `mobileno`,`password`,`created_at`,`person_setting_id`) VALUES
-   ('3', '0', 'Active', '1994-04-11', 'radhapatel6798@mail.com', 'Radhi', 'female', 'Patel', 'Married', '7046357447','$2a$10$s1Fz9XJFbpJQTeTCjRdlE.oIzrvePZ5yihqTJaKuwNGC1X4HJ6b5e','9999-12-31 23:59:59','3');
+   (`id`,`user_name`,`is_deleted`, `status`, `birth_date`, `email`, `first_name`, `gender`, `last_name`, `marital_status`, `mobileno`,`password`,`created_at`,`person_setting_id`) VALUES
+   ('3', 'User#Radhi','0', 'Active', '1994-04-11', 'radhapatel6798@mail.com', 'Radhi', 'female', 'Patel', 'Married', '7046357447','$2a$10$s1Fz9XJFbpJQTeTCjRdlE.oIzrvePZ5yihqTJaKuwNGC1X4HJ6b5e','9999-12-31 23:59:59','3');
 
     INSERT INTO `36lpsamaj`.`users`
-   (`id`, `is_deleted`, `status`, `birth_date`, `email`, `first_name`, `gender`, `last_name`, `marital_status`, `mobileno`,`password`,`created_at`,`person_setting_id`) VALUES
-   ('4', '0', 'Active', '1994-04-11', 'abc@mail.com', 'Ramesh', 'male', 'Patel', 'Married', '9924463386','$2a$10$s1Fz9XJFbpJQTeTCjRdlE.oIzrvePZ5yihqTJaKuwNGC1X4HJ6b5e','9999-12-31 23:59:59','4');
+   (`id`,`user_name`, `is_deleted`, `status`, `birth_date`, `email`, `first_name`, `gender`, `last_name`, `marital_status`, `mobileno`,`password`,`created_at`,`person_setting_id`) VALUES
+   ('4', 'User#Ramesh','0', 'Active', '1994-04-11', 'abc@mail.com', 'Ramesh', 'male', 'Patel', 'Married', '9924463386','$2a$10$s1Fz9XJFbpJQTeTCjRdlE.oIzrvePZ5yihqTJaKuwNGC1X4HJ6b5e','9999-12-31 23:59:59','4');
 /*
    insert into user_roles (user_id, role_id) values ('1', '1');
    insert into user_roles (user_id, role_id) values ('2', '1');

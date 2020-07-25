@@ -2,11 +2,9 @@ package com.xmplify.starter_kit_springboot_singledb.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xmplify.starter_kit_springboot_singledb.DTOs.PersonBasicDetailDTO1;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.constants.Utility;
-import com.xmplify.starter_kit_springboot_singledb.security.SecurityUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +18,6 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity

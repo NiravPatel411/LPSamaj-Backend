@@ -1,6 +1,6 @@
 package com.xmplify.starter_kit_springboot_singledb.mapper;
 
-import com.xmplify.starter_kit_springboot_singledb.DTOs.PersonBasicDetailDTO1;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonListDTO;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.model.Address;
 import com.xmplify.starter_kit_springboot_singledb.model.Admin;
@@ -284,16 +284,16 @@ public class UserMapper {
         );
     }
 
-    public List<PersonBasicDetailDTO1> toPersonBasicDetailDTO(List<User> users) {
-        List<PersonBasicDetailDTO1> personBasicDetailDTOS = new ArrayList<>();
+    public List<PersonListDTO> toPersonBasicDetailDTO(List<User> users) {
+        List<PersonListDTO> personBasicDetailDTOS = new ArrayList<>();
         users.forEach(user -> {
             personBasicDetailDTOS.add(toPersonBasicDetailDTO(user));
         });
         return personBasicDetailDTOS;
     }
 
-    private PersonBasicDetailDTO1 toPersonBasicDetailDTO(User user) {
-        PersonBasicDetailDTO1 personBasicDetailDTO = new PersonBasicDetailDTO1(
+    private PersonListDTO toPersonBasicDetailDTO(User user) {
+        PersonListDTO personBasicDetailDTO = new PersonListDTO(
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),

@@ -2,7 +2,7 @@ package com.xmplify.starter_kit_springboot_singledb.controller;
 
 import com.google.common.base.Strings;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.Address.AddressDTO;
-import com.xmplify.starter_kit_springboot_singledb.DTOs.PersonBasicDetailDTO1;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonListDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonBasicDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail;
 import com.xmplify.starter_kit_springboot_singledb.constants.FamilyCode;
@@ -110,14 +110,14 @@ public class PersonController {
     @GetMapping("/")
     public ResponseEntity<?> listUser(@PageableDefault(page = 0, size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {
         Page<User> users = userService.findAll(pageable);
-        List<PersonBasicDetailDTO1> personBasicDetailDTOS = userMapper.toPersonBasicDetailDTO(users.getContent());
+        List<PersonListDTO> personBasicDetailDTOS = userMapper.toPersonBasicDetailDTO(users.getContent());
         return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", personBasicDetailDTOS), HttpStatus.OK);
     }
 
     @GetMapping("/filter")
     public ResponseEntity<?> filterUser(FilterUserDTO filterUser, @PageableDefault(page = 0, size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {
         Page<User> users = userService.findAll(filterUser, pageable);
-        List<PersonBasicDetailDTO1> personBasicDetailDTOS = userMapper.toPersonBasicDetailDTO(users.getContent());
+        List<PersonListDTO> personBasicDetailDTOS = userMapper.toPersonBasicDetailDTO(users.getContent());
         return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Role Added", personBasicDetailDTOS), HttpStatus.OK);
     }
 
@@ -548,7 +548,7 @@ public class PersonController {
             return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "Can not found admin", null), HttpStatus.OK);
         }
         List<User> users = userService.findAllUserByAdminId(adminId);
-        List<PersonBasicDetailDTO1> personBasicDetailDTOS = userMapper.toPersonBasicDetailDTO(users);
+        List<PersonListDTO> personBasicDetailDTOS = userMapper.toPersonBasicDetailDTO(users);
         return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Success", personBasicDetailDTOS), HttpStatus.OK);
     }
 
@@ -627,9 +627,9 @@ public class PersonController {
     public ResponseEntity<?> getBloodDonor(FilterBloodGroupDTO filterUser, @PageableDefault(page = 0, size = GlobalConstants.DEFAULT_PAGE_SIZE) Pageable pageable) {/*
         //Page<User> users = userRepository.findAll(textInAllColumns(filterUser.getSearchText(), filterUser.getfields()), pageable);
         Page<User> users = userRepository.findAll(CreateSpecification(filterUser), pageable);
-        List<PersonBasicDetailDTO1> listPersonBasicDetails = new ArrayList<>();
+        List<PersonListDTO> listPersonBasicDetails = new ArrayList<>();
         users.forEach(user -> {
-            PersonBasicDetailDTO1 listPersonBasicDetail = new PersonBasicDetailDTO1();
+            PersonListDTO listPersonBasicDetail = new PersonListDTO();
 
             listPersonBasicDetail.setEmail(user.getEmail());
             listPersonBasicDetail.setFirstName(user.getFirstName());

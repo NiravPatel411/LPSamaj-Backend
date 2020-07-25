@@ -1,4 +1,4 @@
-package com.xmplify.starter_kit_springboot_singledb.DTOs;
+package com.xmplify.starter_kit_springboot_singledb.DTOs.person;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PersonBasicDetailDTO1 {
+public class PersonListDTO {
     private String personId;
     private String firstName;
     private String lastName;
@@ -30,7 +30,7 @@ public class PersonBasicDetailDTO1 {
     private int isDeleted;
     private String status;
 
-    public PersonBasicDetailDTO1(String personId, String firstName, String lastName, String surname, String profilePic, String husbandVillageName, String husbandFirstName, String husbandLastName, String husbandSurname, String villageName, String email, String gender, String mobileno) {
+    public PersonListDTO(String personId, String firstName, String lastName, String surname, String profilePic, String husbandVillageName, String husbandFirstName, String husbandLastName, String husbandSurname, String villageName, String email, String gender, String mobileno) {
         this.personId = personId;
         this.firstName = firstName;
         this.lastName = lastName;

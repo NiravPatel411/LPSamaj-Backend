@@ -59,7 +59,7 @@ public class AuthController {
         request.setAttribute("signInAs", loginRequest.getSignInAs());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsernameOrMobileno(),
+                        loginRequest.getUsername(),
                         loginRequest.getPassword()
                 )
         );

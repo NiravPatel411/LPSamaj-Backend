@@ -31,15 +31,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String usernameOrMobileno)
+    public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
 
         // Let people login with either username or email
-        User user = userRepository.findByMobileno(usernameOrMobileno)
+        User user = userRepository.findByUserName(username)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found with username or email : " + usernameOrMobileno)
+                        new UsernameNotFoundException("User not found with username or email : " + username)
                 );
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         return UserPrincipal.create(user, null);
     }
 

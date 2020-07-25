@@ -1,6 +1,6 @@
 package com.xmplify.starter_kit_springboot_singledb.controller;
 
-import com.xmplify.starter_kit_springboot_singledb.DTOs.PersonBasicDetailDTO1;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonListDTO;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.mapper.CommitteeMapper;
 import com.xmplify.starter_kit_springboot_singledb.model.CommitteeMember;
@@ -130,7 +130,7 @@ public class CommitteeController {
         List<CommitteeDTO> committeeDTOS = new ArrayList<>();
         for (CommitteeMember committeeMembers : committeeMemberPage.getContent()) {
             User user = userRepository.findById(committeeMembers.getUserId().getId()).get();
-            PersonBasicDetailDTO1 personBasicDetailDTO = new PersonBasicDetailDTO1();
+            PersonListDTO personBasicDetailDTO = new PersonListDTO();
 
             personBasicDetailDTO.setEmail(user.getEmail());
             personBasicDetailDTO.setFirstName(user.getFirstName());
