@@ -1,5 +1,6 @@
 package com.xmplify.starter_kit_springboot_singledb.controller;
 
+import com.google.common.base.Strings;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.Address.AddressDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.PersonBasicDetailDTO1;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonBasicDetailDTO;
@@ -15,9 +16,9 @@ import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdateP
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdatePersonDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdateUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
+import com.xmplify.starter_kit_springboot_singledb.security.SecurityUtils;
 import com.xmplify.starter_kit_springboot_singledb.service.FileService;
 import com.xmplify.starter_kit_springboot_singledb.service.RoleService;
-import com.xmplify.starter_kit_springboot_singledb.security.SecurityUtils;
 import com.xmplify.starter_kit_springboot_singledb.service.UserService;
 import com.xmplify.starter_kit_springboot_singledb.service.Validators;
 import lombok.Synchronized;
@@ -665,10 +666,10 @@ public class PersonController {
 
     @PostMapping(value = "/add")
     @Transactional
-    public ResponseEntity<?> addPerson(@Valid @ModelAttribute PersonBasicDetailDTO personBasicDetailDTO, HttpServletRequest request){
+    public ResponseEntity<?> addPerson(@Valid @ModelAttribute PersonBasicDetailDTO personBasicDetailDTO, HttpServletRequest request) {
         String type = "add";
         Optional<User> oldUser = Optional.empty();
-        if(Objects.nonNull(personBasicDetailDTO) && Objects.nonNull(personBasicDetailDTO.getPersonDetail()) && Objects.nonNull(personBasicDetailDTO.getPersonDetail().getId())){
+        if (Objects.nonNull(personBasicDetailDTO) && Objects.nonNull(personBasicDetailDTO.getPersonDetail()) && Objects.nonNull(personBasicDetailDTO.getPersonDetail().getId())) {
             List<String> messages = validators.validateUpdatePersonBasicDetailDTO(personBasicDetailDTO);
             if (!messages.isEmpty()) {
                 return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid Requst Reason : ", messages), HttpStatus.BAD_REQUEST);
@@ -686,11 +687,12 @@ public class PersonController {
         List<AddressDTO> addressDTO = personBasicDetailDTO.getAddresses();
 
         MultipartFile multipartFile = personalDetail.getProfilePic();
-        if(Objects.nonNull(multipartFile)) {
-            if(oldUser.isPresent()){
-                if(!fileService.deleteFile(oldUser.get().getProfilePic(),GlobalConstants.IMAGE,GlobalConstants.PROFILE_EVENT,request.getServletContext())){
+        if (Objects.nonNull(multipartFile)) {
+            if (oldUser.isPresent() && !Strings.isNullOrEmpty(oldUser.get().getProfilePic())) {
+                if (!fileService.deleteFile(oldUser.get().getProfilePic(), GlobalConstants.IMAGE, GlobalConstants.PROFILE_EVENT, request.getServletContext())) {
                     return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Problem to delete old Image. see logs", null), HttpStatus.OK);
                 }
+                personalDetail.setProfileURL(null);
             }
             String fileStorePath = fileService.uploadFile(multipartFile, request.getServletContext(), GlobalConstants.IMAGE, GlobalConstants.PROFILE_EVENT);
             if (Objects.isNull(fileStorePath)) {
@@ -698,8 +700,8 @@ public class PersonController {
             }
             personalDetail.setProfileURL(fileStorePath);
         }
-        if(oldUser.isPresent()){
-            return userService.updatePerson(personalDetail, addressDTO,oldUser.get());
+        if (oldUser.isPresent()) {
+            return userService.updatePerson(personalDetail, addressDTO, oldUser.get());
         } else {
             return userService.addPerson(personalDetail, addressDTO);
         }
@@ -708,20 +710,20 @@ public class PersonController {
 
     @GetMapping("/getFamilyCode/{villageId}")
     @Synchronized
-    public ResponseEntity<?> getFamilyCode(@PathVariable String villageId){
-        if(!validators.validateVillageId(villageId)){
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "InValid VillageId",null), HttpStatus.OK);
+    public ResponseEntity<?> getFamilyCode(@PathVariable String villageId) {
+        if (!validators.validateVillageId(villageId)) {
+            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "InValid VillageId", null), HttpStatus.OK);
         }
 
         Village village = villageRepository.findById(villageId).get();
         String currentFamilyCode = village.getShortForm() + GlobalConstants.UNDER_SCORE + familyCodeService.getValue();
-        if(userRepository.existsByfamilyCode(currentFamilyCode)){
+        if (userRepository.existsByfamilyCode(currentFamilyCode)) {
             familyCodeService.increment();
             familyCodeService.getValue();
             String newFamilyCode = village.getShortForm() + GlobalConstants.UNDER_SCORE + familyCodeService.getValue();
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), true, "Family code will be expire if SomeOne Used",newFamilyCode), HttpStatus.OK);
+            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), true, "Family code will be expire if SomeOne Used", newFamilyCode), HttpStatus.OK);
         } else {
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), true, "Family code will be expire if SomeOne Used",currentFamilyCode), HttpStatus.OK);
+            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), true, "Family code will be expire if SomeOne Used", currentFamilyCode), HttpStatus.OK);
         }
 
 

@@ -62,12 +62,6 @@ public class GlobalConstants {
     public static final String SHOW_YOUR_DETAIL_TO_ALL_USER = "SHOW_YOUR_DETAIL_TO_ALL_USER";
 
 
-
-
-
-
-
-
     //HOBBIES
     static {
         HOBBIES = new ArrayList<>();

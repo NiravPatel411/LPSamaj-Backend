@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.PersonBasicDetailDTO1;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
+import com.xmplify.starter_kit_springboot_singledb.constants.Utility;
 import com.xmplify.starter_kit_springboot_singledb.security.SecurityUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -178,7 +179,7 @@ public class User extends AditableEntity {
                 LocalDate.parse(personalDetail.getBirthDate(), GlobalConstants.DATE_FORMAT),
                 personalDetail.getBloodGroup(),
                 personalDetail.getMaritalStatus(),
-                personalDetail.getPassword(),
+                Utility.passwordEncoder.encode(personalDetail.getPassword()),
                 personalDetail.getMobileno(),
                 personalDetail.getAdminId(),
                 personalDetail.getHobby()

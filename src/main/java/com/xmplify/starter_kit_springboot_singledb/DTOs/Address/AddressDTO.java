@@ -1,17 +1,11 @@
 package com.xmplify.starter_kit_springboot_singledb.DTOs.Address;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.xmplify.starter_kit_springboot_singledb.model.*;
+import com.xmplify.starter_kit_springboot_singledb.model.Address;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @NoArgsConstructor
@@ -58,6 +52,6 @@ public class AddressDTO {
                 Objects.nonNull(address.getUpdatedBy()) ? address.getUpdatedBy().getName() : "",
                 address.getIsDeleted(),
                 address.getStatus()
-                );
+        );
     }
 }

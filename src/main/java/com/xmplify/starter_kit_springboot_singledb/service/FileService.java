@@ -39,8 +39,8 @@ public class FileService {
     }
 
 
-    public String getDeleveryPath(String storePath,String type, String event){
-        String directoryPath = getDirectoryPath(type,event);
+    public String getDeleveryPath(String storePath, String type, String event) {
+        String directoryPath = getDirectoryPath(type, event);
         String deleveryPath = ServletUriComponentsBuilder.fromCurrentContextPath().path(directoryPath + storePath).toUriString();
         return deleveryPath;
     }
@@ -49,7 +49,7 @@ public class FileService {
         return GlobalConstants.BACK_SLASH + type + GlobalConstants.BACK_SLASH + event + GlobalConstants.BACK_SLASH;
     }
 
-    public boolean deleteFile(String storePath, String type, String event, ServletContext context){
+    public boolean deleteFile(String storePath, String type, String event, ServletContext context) {
         String fullPath = context.getRealPath(GlobalConstants.UPLOAD_DIR + type + GlobalConstants.BACK_SLASH + event + GlobalConstants.BACK_SLASH);
         Path path = Paths.get(fullPath);
         Path filePath = Paths.get(path + File.separator + storePath);
