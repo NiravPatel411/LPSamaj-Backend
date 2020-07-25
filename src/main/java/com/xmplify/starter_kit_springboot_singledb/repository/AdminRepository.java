@@ -17,6 +17,9 @@ public interface AdminRepository extends JpaRepository<Admin, String> {
     @Query("SELECT p FROM Admin p where p.person.id = :personId")
     List<Admin> isExistsAdminByPerson(String personId);
 
+    @Query("SELECT p FROM Admin p where p.person.id = :personId AND p.adminRole.name = :role")
+    Admin isExistsAdminByPersonAndAdminRole(String personId,String role);
+
     @Query("SELECT p FROM Admin p where p.adminRole.name = :adminRole")
     List<Admin> AdminByRoles(String adminRole);
 }

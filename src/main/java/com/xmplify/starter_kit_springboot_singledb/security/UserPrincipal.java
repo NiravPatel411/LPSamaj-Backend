@@ -1,6 +1,7 @@
 package com.xmplify.starter_kit_springboot_singledb.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xmplify.starter_kit_springboot_singledb.model.Admin;
 import com.xmplify.starter_kit_springboot_singledb.model.User;
 import com.xmplify.starter_kit_springboot_singledb.payload.AuthAdmin;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,11 +33,11 @@ public class UserPrincipal implements UserDetails {
     private String role;
 
     @JsonIgnore
-    private AuthAdmin authAdmin;
+    private Admin admin;
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrincipal(String id, String firstName, String lastName, String email, String password, String mobileno, Collection<? extends GrantedAuthority> authorities, AuthAdmin authAdmin) {
+    public UserPrincipal(String id, String firstName, String lastName, String email, String password, String mobileno, Collection<? extends GrantedAuthority> authorities, Admin authAdmin) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -44,10 +45,10 @@ public class UserPrincipal implements UserDetails {
         this.password = password;
         this.mobileno = mobileno;
         this.authorities = authorities;
-        this.authAdmin = authAdmin;
+        this.admin = authAdmin;
     }
 
-    public static UserPrincipal create(User user, AuthAdmin authAdmin) {
+    public static UserPrincipal create(User user, Admin admin) {
         List<GrantedAuthority> authorities = user.getRoles().stream().map(role ->
                 new SimpleGrantedAuthority(role.getName())
         ).collect(Collectors.toList());
@@ -60,7 +61,7 @@ public class UserPrincipal implements UserDetails {
                 user.getPassword(),
                 user.getMobileno(),
                 authorities,
-                authAdmin
+                admin
         );
     }
 
@@ -117,6 +118,14 @@ public class UserPrincipal implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public Admin getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(Admin admin) {
+        this.admin = admin;
     }
 
     @Override

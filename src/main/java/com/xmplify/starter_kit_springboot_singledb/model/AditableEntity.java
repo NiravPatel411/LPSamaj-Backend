@@ -38,9 +38,11 @@ public class AditableEntity implements Serializable {
     private Date updatedAt;
 
     @ManyToOne
+    @CreatedBy
     private Admin createdBy;
 
     @ManyToOne
+    @LastModifiedBy
     private Admin updatedBy;
 
     @ManyToOne

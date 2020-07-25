@@ -1,5 +1,7 @@
 package com.xmplify.starter_kit_springboot_singledb.payload;
 
+import com.xmplify.starter_kit_springboot_singledb.model.Admin;
+import com.xmplify.starter_kit_springboot_singledb.model.AdminRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,4 +20,5 @@ public class AuthAdmin {
     private String personId;
 
     private String adminType;
+
 }

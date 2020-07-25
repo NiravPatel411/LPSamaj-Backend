@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     and create the UserDetails object by parsing those claims from the JWT.
                     That would avoid the following database hit. It's completely up to you.
                  */
-                UserDetails userDetails = customUserDetailsService.loadUserById(userId);
+                UserDetails userDetails = customUserDetailsService.loadUserById(userId,role);
                 UserPrincipal userPrincipal = (UserPrincipal) userDetails;
                 userPrincipal.setRole(role);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

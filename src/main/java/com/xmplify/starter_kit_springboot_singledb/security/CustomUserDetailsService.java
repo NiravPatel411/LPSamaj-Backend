@@ -40,53 +40,15 @@ public class CustomUserDetailsService implements UserDetailsService {
                         new UsernameNotFoundException("User not found with username or email : " + usernameOrMobileno)
                 );
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        AuthAdmin authAdmin = new AuthAdmin();
-        List<Admin> admins = adminRepository.isExistsAdminByPerson(user.getId());
-        if (Objects.nonNull(admins) && (!"NORMAL".equalsIgnoreCase(request.getAttribute("signInAs").toString()))) {
-            if (admins.stream().anyMatch(a -> a.getAdminRole().getName().equalsIgnoreCase(request.getAttribute("signInAs").toString()))) {
-                Admin admin = null;
-                for (Admin ad : admins) {
-                    if (ad.getAdminRole().getName().equalsIgnoreCase(request.getAttribute("signInAs").toString())) {
-                        admin = ad;
-                        break;
-                    }
-                }
-                authAdmin.setAdminId(admin.getId());
-                authAdmin.setAdminName(admin.getName());
-                authAdmin.setPersonId(admin.getPerson().getId());
-                authAdmin.setAdminType(request.getAttribute("signInAs").toString());
-            }
-        }
-
-        return UserPrincipal.create(user, authAdmin);
+        return UserPrincipal.create(user, null);
     }
 
     @Transactional
-    public UserDetails loadUserById(String id) {
+    public UserDetails loadUserById(String id, String role) {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("User", "id", id)
         );
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        AuthAdmin authAdmin = new AuthAdmin();
-
-        List<Admin> admins = adminRepository.isExistsAdminByPerson(user.getId());
-        if (request.getAttribute("signInAs") != null) {
-            if (Objects.nonNull(admins) && (!"NORMAL".equalsIgnoreCase(request.getAttribute("signInAs").toString()))) {
-                if (admins.stream().anyMatch(a -> a.getAdminRole().getName().equalsIgnoreCase(request.getAttribute("signInAs").toString()))) {
-                    Admin admin = null;
-                    for (Admin ad : admins) {
-                        if (ad.getAdminRole().getName().equalsIgnoreCase(request.getAttribute("signInAs").toString())) {
-                            admin = ad;
-                            break;
-                        }
-                    }
-                    authAdmin.setAdminId(admin.getId());
-                    authAdmin.setAdminName(admin.getName());
-                    authAdmin.setPersonId(admin.getPerson().getId());
-                    authAdmin.setAdminType(request.getAttribute("signInAs").toString());
-                }
-            }
-        }
-        return UserPrincipal.create(user, authAdmin);
+        Admin admin = adminRepository.isExistsAdminByPersonAndAdminRole(user.getId(),role);
+        return UserPrincipal.create(user, admin);
     }
 }
