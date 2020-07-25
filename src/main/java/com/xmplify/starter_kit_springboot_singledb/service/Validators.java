@@ -6,6 +6,7 @@ import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail;
 import com.xmplify.starter_kit_springboot_singledb.model.Activity;
 import com.xmplify.starter_kit_springboot_singledb.model.Admin;
 import com.xmplify.starter_kit_springboot_singledb.model.CommitteeType;
+import com.xmplify.starter_kit_springboot_singledb.model.User;
 import com.xmplify.starter_kit_springboot_singledb.payload.AddEditMedia;
 import com.xmplify.starter_kit_springboot_singledb.payload.CommitteeDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddAddressFromUserDTO;
@@ -18,9 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class Validators {
@@ -57,6 +60,9 @@ public class Validators {
 
     @Autowired
     CommitteeTypeRepository committeeTypeRepository;
+
+    @Autowired
+    AddressRepository addressRepository;
 
 
     public List<String> validateAddPersonDTO(AddPersonDTO addPersonDTO) {
@@ -315,7 +321,7 @@ public class Validators {
         return validateAdminId(adminId);
     }
 
-    public List<String> validatePersonBasicDetailDTO(PersonBasicDetailDTO personBasicDetailDTO) {
+    public List<String> validateAddPersonBasicDetailDTO(PersonBasicDetailDTO personBasicDetailDTO) {
         List<String> response = new ArrayList<>();
         if(Objects.isNull(personBasicDetailDTO)){
             response.add("Request can not be null");
@@ -362,15 +368,16 @@ public class Validators {
     }
 
     private void validatePersonalDetailDTO(PersonalDetail personDetail, List<String> response) {
+
         if(!validateFamilyCode(personDetail.getFamilyCode())){
             response.add("Invalid family code");
         }
 
-        if(validateEmail(personDetail.getEmail())){
+        if(!validateUpdateEmail(personDetail.getId(),personDetail.getEmail())){
             response.add("Invalid Email Id");
         }
 
-        if(!validateUsename(personDetail.getUserName())){
+        if(!validateUpdateUsename(personDetail.getId(),personDetail.getUserName())){
             response.add("Invalid Username");
         }
 
@@ -384,6 +391,38 @@ public class Validators {
 
         if(!validateAdminId(personDetail.getAdminId())){
             response.add("Invalid Admin Id");
+        }
+    }
+
+    private boolean validateUpdateUsename(String id, String username) {
+        if(Objects.isNull(username)){
+            return false;
+        }
+        Optional<User> user = userRepository.findByUserName(username);
+        if(user.isPresent()){
+            if(user.get().getId().equalsIgnoreCase(id)){
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    private boolean validateUpdateEmail(String id, String email) {
+        if(Objects.isNull(email)){
+            return true;
+        }
+        Optional<User> user = userRepository.findByEmail(email);
+        if(user.isPresent()){
+            if(user.get().getId().equalsIgnoreCase(id)){
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
         }
     }
 
@@ -402,5 +441,40 @@ public class Validators {
             return false;
         }
         return true;
+    }
+
+    public List<String> validateUpdatePersonBasicDetailDTO(PersonBasicDetailDTO personBasicDetailDTO) {
+        List<String> response = new ArrayList<>();
+        if(Objects.isNull(personBasicDetailDTO)){
+            response.add("Request can not be null");
+            return response;
+        }
+
+        if(Objects.isNull(personBasicDetailDTO.getPersonDetail())){
+            response.add("Invalid request. Personal Detail Missing");
+            return response;
+        }
+
+        if(Objects.isNull(personBasicDetailDTO.getAddresses())){
+            response.add("Invalid request. Address Detail Missing");
+            return response;
+        }
+
+        validateUserId(personBasicDetailDTO.getPersonDetail().getId(),response);
+
+        validatePersonalDetailDTO(personBasicDetailDTO.getPersonDetail(),response);
+        for(AddressDTO addressDTO : personBasicDetailDTO.getAddresses()){
+            if(Objects.nonNull(addressDTO.getId())) {
+                if (!validateAddressId(addressDTO.getId())) {
+                    response.add("Invalid address Id. Can not found any address : "+addressDTO.getId());
+                }
+            }
+            validateAddressDTO(addressDTO,response);
+        }
+
+        return response;
+    }
+    private boolean validateAddressId(String id) {
+        return addressRepository.existsById(id);
     }
 }

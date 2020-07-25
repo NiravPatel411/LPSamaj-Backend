@@ -304,4 +304,26 @@ public class UserService {
         PersonBasicDetailDTO personBasicDetailDTO = PersonBasicDetailDTO.create(personalDetail1,returnAddressDTO);
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS",personBasicDetailDTO), HttpStatus.OK);
     }
+
+    public ResponseEntity<?> updatePerson(com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail personalDetail, List<AddressDTO> addressDTOs, User oldUser) {
+        User user = User.create(personalDetail,oldUser.getRoles(),oldUser.getPersonSetting());
+        User savedUser = userRepository.save(user);
+        List<Address> addressList = new ArrayList<>();
+        for(AddressDTO address : addressDTOs){
+            addressList.add(Address.create(address,savedUser));
+        }
+        addressRepository.saveAll(addressList);
+        String deleveryPath = "";
+        if(Objects.nonNull(savedUser.getProfilePic())) {
+            deleveryPath = fileService.getDeleveryPath(savedUser.getProfilePic(), GlobalConstants.IMAGE, GlobalConstants.PROFILE_EVENT);
+        }
+        com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail personalDetail1 = com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail.create(savedUser,deleveryPath);
+        List<AddressDTO> returnAddressDTO = new ArrayList<>();
+        for(Address address : addressList){
+            returnAddressDTO.add(AddressDTO.create(address));
+        }
+
+        PersonBasicDetailDTO personBasicDetailDTO = PersonBasicDetailDTO.create(personalDetail1,returnAddressDTO);
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS",personBasicDetailDTO), HttpStatus.OK);
+    }
 }

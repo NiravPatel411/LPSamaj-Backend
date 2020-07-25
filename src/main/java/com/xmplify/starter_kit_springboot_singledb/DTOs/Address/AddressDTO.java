@@ -12,6 +12,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -49,12 +50,12 @@ public class AddressDTO {
                 address.getDistrict().getId(),
                 address.getState().getName(),
                 address.getState().getId(),
-                address.getCreatedAt().toString(),
-                address.getUpdatedAt().toString(),
-                "",//address.getCreatedBy().getId(),
-                "",//address.getCreatedBy().getName(),
-                "",//address.getUpdatedBy().getId(),
-                "",//address.getUpdatedBy().getName(),
+                Objects.nonNull(address.getCreatedAt()) ? address.getCreatedAt().toString() : "",
+                Objects.nonNull(address.getUpdatedAt()) ? address.getUpdatedAt().toString() : "",
+                Objects.nonNull(address.getCreatedBy()) ? address.getCreatedBy().getId() : "",
+                Objects.nonNull(address.getCreatedBy()) ? address.getCreatedBy().getName() : "",
+                Objects.nonNull(address.getUpdatedBy()) ? address.getUpdatedBy().getId() : "",
+                Objects.nonNull(address.getUpdatedBy()) ? address.getUpdatedBy().getName() : "",
                 address.getIsDeleted(),
                 address.getStatus()
                 );

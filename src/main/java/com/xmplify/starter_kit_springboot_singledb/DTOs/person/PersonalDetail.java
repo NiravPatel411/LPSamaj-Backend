@@ -12,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Objects;
+import java.util.Optional;
 
 @Setter
 @Getter
@@ -76,12 +78,12 @@ public class PersonalDetail {
                 savedUser.getMobileno(),
                 savedUser.getAdminId(),
                 savedUser.getHobby(),
-                "",//savedUser.getCreatedBy().getId(),
-                "",//savedUser.getCreatedBy().getName(),
-                "",//savedUser.getUpdatedBy().getId(),
-                "",//savedUser.getUpdatedBy().getName(),
-                savedUser.getCreatedAt().toString(),
-                savedUser.getUpdatedAt().toString(),
+                Objects.nonNull(savedUser.getCreatedBy()) ? savedUser.getCreatedBy().getId() : "",
+                Objects.nonNull(savedUser.getCreatedBy()) ? savedUser.getCreatedBy().getName(): "",
+                Objects.nonNull(savedUser.getUpdatedBy()) ? savedUser.getUpdatedBy().getId(): "",
+                Objects.nonNull(savedUser.getUpdatedBy()) ? savedUser.getUpdatedBy().getName(): "",
+                Objects.nonNull(savedUser.getCreatedAt()) ? savedUser.getCreatedAt().toString(): "",
+                Objects.nonNull(savedUser.getUpdatedAt()) ? savedUser.getUpdatedAt().toString(): "",
                 String.valueOf(savedUser.getIsDeleted()),
                 PersonSettingDTO.create(savedUser.getPersonSetting())
         );

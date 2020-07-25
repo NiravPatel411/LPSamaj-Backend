@@ -6,6 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.ServletContext;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,5 +47,18 @@ public class FileService {
 
     private String getDirectoryPath(String type, String event) {
         return GlobalConstants.BACK_SLASH + type + GlobalConstants.BACK_SLASH + event + GlobalConstants.BACK_SLASH;
+    }
+
+    public boolean deleteFile(String storePath, String type, String event, ServletContext context){
+        String fullPath = context.getRealPath(GlobalConstants.UPLOAD_DIR + type + GlobalConstants.BACK_SLASH + event + GlobalConstants.BACK_SLASH);
+        Path path = Paths.get(fullPath);
+        Path filePath = Paths.get(path + File.separator + storePath);
+        try {
+            Files.delete(filePath);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

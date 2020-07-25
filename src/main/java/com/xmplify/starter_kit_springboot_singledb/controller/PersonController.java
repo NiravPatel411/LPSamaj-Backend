@@ -666,22 +666,43 @@ public class PersonController {
     @PostMapping(value = "/add")
     @Transactional
     public ResponseEntity<?> addPerson(@Valid @ModelAttribute PersonBasicDetailDTO personBasicDetailDTO, HttpServletRequest request){
-        List<String> messages = validators.validatePersonBasicDetailDTO(personBasicDetailDTO);
-        if(!messages.isEmpty()){
-            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid Requst Reason : ",messages), HttpStatus.BAD_REQUEST);
-        }
+        String type = "add";
+        Optional<User> oldUser = Optional.empty();
+        if(Objects.nonNull(personBasicDetailDTO) && Objects.nonNull(personBasicDetailDTO.getPersonDetail()) && Objects.nonNull(personBasicDetailDTO.getPersonDetail().getId())){
+            List<String> messages = validators.validateUpdatePersonBasicDetailDTO(personBasicDetailDTO);
+            if (!messages.isEmpty()) {
+                return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid Requst Reason : ", messages), HttpStatus.BAD_REQUEST);
+            }
+            oldUser = userRepository.findById(personBasicDetailDTO.getPersonDetail().getId());
+        } else {
 
+            List<String> messages = validators.validateAddPersonBasicDetailDTO(personBasicDetailDTO);
+            if (!messages.isEmpty()) {
+                return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid Requst Reason : ", messages), HttpStatus.BAD_REQUEST);
+            }
+        }
 
         PersonalDetail personalDetail = personBasicDetailDTO.getPersonDetail();
         List<AddressDTO> addressDTO = personBasicDetailDTO.getAddresses();
 
         MultipartFile multipartFile = personalDetail.getProfilePic();
-        String fileStorePath = fileService.uploadFile(multipartFile,request.getServletContext(),GlobalConstants.IMAGE,GlobalConstants.PROFILE_EVENT);
-        if(Objects.isNull(fileStorePath)){
-            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Problem to store Image see more logs",null), HttpStatus.OK);
+        if(Objects.nonNull(multipartFile)) {
+            if(oldUser.isPresent()){
+                if(!fileService.deleteFile(oldUser.get().getProfilePic(),GlobalConstants.IMAGE,GlobalConstants.PROFILE_EVENT,request.getServletContext())){
+                    return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Problem to delete old Image. see logs", null), HttpStatus.OK);
+                }
+            }
+            String fileStorePath = fileService.uploadFile(multipartFile, request.getServletContext(), GlobalConstants.IMAGE, GlobalConstants.PROFILE_EVENT);
+            if (Objects.isNull(fileStorePath)) {
+                return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Problem to store Image see more logs", null), HttpStatus.OK);
+            }
+            personalDetail.setProfileURL(fileStorePath);
         }
-        personalDetail.setProfileURL(fileStorePath);
-        return userService.addPerson(personalDetail, addressDTO);
+        if(oldUser.isPresent()){
+            return userService.updatePerson(personalDetail, addressDTO,oldUser.get());
+        } else {
+            return userService.addPerson(personalDetail, addressDTO);
+        }
     }
 
 
