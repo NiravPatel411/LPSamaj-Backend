@@ -27,6 +27,7 @@ public class GlobalConstants {
     public static final String UPLOAD_NEWS_MEDIA_URL_PATH = "/image/news/";
     public static final String IMAGE = "Image";
     public static final String BACK_SLASH = "/";
+    public static final String UPLOAD_PROFILE_PICTURE_PATH = GlobalConstants.UPLOAD_DIR + GlobalConstants.IMAGE + GlobalConstants.BACK_SLASH + GlobalConstants.PROFILE_EVENT + GlobalConstants.BACK_SLASH;
 
     public static final String NEWS_TYPE = "News";
     public static final String FILE_DOWNLOAD_HTTP_HEADER = "attachment; filename=\"%s\"";

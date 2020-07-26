@@ -15,6 +15,7 @@ import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdateP
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdatePersonDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdateUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
+import com.xmplify.starter_kit_springboot_singledb.service.FileService;
 import com.xmplify.starter_kit_springboot_singledb.service.GlobalService;
 import com.xmplify.starter_kit_springboot_singledb.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,9 @@ public class UserMapper {
 
     @Autowired
     RoleService roleService;
+
+    @Autowired
+    private FileService fileService;
 
     @Autowired
     AdminRepository adminRepository;
@@ -298,13 +302,14 @@ public class UserMapper {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getSurname(),
-                user.getProfilePic(),
+                (user.getProfilePic() == null ? "" : fileService.getDeleveryPath(user.getProfilePic(), GlobalConstants.IMAGE, GlobalConstants.PROFILE_EVENT)),
                 user.getHusbandVillageId() != null ? user.getHusbandVillageId() : "",
                 user.getHusbandFirstName() != null ? user.getHusbandFirstName() : "",
                 user.getHusbandLastName() != null ? user.getHusbandLastName() : "",
                 user.getHusbandSurname() != null ? user.getHusbandSurname() : "",
                 user.getVillage() != null ? user.getVillage().getName() : "",
                 user.getEmail(),
+                user.getFamilyCode(),
                 user.getGender(),
                 user.getMobileno(),
                 setCreatedDate(user),
