@@ -347,6 +347,7 @@ public class Validators {
         validatePersonalDetailDTO(personBasicDetailDTO.getPersonDetail(),response);
         for(AddressDTO addressDTO : personBasicDetailDTO.getAddresses()){
             if(Objects.nonNull(addressDTO.getId())){
+
                 response.add("Id should be null or empty in address details");
             }
             validateAddressDTO(addressDTO,response);
@@ -375,11 +376,11 @@ public class Validators {
         if(!validateFamilyCode(personDetail.getFamilyCode())){
             response.add("Invalid family code");
         }
-
-        if(!validateUpdateEmail(personDetail.getId(),personDetail.getEmail())){
+        /*
+        if(personDetail.getId()==null && !validateUpdateEmail(personDetail.getId(),personDetail.getEmail())){
             response.add("Invalid Email Id");
         }
-
+*/
         if(!validateUpdateUsename(personDetail.getId(),personDetail.getUserName())){
             response.add("Invalid Username");
         }

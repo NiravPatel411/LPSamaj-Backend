@@ -2,8 +2,8 @@ package com.xmplify.starter_kit_springboot_singledb.controller;
 
 import com.google.common.base.Strings;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.Address.AddressDTO;
-import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonListDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonBasicDetailDTO;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonListDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail;
 import com.xmplify.starter_kit_springboot_singledb.constants.FamilyCode;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
@@ -11,7 +11,6 @@ import com.xmplify.starter_kit_springboot_singledb.constants.SettingConstants;
 import com.xmplify.starter_kit_springboot_singledb.mapper.UserMapper;
 import com.xmplify.starter_kit_springboot_singledb.model.*;
 import com.xmplify.starter_kit_springboot_singledb.payload.*;
-import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDBDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdateAddressFromUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdatePersonDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.UpdatePersonPayload.UpdateUserDTO;
@@ -31,9 +30,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -430,14 +426,14 @@ public class PersonController {
         if (Objects.nonNull(personBasicDetailDTO) && Objects.nonNull(personBasicDetailDTO.getPersonDetail()) && Objects.nonNull(personBasicDetailDTO.getPersonDetail().getId())) {
             List<String> messages = validators.validateUpdatePersonBasicDetailDTO(personBasicDetailDTO);
             if (!messages.isEmpty()) {
-                return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid Requst Reason : ", messages), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid Requst Reason : " + messages.get(0), messages), HttpStatus.BAD_REQUEST);
             }
             oldUser = userRepository.findById(personBasicDetailDTO.getPersonDetail().getId());
         } else {
 
             List<String> messages = validators.validateAddPersonBasicDetailDTO(personBasicDetailDTO);
             if (!messages.isEmpty()) {
-                return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid Requst Reason : ", messages), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid Requst Reason : " + messages.get(0), messages), HttpStatus.BAD_REQUEST);
             }
         }
 
