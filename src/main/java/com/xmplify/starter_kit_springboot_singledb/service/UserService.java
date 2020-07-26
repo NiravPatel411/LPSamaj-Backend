@@ -1,16 +1,15 @@
 package com.xmplify.starter_kit_springboot_singledb.service;
 
 import com.xmplify.starter_kit_springboot_singledb.DTOs.Address.AddressDTO;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.education.EducationDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonBasicDetailDTO;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.mapper.EducationMapper;
 import com.xmplify.starter_kit_springboot_singledb.mapper.UserMapper;
 import com.xmplify.starter_kit_springboot_singledb.model.*;
-import com.xmplify.starter_kit_springboot_singledb.payload.*;
-import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddAddressFromUserDTO;
-import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddPersonDTO;
-import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDBDTO;
-import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.EducationDTO;
+import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
+import com.xmplify.starter_kit_springboot_singledb.payload.FilterUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +27,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -66,46 +64,6 @@ public class UserService {
         return userRepository.findAll();
     }
 
-
-    @Transactional
-    public User save(AddPersonDTO addPersonDTO, HttpServletRequest request) {
-        User user = userMapper.personDetailDTOtoUser(addPersonDTO.getPersonDetail(), request);
-        User savedUser = userRepository.save(user);
-        List<Address> addresses = new ArrayList<>();
-        for (AddAddressFromUserDTO address : addPersonDTO.getAddress()) {
-            addresses.add(userMapper.addAddressFromUserDTOtoAddress(address, savedUser));
-        }
-        List<PersonEducation> educations = new ArrayList<>();
-        if (Objects.nonNull(addPersonDTO.getEducation())) {
-            for (EducationDBDTO educationDTO : addPersonDTO.getEducation()) {
-                educations.add(educationMapper.educationDTOtoPersonEducation(educationDTO, savedUser));
-            }
-            savedUser.setEducations(educationRepository.saveAll(educations));
-        }
-        savedUser.setAddressList(addressRepository.saveAll(addresses));
-        return savedUser;
-    }
-
-
-    public PersonAllDetails getPersonAllServiceByPersonId(String id) {
-        PersonAllDetails personAllDetails = new PersonAllDetails();
-        PersonalDetail personalDetail = getPersonDetail(id);
-        if (!Objects.nonNull(personalDetail)) {
-            return null;
-        }
-        personAllDetails.setPersonalDetails(personalDetail);
-        List<AddressDetail> addressDetail = getAddressDetail(id);
-        if (Objects.nonNull(addressDetail)) {
-            personAllDetails.setAddressDetails(addressDetail);
-        }
-
-        List<EducationDTO> educationDTOS = getEducations(id);
-        personAllDetails.setEducationDetails(educationDTOS);
-
-        return personAllDetails;
-    }
-
-
     public Page<User> findAll(Pageable pageable) {
         return userRepository.findAll(pageable);
     }
@@ -123,15 +81,6 @@ public class UserService {
 
     public List<User> findAllUserByAdminId(String adminId) {
         return userRepository.findAllByAdminId(adminId);
-    }
-
-
-    public List<PersonAllDetails> getPersonAllService(List<User> users) {
-        List<PersonAllDetails> personAllDetails = new ArrayList<>();
-        for (User user : users) {
-            personAllDetails.add(getPersonAllServiceByPersonId(user.getId()));
-        }
-        return personAllDetails;
     }
 
     private Specification<User> CreateSpecification(FilterUserDTO filterUser) {
@@ -189,95 +138,8 @@ public class UserService {
         };
     }
 
-    private List<EducationDTO> getEducations(String id) {
-        List<PersonEducation> personEducationList = getEducationsFromUserId(id);
-        if (!Objects.nonNull(personEducationList)) {
-            return null;
-        }
-        List<EducationDTO> educationDTOList = new ArrayList<>();
-        for (PersonEducation personEducation : personEducationList) {
-            EducationDTO educationDTO = new EducationDTO(personEducation.getPersonEducationId(), personEducation.getPerson().getId(),
-                    personEducation.getDegreeId(), degreeRepository.findById(personEducation.getDegreeId()).get().getName(), personEducation.getSchoolName(), personEducation.getResult(),
-                    personEducation.getStartYear(), personEducation.getEndYear(), personEducation.getProofPhoto(),
-                    personEducation.getMedium(),
-                    Objects.nonNull(personEducation.getCreatedBy()) ? personEducation.getCreatedBy().getId() : "",
-                    Objects.nonNull(personEducation.getUpdatedBy()) ? personEducation.getUpdatedBy().getId() : "",
-                    Objects.nonNull(personEducation.getDeletedBy()) ? personEducation.getDeletedBy().getId() : "",
-                    Objects.nonNull(personEducation.getCreatedAt()) ? personEducation.getCreatedAt().toString() : "",
-                    Objects.nonNull(personEducation.getUpdatedAt()) ? personEducation.getUpdatedAt().toString() : "",
-                    Objects.nonNull(personEducation.getDeletedAt()) ? personEducation.getDeletedAt().toString() : "",
-                    String.valueOf(personEducation.getIsDeleted()), personEducation.getMobileLocalId(),
-                    personEducation.getStatus(), "");
-            educationDTOList.add(educationDTO);
-        }
-        return educationDTOList;
-    }
-
-    private List<PersonEducation> getEducationsFromUserId(String id) {
-        List<PersonEducation> personEducations = educationRepository.findAllByPersonId(id);
-        if (!Objects.nonNull(personEducations)) {
-            return null;
-        }
-        return personEducations;
-    }
-
-    private List<AddressDetail> getAddressDetail(String id) {
-        List<Address> addresses = getAddressFromPersonId(id);
-        if (!Objects.nonNull(addresses)) {
-            return null;
-        }
-        List<AddressDetail> addressDetailList = new ArrayList<>();
-        for (Address address : addresses) {
-            AddressDetail addressDetail = new AddressDetail(address.getId(), address.getPersonId().getId(), address.getAddressType(),
-                    address.getAddressText(), address.getCountry().getId(), address.getCountry().getName(), address.getDistrict().getId(), address.getDistrict().getName(),
-                    address.getState().getId(), address.getState().getName(), "",
-                    Objects.nonNull(address.getCreatedBy()) ? address.getCreatedBy().getId() : "",
-                    Objects.nonNull(address.getUpdatedBy()) ? address.getUpdatedBy().getId() : "",
-                    Objects.nonNull(address.getCreatedAt()) ? address.getCreatedAt().toString() : "",
-                    Objects.nonNull(address.getUpdatedAt()) ? address.getUpdatedAt().toString() : "",
-                    Objects.nonNull(address.getDeletedAt()) ? address.getDeletedAt().toString() : "",
-                    String.valueOf(address.getIsDeleted()), ""
-            );
-            addressDetailList.add(addressDetail);
-        }
-        return addressDetailList;
-    }
-
-    private List<Address> getAddressFromPersonId(String id) {
-        Optional<List<Address>> optionalAddressList = addressRepository.findByPersonIdId(id);
-        if (optionalAddressList.isPresent()) {
-            return optionalAddressList.get();
-        } else {
-            return null;
-        }
-    }
-
-    private PersonalDetail getPersonDetail(String id) {
-        User user = getUserById(id);
-        if (Objects.nonNull(user)) {
-            return PersonalDetail.toDTO(user);
-        } else {
-            return null;
-        }
-    }
-
-    private User getUserById(String id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        if (optionalUser.isPresent()) {
-            return optionalUser.get();
-        } else {
-            return null;
-        }
-    }
-
-
     public List<String> getAllHobbies() {
         return GlobalConstants.HOBBIES;
-    }
-
-
-    public User save(User user) {
-        return userRepository.save(user);
     }
 
     @Transactional
@@ -293,8 +155,7 @@ public class UserService {
             addressList.add(Address.create(address, savedUser));
         }
         List<Address> savedAddress = addressRepository.saveAll(addressList);
-        String deleveryPath = fileService.getDeleveryPath(savedUser.getProfilePic(), GlobalConstants.IMAGE, GlobalConstants.PROFILE_EVENT);
-        com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail personalDetail1 = com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail.create(savedUser, deleveryPath);
+        com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail personalDetail1 = com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail.create(savedUser);
         List<AddressDTO> returnAddressDTO = new ArrayList<>();
         for (Address address : addressList) {
             returnAddressDTO.add(AddressDTO.create(address));
@@ -312,11 +173,7 @@ public class UserService {
             addressList.add(Address.create(address, savedUser));
         }
         addressRepository.saveAll(addressList);
-        String deleveryPath = "";
-        if (Objects.nonNull(savedUser.getProfilePic())) {
-            deleveryPath = fileService.getDeleveryPath(savedUser.getProfilePic(), GlobalConstants.IMAGE, GlobalConstants.PROFILE_EVENT);
-        }
-        com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail personalDetail1 = com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail.create(savedUser, deleveryPath);
+        com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail personalDetail1 = com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail.create(savedUser);
         List<AddressDTO> returnAddressDTO = new ArrayList<>();
         for (Address address : addressList) {
             returnAddressDTO.add(AddressDTO.create(address));
@@ -324,5 +181,26 @@ public class UserService {
 
         PersonBasicDetailDTO personBasicDetailDTO = PersonBasicDetailDTO.create(personalDetail1, returnAddressDTO);
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", personBasicDetailDTO), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getPersonDetail(String personId) {
+        Optional<User> user = userRepository.findById(personId);
+        Optional<List<Address>> addresses = Optional.empty();
+        Optional<List<PersonEducation>> educations = Optional.empty();
+        if (user.isPresent()) {
+            addresses = addressRepository.findByPersonIdId(personId);
+            educations = educationRepository.findAllByPersonId(personId);
+        }
+        List<AddressDTO> addressDTOList = null;
+        List<EducationDTO> educationDTO = null;
+        com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail personalDetail = com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail.create(user.get());
+        if (addresses.isPresent()) {
+            addressDTOList = AddressDTO.create(addresses.get());
+        }
+        if (educations.isPresent()) {
+            educationDTO = EducationDTO.create(educations.get());
+        }
+        PersonDetailDTO personDetailDTO = PersonDetailDTO.create(personalDetail, addressDTOList, educationDTO);
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", personDetailDTO), HttpStatus.OK);
     }
 }

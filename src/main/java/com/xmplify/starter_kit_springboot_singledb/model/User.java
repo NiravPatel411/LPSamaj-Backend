@@ -70,7 +70,6 @@ public class User extends AditableEntity {
     @Size(max = 50)
     private String husbandSurname;
 
-    @NaturalId
     @Size(max = 40)
     @Email
     private String email;
@@ -99,15 +98,15 @@ public class User extends AditableEntity {
     private Set<Role> roles = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "person")
+    @OneToMany(mappedBy = "person")
     private List<PersonAchievement> achievements;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "person")
+    @OneToMany(mappedBy = "person")
     private List<PersonEducation> educations;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "person")
+    @OneToMany(mappedBy = "person")
     private Set<PersonWorking> personWorkings;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -156,6 +155,10 @@ public class User extends AditableEntity {
         this.hobby=hobby;
         this.admin = new Admin(adminId);
 
+    }
+
+    public User(String personId) {
+        this.id = personId;
     }
 
     public static User create(PersonalDetail personalDetail, Set<Role> userRole, PersonSetting savedSetting) {

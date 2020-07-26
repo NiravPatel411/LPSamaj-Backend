@@ -1,12 +1,16 @@
 package com.xmplify.starter_kit_springboot_singledb.DTOs.Address;
 
+import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail;
 import com.xmplify.starter_kit_springboot_singledb.model.Address;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -54,5 +58,13 @@ public class AddressDTO {
                 address.getIsDeleted(),
                 address.getStatus()
         );
+    }
+
+    public static List<AddressDTO> create(List<Address> addresses) {
+        List<AddressDTO> addressDTOList = new ArrayList<>();
+        for(Address address : addresses){
+            addressDTOList.add(create(address));
+        }
+        return addressDTOList;
     }
 }

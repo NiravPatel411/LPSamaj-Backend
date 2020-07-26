@@ -1,6 +1,7 @@
 package com.xmplify.starter_kit_springboot_singledb.service;
 
 import com.xmplify.starter_kit_springboot_singledb.DTOs.Address.AddressDTO;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.education.EducationDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonBasicDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail;
 import com.xmplify.starter_kit_springboot_singledb.model.Activity;
@@ -19,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -63,6 +63,9 @@ public class Validators {
 
     @Autowired
     AddressRepository addressRepository;
+
+    @Autowired
+    EducationRepository educationRepository;
 
 
     public List<String> validateAddPersonDTO(AddPersonDTO addPersonDTO) {
@@ -476,5 +479,29 @@ public class Validators {
     }
     private boolean validateAddressId(String id) {
         return addressRepository.existsById(id);
+    }
+
+    public List<String> validateAddEducationDTO(EducationDTO educationDTO) {
+        List<String> response = new ArrayList<>();
+       validateUserId(educationDTO.getPersonId(),response);
+       if(Objects.nonNull(educationDTO.getId()) && validateEducationId(educationDTO.getId())){
+           response.add("Invalid Education Id : "+educationDTO.getId());
+       }
+       if(Objects.nonNull(educationDTO.getDegreeId()) && !validateDegreeId(educationDTO.getDegreeId())) {
+           response.add("Invalid Degree Id : " + educationDTO.getDegreeId());
+       }
+       return response;
+    }
+
+    private boolean validateEducationId(String id) {
+        return ! educationRepository.existsById(id);
+    }
+
+    public List<String> validateListEducationDTO(List<EducationDTO> educationDTOs) {
+        List<String> response = new ArrayList<>();
+        for(EducationDTO educationDTO : educationDTOs){
+            response.addAll(validateAddEducationDTO(educationDTO));
+        }
+        return response;
     }
 }

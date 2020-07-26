@@ -34,29 +34,4 @@ public class EducationMapper {
     @Autowired
     StateRepository stateRepository;
 
-
-    public PersonEducation educationDTOtoPersonEducation(EducationDBDTO educationDTO, User savedUser) {
-        PersonEducation personEducation = new PersonEducation(educationDTO.getPersonEducationId(),
-                savedUser,
-                educationDTO.getDegreeId(),
-                educationDTO.getSchoolName(),
-                educationDTO.getResult(),
-                educationDTO.getStartYear(),
-                educationDTO.getEndYear(),
-                educationDTO.getProofPhoto(),
-                educationDTO.getMedium(),
-                educationDTO.getMobileLocalId());
-        personEducation.setStatus(educationDTO.getStatus());
-        personEducation.setCreatedBy(Objects.nonNull(educationDTO.getCreatedBy()) ?
-                adminRepository.findById(educationDTO.getCreatedBy()).isPresent() ?
-                        adminRepository.findById(educationDTO.getCreatedBy()).get() :
-                        null :
-                null);
-        personEducation.setUpdatedBy(Objects.nonNull(educationDTO.getUpdatedBy()) ?
-                adminRepository.findById(educationDTO.getUpdatedBy()).isPresent() ?
-                        adminRepository.findById(educationDTO.getUpdatedBy()).get() :
-                        null :
-                null);
-        return personEducation;
-    }
 }

@@ -16,8 +16,11 @@ import java.util.List;
 @Setter
 public class PersonDetailDTO {
 
-    PersonBasicDetailDTO personBasicDetail;
+    PersonalDetail personalDetail;
     List<AddressDTO> addresses;
     List<EducationDTO> educations;
 
+    public static PersonDetailDTO create(PersonalDetail personalDetail, List<AddressDTO> returnAddressDTO,List<EducationDTO> educationDTOList) {
+        return new PersonDetailDTO(personalDetail,returnAddressDTO,educationDTOList);
+    }
 }

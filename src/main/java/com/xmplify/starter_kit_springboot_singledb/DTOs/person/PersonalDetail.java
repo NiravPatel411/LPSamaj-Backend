@@ -1,6 +1,8 @@
 package com.xmplify.starter_kit_springboot_singledb.DTOs.person;
 
 import com.xmplify.starter_kit_springboot_singledb.DTOs.Setting.PersonSettingDTO;
+import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
+import com.xmplify.starter_kit_springboot_singledb.constants.Utility;
 import com.xmplify.starter_kit_springboot_singledb.model.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,7 +49,7 @@ public class PersonalDetail {
     private PersonSettingDTO personSetting;
 
 
-    public static PersonalDetail create(User savedUser, String deleveryPath) {
+    public static PersonalDetail create(User savedUser) {
         PersonalDetail personalDetail = new PersonalDetail(
                 savedUser.getId(),
                 savedUser.getFamilyCode(),
@@ -55,7 +57,7 @@ public class PersonalDetail {
                 savedUser.getFirstName(),
                 savedUser.getLastName(),
                 savedUser.getSurname(),
-                savedUser.getProfilePic(),
+                Objects.nonNull(savedUser.getProfilePic()) ? Utility.fileService.getDeleveryPath(savedUser.getProfilePic(), GlobalConstants.IMAGE, GlobalConstants.PROFILE_EVENT) : "",
                 savedUser.getVillage().getName(),
                 savedUser.getVillageId(),
                 savedUser.getHusbandVillageId(),
@@ -80,7 +82,6 @@ public class PersonalDetail {
                 String.valueOf(savedUser.getIsDeleted()),
                 PersonSettingDTO.create(savedUser.getPersonSetting())
         );
-        personalDetail.setProfileURL(deleveryPath);
         return personalDetail;
     }
 

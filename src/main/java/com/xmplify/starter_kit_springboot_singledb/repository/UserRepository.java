@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +46,5 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Transactional
     @Query(nativeQuery = true, value = "UPDATE Users set Users.password =:newPassword where Users.id =:userId")
     public void changePassword(String userId, String newPassword);
-
 
 }
