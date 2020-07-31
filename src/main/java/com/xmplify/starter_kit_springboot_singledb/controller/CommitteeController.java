@@ -130,42 +130,9 @@ public class CommitteeController {
         List<CommitteeDTO> committeeDTOS = new ArrayList<>();
         for (CommitteeMember committeeMembers : committeeMemberPage.getContent()) {
             User user = userRepository.findById(committeeMembers.getUserId().getId()).get();
-            PersonListDTO personBasicDetailDTO = new PersonListDTO();
-
-            personBasicDetailDTO.setEmail(user.getEmail());
-            personBasicDetailDTO.setFirstName(user.getFirstName());
-            personBasicDetailDTO.setGender(user.getGender());
-            personBasicDetailDTO.setLastName(user.getLastName());
-            personBasicDetailDTO.setMobileno(user.getMobileno());
-            personBasicDetailDTO.setPersonId(user.getId());
-            personBasicDetailDTO.setProfilePic(user.getProfilePic());
-            personBasicDetailDTO.setSurname(user.getSurname());
-
-            personBasicDetailDTO.setHusbandVillageName(user.getHusbandVillageId() != null ? user.getHusbandVillageId() : "");
-            personBasicDetailDTO.setHusbandFirstName(user.getHusbandFirstName() != null ? user.getHusbandFirstName() : "");
-            personBasicDetailDTO.setHusbandLastName(user.getHusbandLastName() != null ? user.getHusbandLastName() : "");
-            personBasicDetailDTO.setHusbandSurname(user.getHusbandSurname() != null ? user.getHusbandSurname() : "");
-
-
-            personBasicDetailDTO.setCreatedDate(user.getCreatedAt().toString());
-//            personBasicDetailDTO.setUpdatedDate(user.getUpdatedAt().toString());
-            personBasicDetailDTO.setCreatedBy(user.getCreatedBy() != null ? user.getCreatedBy().getId() : null);
-//            personBasicDetailDTO.setUpdatedBy(user.getUpdatedBy().getId());
-            personBasicDetailDTO.setIsDeleted(user.getIsDeleted());
-            personBasicDetailDTO.setStatus(user.getStatus());
-            if (user.getVillage() != null) {
-                personBasicDetailDTO.setVillageName(user.getVillage().getName());
-            }
-
-
-            CommitteeDTO committeeDTO = new CommitteeDTO(committeeMembers.getId(),
-                    committeeMembers.getCommitteeType().getId(),
-                    committeeMembers.getUserId().getId(),
-                    personBasicDetailDTO,
-                    committeeMembers.getDesignation());
-            committeeDTOS.add(committeeDTO);
+            PersonListDTO personListDTO = PersonListDTO.create(user);
+            committeeDTOS.add(CommitteeDTO.create(committeeMembers,personListDTO));
         }
         return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Success", committeeDTOS), HttpStatus.OK);
     }
-
 }

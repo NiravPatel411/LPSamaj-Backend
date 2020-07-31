@@ -45,13 +45,15 @@ public class GlobalConstants {
 
 
     //User Fields
-    public static final String FIRST_NAME = "firstName";
-    public static final String LAST_NAME = "lastName";
-    public static final String SURNAME = "surname";
-    public static final String EMAIL = "email";
-    public static final String MOBILENO = "mobileno";
-    public static final String GENDER = "gender";
-    public static final String MARITAL_STATUS = "maritalStatus";
+    public static final String FIRST_NAME_FIELD = "firstName";
+    public static final String LAST_NAME_FIELD = "lastName";
+    public static final String SURNAME_FIELD = "surname";
+    public static final String EMAIL_FIELD = "email";
+    public static final String MOBILENO_FIELD = "mobileno";
+    public static final String GENDER_FIELD = "gender";
+    public static final String MARITAL_STATUS_FIELD = "maritalStatus";
+    public static final String BLOOD_GROUP_FIELD = "bloodGroup";
+    public static final String BLOOD_DONATE_FIELD = "bloodDonate";
 
     // setting type
 

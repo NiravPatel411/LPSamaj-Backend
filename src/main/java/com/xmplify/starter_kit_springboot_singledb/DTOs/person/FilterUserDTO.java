@@ -1,4 +1,4 @@
-package com.xmplify.starter_kit_springboot_singledb.payload;
+package com.xmplify.starter_kit_springboot_singledb.DTOs.person;
 
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import lombok.AllArgsConstructor;
@@ -21,15 +21,18 @@ public class FilterUserDTO {
     private Long greaterThanBOD;
     private Long lessThanBOD;
     private String maritalStatus;
+    private boolean bloodDonor;
+    private String[] bloodGroup;
     private String[] DegreeIds;
 
-    public List<String> getfields() {
+    public List<String> getFreeTextfields() {
         List<String> fields = new ArrayList<>();
-        fields.add(GlobalConstants.FIRST_NAME);
-        fields.add(GlobalConstants.LAST_NAME);
-        fields.add(GlobalConstants.SURNAME);
-        fields.add(GlobalConstants.EMAIL);
-        fields.add(GlobalConstants.MOBILENO);
+        fields.add(GlobalConstants.FIRST_NAME_FIELD);
+        fields.add(GlobalConstants.LAST_NAME_FIELD);
+        fields.add(GlobalConstants.SURNAME_FIELD);
+        fields.add(GlobalConstants.EMAIL_FIELD);
+        fields.add(GlobalConstants.MOBILENO_FIELD);
+
         return fields;
     }
 }

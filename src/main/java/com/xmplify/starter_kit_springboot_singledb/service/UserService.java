@@ -9,7 +9,7 @@ import com.xmplify.starter_kit_springboot_singledb.mapper.EducationMapper;
 import com.xmplify.starter_kit_springboot_singledb.mapper.UserMapper;
 import com.xmplify.starter_kit_springboot_singledb.model.*;
 import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
-import com.xmplify.starter_kit_springboot_singledb.payload.FilterUserDTO;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.person.FilterUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +89,7 @@ public class UserService {
             public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 final Collection<Predicate> predicates = new ArrayList<>();
                 if (!StringUtils.isEmpty(filterUser.getGender())) {
-                    final Predicate genderPredicate = cb.equal(root.get(GlobalConstants.GENDER), filterUser.getGender());
+                    final Predicate genderPredicate = cb.equal(root.get(GlobalConstants.GENDER_FIELD), filterUser.getGender());
                     predicates.add(genderPredicate);
                 }
                 if (!StringUtils.isEmpty(filterUser.getSearchText())) {
@@ -99,14 +99,14 @@ public class UserService {
                     }
                     String finalText = text;
                     Predicate searchTextPredicate = cb.or(root.getModel().getDeclaredSingularAttributes().stream()
-                            .filter(a -> filterUser.getfields().contains(a.getName()))
+                            .filter(a -> filterUser.getFreeTextfields().contains(a.getName()))
                             .map(a -> cb.like(root.get(a.getName()), finalText))
                             .toArray(Predicate[]::new));
                     predicates.add(searchTextPredicate);
                 }
 
                 if (!StringUtils.isEmpty(filterUser.getMaritalStatus())) {
-                    final Predicate maritalStatusPredicate = cb.equal(root.get(GlobalConstants.MARITAL_STATUS), filterUser.getMaritalStatus());
+                    final Predicate maritalStatusPredicate = cb.equal(root.get(GlobalConstants.MARITAL_STATUS_FIELD), filterUser.getMaritalStatus());
                     predicates.add(maritalStatusPredicate);
                 }
 
@@ -132,6 +132,19 @@ public class UserService {
 
                     Predicate bodPredicate = cb.between(root.get("birthDate"), greaterThan, lessThan);
                     predicates.add(bodPredicate);
+                }
+
+                if(Objects.nonNull(filterUser.getBloodGroup()) && filterUser.getBloodGroup().length > 0){
+                    CriteriaBuilder.In<String> bloodGroupIn = cb.in(root.get(GlobalConstants.BLOOD_GROUP_FIELD));
+                    for(String bloodGroup : filterUser.getBloodGroup()){
+                        bloodGroupIn.value(bloodGroup);
+                    }
+                    predicates.add(bloodGroupIn);
+                }
+
+                if(Objects.nonNull(filterUser.isBloodDonor()) && filterUser.isBloodDonor()){
+                    Predicate bloodDonate = cb.equal(root.join("personSetting").get(GlobalConstants.BLOOD_DONATE_FIELD), 1);
+                    predicates.add(bloodDonate);
                 }
                 return cb.and(predicates.toArray(new Predicate[predicates.size()]));
             }
