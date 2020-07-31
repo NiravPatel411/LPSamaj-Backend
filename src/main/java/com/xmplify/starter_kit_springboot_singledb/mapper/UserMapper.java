@@ -288,45 +288,6 @@ public class UserMapper {
         );
     }
 
-    public List<PersonListDTO> toPersonBasicDetailDTO(List<User> users) {
-        List<PersonListDTO> personBasicDetailDTOS = new ArrayList<>();
-        users.forEach(user -> {
-            personBasicDetailDTOS.add(toPersonBasicDetailDTO(user));
-        });
-        return personBasicDetailDTOS;
-    }
-
-    private PersonListDTO toPersonBasicDetailDTO(User user) {
-        PersonListDTO personBasicDetailDTO = new PersonListDTO(
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getSurname(),
-                (user.getProfilePic() == null ? "" : fileService.getDeleveryPath(user.getProfilePic(), GlobalConstants.IMAGE, GlobalConstants.PROFILE_EVENT)),
-                user.getHusbandVillageId() != null ? user.getHusbandVillageId() : "",
-                user.getHusbandFirstName() != null ? user.getHusbandFirstName() : "",
-                user.getHusbandLastName() != null ? user.getHusbandLastName() : "",
-                user.getHusbandSurname() != null ? user.getHusbandSurname() : "",
-                user.getVillage() != null ? user.getVillage().getName() : "",
-                user.getEmail(),
-                user.getFamilyCode(),
-                user.getGender(),
-                user.getMobileno(),
-                setCreatedDate(user),
-                setUpdatedDate(user),
-                setCreatedBy(user),
-                setUpdatedBy(user),
-                user.getIsDeleted(),
-                user.getStatus()
-        );
-
-        if (user.getVillage() != null) {
-            personBasicDetailDTO.setVillageName(user.getVillage().getName());
-            personBasicDetailDTO.setHusbandVillageName(user.getVillage() != null ? user.getVillage().getName() : "");
-        }
-        return personBasicDetailDTO;
-    }
-
     private String setUpdatedBy(User user) {
         return user.getUpdatedBy() != null ? user.getUpdatedBy().getId() : null;
     }
