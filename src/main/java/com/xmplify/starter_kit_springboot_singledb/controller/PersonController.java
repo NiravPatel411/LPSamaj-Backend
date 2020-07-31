@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+
 @RestController
 @RequestMapping("/api/person")
 public class PersonController {
@@ -253,6 +254,7 @@ public class PersonController {
             List<String> messages = validators.validateAddPersonBasicDetailDTO(personBasicDetailDTO);
             if (!messages.isEmpty()) {
                 return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid Requst Reason : ", messages), HttpStatus.BAD_REQUEST);
+
             }
         }
         PersonalDetail personalDetail = personBasicDetailDTO.getPersonDetail();
