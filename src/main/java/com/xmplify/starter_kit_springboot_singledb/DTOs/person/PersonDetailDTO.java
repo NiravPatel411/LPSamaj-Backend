@@ -16,11 +16,11 @@ import java.util.List;
 @Setter
 public class PersonDetailDTO {
 
-    PersonalDetail personalDetail;
+    PersonalDetailDTO personalDetailDTO;
     List<AddressDTO> addresses;
     List<EducationDTO> educations;
 
-    public static PersonDetailDTO create(PersonalDetail personalDetail, List<AddressDTO> returnAddressDTO,List<EducationDTO> educationDTOList) {
-        return new PersonDetailDTO(personalDetail,returnAddressDTO,educationDTOList);
+    public static PersonDetailDTO create(PersonalDetailDTO personalDetailDTO, List<AddressDTO> returnAddressDTO, List<EducationDTO> educationDTOList) {
+        return new PersonDetailDTO(personalDetailDTO,returnAddressDTO,educationDTOList);
     }
 }

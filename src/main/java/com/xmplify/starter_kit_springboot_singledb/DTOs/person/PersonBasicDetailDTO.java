@@ -11,10 +11,10 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class PersonBasicDetailDTO {
-    PersonalDetail personDetail;
+    PersonalDetailDTO personDetail;
     List<AddressDTO> addresses;
 
-    public static PersonBasicDetailDTO create(PersonalDetail personalDetail, List<AddressDTO> returnAddressDTO) {
-        return new PersonBasicDetailDTO(personalDetail, returnAddressDTO);
+    public static PersonBasicDetailDTO create(PersonalDetailDTO personalDetailDTO, List<AddressDTO> returnAddressDTO) {
+        return new PersonBasicDetailDTO(personalDetailDTO, returnAddressDTO);
     }
 }

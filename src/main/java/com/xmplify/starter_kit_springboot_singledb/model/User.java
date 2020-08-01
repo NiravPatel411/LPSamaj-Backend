@@ -2,7 +2,7 @@ package com.xmplify.starter_kit_springboot_singledb.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.constants.Utility;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -161,28 +160,28 @@ public class User extends AditableEntity {
         this.id = personId;
     }
 
-    public static User create(PersonalDetail personalDetail, Set<Role> userRole, PersonSetting savedSetting) {
-        User user =  new User(personalDetail.getId(),personalDetail.getFamilyCode(),
-                personalDetail.getUserName(),
-                personalDetail.getFirstName(),
-                personalDetail.getLastName(),
-                personalDetail.getSurname(),
-                personalDetail.getProfileURL(),
-                new Village(personalDetail.getVillageId()),
-                personalDetail.getVillageId(),
-                personalDetail.getHusbandVillageId(),
-                personalDetail.getHusbandFirstName(),
-                personalDetail.getHusbandLastName(),
-                personalDetail.getHusbandSurname(),
-                personalDetail.getEmail(),
-                personalDetail.getGender(),
-                LocalDate.parse(personalDetail.getBirthDate(), GlobalConstants.DATE_FORMAT),
-                personalDetail.getBloodGroup(),
-                personalDetail.getMaritalStatus(),
-                Utility.passwordEncoder.encode(personalDetail.getPassword()),
-                personalDetail.getMobileno(),
-                personalDetail.getAdminId(),
-                personalDetail.getHobby()
+    public static User create(PersonalDetailDTO personalDetailDTO, Set<Role> userRole, PersonSetting savedSetting) {
+        User user =  new User(personalDetailDTO.getId(), personalDetailDTO.getFamilyCode(),
+                personalDetailDTO.getUserName(),
+                personalDetailDTO.getFirstName(),
+                personalDetailDTO.getLastName(),
+                personalDetailDTO.getSurname(),
+                personalDetailDTO.getProfileURL(),
+                new Village(personalDetailDTO.getVillageId()),
+                personalDetailDTO.getVillageId(),
+                personalDetailDTO.getHusbandVillageId(),
+                personalDetailDTO.getHusbandFirstName(),
+                personalDetailDTO.getHusbandLastName(),
+                personalDetailDTO.getHusbandSurname(),
+                personalDetailDTO.getEmail(),
+                personalDetailDTO.getGender(),
+                LocalDate.parse(personalDetailDTO.getBirthDate(), GlobalConstants.DATE_FORMAT),
+                personalDetailDTO.getBloodGroup(),
+                personalDetailDTO.getMaritalStatus(),
+                Utility.passwordEncoder.encode(personalDetailDTO.getPassword()),
+                personalDetailDTO.getMobileno(),
+                personalDetailDTO.getAdminId(),
+                personalDetailDTO.getHobby()
                 );
         user.setRoles(userRole);
         user.setPersonSetting(savedSetting);

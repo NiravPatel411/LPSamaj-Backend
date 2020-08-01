@@ -1,11 +1,8 @@
 package com.xmplify.starter_kit_springboot_singledb.mapper;
 
-import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonListDTO;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.model.Address;
-import com.xmplify.starter_kit_springboot_singledb.model.Admin;
 import com.xmplify.starter_kit_springboot_singledb.model.User;
-import com.xmplify.starter_kit_springboot_singledb.payload.AdminBasicDetail;
 import com.xmplify.starter_kit_springboot_singledb.payload.GetAddressDetail;
 import com.xmplify.starter_kit_springboot_singledb.payload.GetPersonDetail;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddAddressFromUserDTO;
@@ -304,33 +301,4 @@ public class UserMapper {
         return Objects.nonNull(user.getCreatedAt()) ? user.getCreatedAt().toString() : "";
     }
 
-    public List<AdminBasicDetail> adminToAdminBasicDetail(List<Admin> admins) {
-        List<AdminBasicDetail> adminBasicDetailList = new ArrayList<>();
-        for (Admin admin : admins) {
-            adminBasicDetailList.add(adminToAdminBasicDetail(admin));
-        }
-        return adminBasicDetailList;
-    }
-
-    private AdminBasicDetail adminToAdminBasicDetail(Admin admin) {
-        AdminBasicDetail adminBasicDetail = new AdminBasicDetail(
-                admin.getId(),
-                admin.getPerson().getId(),
-                admin.getPerson().getFirstName(),
-                admin.getPerson().getLastName(),
-                admin.getPerson().getSurname(),
-                admin.getAdminRole().getName(),
-                admin.getPerson().getProfilePic(), //TODO : use profile pic utility
-                admin.getPerson().getVillage().getName(),
-                admin.getPerson().getEmail(),
-                admin.getPerson().getGender(),
-                admin.getPerson().getMobileno(),
-                "",//TODO : Add Husbund village Name
-                admin.getPerson().getHusbandFirstName(),
-                admin.getPerson().getHusbandLastName(),
-                admin.getPerson().getHusbandLastName() //TODO : change LastName to surName
-
-        );
-        return adminBasicDetail;
-    }
 }

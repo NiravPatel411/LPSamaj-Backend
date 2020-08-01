@@ -1,6 +1,5 @@
 package com.xmplify.starter_kit_springboot_singledb.DTOs.Address;
 
-import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail;
 import com.xmplify.starter_kit_springboot_singledb.model.Address;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +9,6 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @NoArgsConstructor
 @AllArgsConstructor

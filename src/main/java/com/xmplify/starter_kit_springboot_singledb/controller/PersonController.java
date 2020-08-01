@@ -2,10 +2,11 @@ package com.xmplify.starter_kit_springboot_singledb.controller;
 
 import com.google.common.base.Strings;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.Address.AddressDTO;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.admin.AdminBasicDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.FilterUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonBasicDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonListDTO;
-import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.constants.FamilyCode;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.constants.SettingConstants;
@@ -33,7 +34,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -163,8 +163,8 @@ public class PersonController {
     @GetMapping("/admin/")
     public ResponseEntity<?> getAllAdmin() {
         List<Admin> admins = userService.findAllAdmin();
-        List<AdminBasicDetail> BasicDetails = userMapper.adminToAdminBasicDetail(admins);
-        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Admin Created", BasicDetails), HttpStatus.OK);
+        List<AdminBasicDetailDTO> basicDetails = AdminBasicDetailDTO.create(admins);
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Admin Created", basicDetails), HttpStatus.OK);
     }
 
     @GetMapping("/byadmin/{adminId}")
@@ -179,21 +179,12 @@ public class PersonController {
 
     @GetMapping("/getAdminsByType/{adminType}")
     public ResponseEntity<?> getAdminsByType(@PathVariable String adminType) {
-        AdminRole adminRole = adminRoleRepository.findByName(adminType);
-        if (Objects.isNull(adminRole)) {
+        if (!adminRoleRepository.existsByName(adminType)) {
             return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not found admin type", null), HttpStatus.BAD_REQUEST);
         }
         List<Admin> admins = adminRepository.AdminByRoles(adminType);
-        List<AuthAdmin> authAdminList = new ArrayList<>();
-        admins.forEach((admin) -> {
-            AuthAdmin authAdminData = new AuthAdmin();
-            authAdminData.setAdminId(admin.getId());
-            authAdminData.setAdminName(admin.getName());
-            authAdminData.setPersonId(admin.getPerson().getId());
-            authAdminData.setAdminType(adminType);
-            authAdminList.add(authAdminData);
-        });
-        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Success", authAdminList), HttpStatus.OK);
+        List<AdminBasicDetailDTO> basicDetails = AdminBasicDetailDTO.create(admins);
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Success", basicDetails), HttpStatus.OK);
     }
 
     @GetMapping("/{personId}")
@@ -257,26 +248,26 @@ public class PersonController {
 
             }
         }
-        PersonalDetail personalDetail = personBasicDetailDTO.getPersonDetail();
+        PersonalDetailDTO personalDetailDTO = personBasicDetailDTO.getPersonDetail();
         List<AddressDTO> addressDTO = personBasicDetailDTO.getAddresses();
-        MultipartFile multipartFile = personalDetail.getProfilePic();
+        MultipartFile multipartFile = personalDetailDTO.getProfilePic();
         if (Objects.nonNull(multipartFile)) {
             if (oldUser.isPresent() && !Strings.isNullOrEmpty(oldUser.get().getProfilePic())) {
                 if (!fileService.deleteFile(oldUser.get().getProfilePic(), GlobalConstants.IMAGE, GlobalConstants.PROFILE_EVENT, request.getServletContext())) {
                     return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "Problem to delete old Image. see logs", null), HttpStatus.OK);
                 }
-                personalDetail.setProfileURL(null);
+                personalDetailDTO.setProfileURL(null);
             }
             String fileStorePath = fileService.uploadFile(multipartFile, request.getServletContext(), GlobalConstants.IMAGE, GlobalConstants.PROFILE_EVENT);
             if (Objects.isNull(fileStorePath)) {
                 return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "Problem to store Image see more logs", null), HttpStatus.OK);
             }
-            personalDetail.setProfileURL(fileStorePath);
+            personalDetailDTO.setProfileURL(fileStorePath);
         }
         if (oldUser.isPresent()) {
-            return userService.updatePerson(personalDetail, addressDTO, oldUser.get());
+            return userService.updatePerson(personalDetailDTO, addressDTO, oldUser.get());
         } else {
-            return userService.addPerson(personalDetail, addressDTO);
+            return userService.addPerson(personalDetailDTO, addressDTO);
         }
     }
 

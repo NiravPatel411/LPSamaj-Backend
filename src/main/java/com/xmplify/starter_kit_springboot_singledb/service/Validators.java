@@ -3,7 +3,7 @@ package com.xmplify.starter_kit_springboot_singledb.service;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.Address.AddressDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.education.EducationDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonBasicDetailDTO;
-import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.model.Activity;
 import com.xmplify.starter_kit_springboot_singledb.model.Admin;
 import com.xmplify.starter_kit_springboot_singledb.model.CommitteeType;
@@ -371,7 +371,7 @@ public class Validators {
 
     }
 
-    private void validatePersonalDetailDTO(PersonalDetail personDetail, List<String> response) {
+    private void validatePersonalDetailDTO(PersonalDetailDTO personDetail, List<String> response) {
 
         if(!validateFamilyCode(personDetail.getFamilyCode())){
             response.add("Invalid family code");

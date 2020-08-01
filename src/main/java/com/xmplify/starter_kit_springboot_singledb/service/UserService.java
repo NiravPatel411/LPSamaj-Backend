@@ -4,6 +4,7 @@ import com.xmplify.starter_kit_springboot_singledb.DTOs.Address.AddressDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.education.EducationDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonBasicDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonDetailDTO;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.mapper.EducationMapper;
 import com.xmplify.starter_kit_springboot_singledb.mapper.UserMapper;
@@ -156,43 +157,43 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<?> addPerson(com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail personalDetail, List<AddressDTO> addressDTOs) {
+    public ResponseEntity<?> addPerson(PersonalDetailDTO personalDetailDTO, List<AddressDTO> addressDTOs) {
         Role userRole = roleService.getNormalUserRole();
         Set<Role> userRoles = new HashSet<>();
         userRoles.add(userRole);
         PersonSetting savedSetting = personSettingsRepository.save(PersonSetting.getDefaultSetting());
-        User user = User.create(personalDetail, userRoles, savedSetting);
+        User user = User.create(personalDetailDTO, userRoles, savedSetting);
         User savedUser = userRepository.save(user);
         List<Address> addressList = new ArrayList<>();
         for (AddressDTO address : addressDTOs) {
             addressList.add(Address.create(address, savedUser));
         }
         List<Address> savedAddress = addressRepository.saveAll(addressList);
-        com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail personalDetail1 = com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail.create(savedUser);
+        PersonalDetailDTO personalDetailDTO1 = PersonalDetailDTO.create(savedUser);
         List<AddressDTO> returnAddressDTO = new ArrayList<>();
         for (Address address : addressList) {
             returnAddressDTO.add(AddressDTO.create(address));
         }
 
-        PersonBasicDetailDTO personBasicDetailDTO = PersonBasicDetailDTO.create(personalDetail1, returnAddressDTO);
+        PersonBasicDetailDTO personBasicDetailDTO = PersonBasicDetailDTO.create(personalDetailDTO1, returnAddressDTO);
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", personBasicDetailDTO), HttpStatus.OK);
     }
 
-    public ResponseEntity<?> updatePerson(com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail personalDetail, List<AddressDTO> addressDTOs, User oldUser) {
-        User user = User.create(personalDetail, oldUser.getRoles(), oldUser.getPersonSetting());
+    public ResponseEntity<?> updatePerson(PersonalDetailDTO personalDetailDTO, List<AddressDTO> addressDTOs, User oldUser) {
+        User user = User.create(personalDetailDTO, oldUser.getRoles(), oldUser.getPersonSetting());
         User savedUser = userRepository.save(user);
         List<Address> addressList = new ArrayList<>();
         for (AddressDTO address : addressDTOs) {
             addressList.add(Address.create(address, savedUser));
         }
         addressRepository.saveAll(addressList);
-        com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail personalDetail1 = com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail.create(savedUser);
+        PersonalDetailDTO personalDetailDTO1 = PersonalDetailDTO.create(savedUser);
         List<AddressDTO> returnAddressDTO = new ArrayList<>();
         for (Address address : addressList) {
             returnAddressDTO.add(AddressDTO.create(address));
         }
 
-        PersonBasicDetailDTO personBasicDetailDTO = PersonBasicDetailDTO.create(personalDetail1, returnAddressDTO);
+        PersonBasicDetailDTO personBasicDetailDTO = PersonBasicDetailDTO.create(personalDetailDTO1, returnAddressDTO);
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", personBasicDetailDTO), HttpStatus.OK);
     }
 
@@ -206,14 +207,14 @@ public class UserService {
         }
         List<AddressDTO> addressDTOList = null;
         List<EducationDTO> educationDTO = null;
-        com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail personalDetail = com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail.create(user.get());
+        PersonalDetailDTO personalDetailDTO = PersonalDetailDTO.create(user.get());
         if (addresses.isPresent()) {
             addressDTOList = AddressDTO.create(addresses.get());
         }
         if (educations.isPresent()) {
             educationDTO = EducationDTO.create(educations.get());
         }
-        PersonDetailDTO personDetailDTO = PersonDetailDTO.create(personalDetail, addressDTOList, educationDTO);
+        PersonDetailDTO personDetailDTO = PersonDetailDTO.create(personalDetailDTO, addressDTOList, educationDTO);
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", personDetailDTO), HttpStatus.OK);
     }
 }

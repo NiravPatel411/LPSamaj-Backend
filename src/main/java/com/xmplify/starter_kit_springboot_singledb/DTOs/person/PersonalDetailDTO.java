@@ -14,7 +14,7 @@ import java.util.Objects;
 @Setter
 @Getter
 @NoArgsConstructor
-public class PersonalDetail {
+public class PersonalDetailDTO {
 
     private String id;
     private String familyCode;
@@ -46,11 +46,13 @@ public class PersonalDetail {
     private String createdAt;
     private String updatedAt;
     private String isDelete;
+    private String observingCount;
+    private String observerCount;
     private PersonSettingDTO personSetting;
 
 
-    public static PersonalDetail create(User savedUser) {
-        PersonalDetail personalDetail = new PersonalDetail(
+    public static PersonalDetailDTO create(User savedUser) {
+        PersonalDetailDTO personalDetailDTO = new PersonalDetailDTO(
                 savedUser.getId(),
                 savedUser.getFamilyCode(),
                 savedUser.getUserName(),
@@ -82,10 +84,16 @@ public class PersonalDetail {
                 String.valueOf(savedUser.getIsDeleted()),
                 PersonSettingDTO.create(savedUser.getPersonSetting())
         );
-        return personalDetail;
+        int observingCount = 0;
+        int observerCount = 0;
+        observingCount = Utility.ObservationRepositoy.countAllByObserver(savedUser);
+        observerCount = Utility.ObservationRepositoy.countAllByObserving(savedUser);
+        personalDetailDTO.setObserverCount(String.valueOf(observerCount));
+        personalDetailDTO.setObservingCount(String.valueOf(observingCount));
+        return personalDetailDTO;
     }
 
-    public PersonalDetail(String id, String familyCode, String userName, String firstName, String lastName, String surname, String profileURL, String villageName, String villageId, String husbandVillageId, String husbandFirstName, String husbandLastName, String husbandSurname, String email, String gender, String birthDate, String bloodGroup, String maritalStatus, String password, String mobileno, String adminId, String hobby, String createdBy, String createdByName, String updatedBy, String updatedByName, String createdAt, String updatedAt, String isDelete, PersonSettingDTO personSetting) {
+    public PersonalDetailDTO(String id, String familyCode, String userName, String firstName, String lastName, String surname, String profileURL, String villageName, String villageId, String husbandVillageId, String husbandFirstName, String husbandLastName, String husbandSurname, String email, String gender, String birthDate, String bloodGroup, String maritalStatus, String password, String mobileno, String adminId, String hobby, String createdBy, String createdByName, String updatedBy, String updatedByName, String createdAt, String updatedAt, String isDelete, PersonSettingDTO personSetting) {
         this.id = id;
         this.familyCode = familyCode;
         this.userName = userName;

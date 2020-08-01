@@ -1,8 +1,6 @@
 package com.xmplify.starter_kit_springboot_singledb.DTOs.education;
 
-import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetail;
 import com.xmplify.starter_kit_springboot_singledb.model.PersonEducation;
-import com.xmplify.starter_kit_springboot_singledb.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

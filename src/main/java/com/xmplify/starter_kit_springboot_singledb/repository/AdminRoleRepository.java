@@ -10,7 +10,9 @@ public interface AdminRoleRepository extends JpaRepository<AdminRole, String> {
 
     List<AdminRole> findByNameIn(List<String> roleName);
 
-    AdminRole findByName(String roleName);
+    List<AdminRole> findByName(String roleName);
+
+    boolean existsByName (String roleName);
 
 
     // Optional<Set<Role>> findByName(Iterable<String> roleName);
