@@ -2,6 +2,7 @@ package com.xmplify.starter_kit_springboot_singledb.controller;
 
 import com.xmplify.starter_kit_springboot_singledb.DTOs.education.EducationDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.education.EducationListDTO;
+import com.xmplify.starter_kit_springboot_singledb.model.Address;
 import com.xmplify.starter_kit_springboot_singledb.model.PersonEducation;
 import com.xmplify.starter_kit_springboot_singledb.model.User;
 import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,18 +49,6 @@ public class EducationController {
         return this.educationRepository.findById(educationId);
     }
 
-
-    @GetMapping("/person/{personId}")
-    public ResponseEntity<?> getEducationByPerson(@PathVariable String personId) {
-        Optional<User> user = userRepository.findById(personId);
-        if (user.isPresent()) {
-            List<PersonEducation> Educations = user.get().getEducations();
-            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", Educations), HttpStatus.OK);
-        } else {
-            return new ResponseEntity(new ApiResponse(HttpStatus.NOT_FOUND.value(), true, "Error", null), HttpStatus.NOT_FOUND);
-        }
-    }
-
     @PostMapping("/add")
     public ResponseEntity<?> addEducation(@ModelAttribute EducationListDTO educationListDTO){
         List<String> messages = validators.validateListEducationDTO(educationListDTO.getEducation());
@@ -70,8 +60,20 @@ public class EducationController {
 
     }
 
-    @PostMapping("/addSingle")
-    public ResponseEntity<?> addEducation(@ModelAttribute EducationDTO educationDTO){
-        return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid Requst Reason : ", null), HttpStatus.BAD_REQUEST);
+    @GetMapping("/byPerson/{personId}")
+    public ResponseEntity<?> getEducationListById (@PathVariable String personId){
+        List<String> messages = new ArrayList<>();
+        validators.validateUserId(personId,messages);
+        if(!messages.isEmpty()){
+            return new ResponseEntity(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid Requst Reason : ", messages), HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<List<PersonEducation>> addressList = educationRepository.findAllByPersonId(personId);
+        if(addressList.isPresent()) {
+            List<EducationDTO> educationDTO = EducationDTO.create(addressList.get());
+            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", educationDTO), HttpStatus.OK);
+        } else {
+            return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), false, "Can not found any education details ", null), HttpStatus.OK);
+        }
     }
 }

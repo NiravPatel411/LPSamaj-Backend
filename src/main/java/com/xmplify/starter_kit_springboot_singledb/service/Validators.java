@@ -259,7 +259,7 @@ public class Validators {
         }
     }
 
-    private void validateUserId(String personId, List<String> response) {
+    public void validateUserId(String personId, List<String> response) {
         if (Objects.isNull(personId)) {
             response.add("Person Id can not be null or empty");
         } else {

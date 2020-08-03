@@ -219,6 +219,7 @@ public class UserService {
             educationDTO = EducationDTO.create(educations.get());
         }
         if(familyUsers.isPresent()){
+            familyUsers.get().removeIf((usr) ->  usr.getId().equalsIgnoreCase(personId));
             familyUsersDTO = PersonListDTO.create(familyUsers.get());
         }
         PersonDetailDTO personDetailDTO = PersonDetailDTO.create(personalDetailDTO,personSettingDTO, addressDTOList, educationDTO,familyUsersDTO);
