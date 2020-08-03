@@ -263,6 +263,8 @@ public class PersonController {
                 return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "Problem to store Image see more logs", null), HttpStatus.OK);
             }
             personalDetailDTO.setProfileURL(fileStorePath);
+        }else {
+            personalDetailDTO.setProfileURL(oldUser.get().getProfilePic());
         }
         if (oldUser.isPresent()) {
             return userService.updatePerson(personalDetailDTO, addressDTO, oldUser.get());

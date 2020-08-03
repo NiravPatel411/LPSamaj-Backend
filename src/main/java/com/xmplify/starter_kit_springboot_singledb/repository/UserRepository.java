@@ -7,7 +7,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +23,8 @@ public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByMobileno(String mobileno);
 
     List<User> findAllByAdminId(String adminid);
+
+    Optional<List<User>> findAllByFamilyCode(String familyCode);
 
     List<User> findByIdIn(List<String> userIds);
 

@@ -48,7 +48,6 @@ public class PersonalDetailDTO {
     private String isDelete;
     private String observingCount;
     private String observerCount;
-    private PersonSettingDTO personSetting;
 
 
     public static PersonalDetailDTO create(User savedUser) {
@@ -81,8 +80,7 @@ public class PersonalDetailDTO {
                 Objects.nonNull(savedUser.getUpdatedBy()) ? savedUser.getUpdatedBy().getName() : "",
                 Objects.nonNull(savedUser.getCreatedAt()) ? savedUser.getCreatedAt().toString() : "",
                 Objects.nonNull(savedUser.getUpdatedAt()) ? savedUser.getUpdatedAt().toString() : "",
-                String.valueOf(savedUser.getIsDeleted()),
-                PersonSettingDTO.create(savedUser.getPersonSetting())
+                String.valueOf(savedUser.getIsDeleted())
         );
         int observingCount = 0;
         int observerCount = 0;
@@ -93,7 +91,7 @@ public class PersonalDetailDTO {
         return personalDetailDTO;
     }
 
-    public PersonalDetailDTO(String id, String familyCode, String userName, String firstName, String lastName, String surname, String profileURL, String villageName, String villageId, String husbandVillageId, String husbandFirstName, String husbandLastName, String husbandSurname, String email, String gender, String birthDate, String bloodGroup, String maritalStatus, String password, String mobileno, String adminId, String hobby, String createdBy, String createdByName, String updatedBy, String updatedByName, String createdAt, String updatedAt, String isDelete, PersonSettingDTO personSetting) {
+    public PersonalDetailDTO(String id, String familyCode, String userName, String firstName, String lastName, String surname, String profileURL, String villageName, String villageId, String husbandVillageId, String husbandFirstName, String husbandLastName, String husbandSurname, String email, String gender, String birthDate, String bloodGroup, String maritalStatus, String password, String mobileno, String adminId, String hobby, String createdBy, String createdByName, String updatedBy, String updatedByName, String createdAt, String updatedAt, String isDelete) {
         this.id = id;
         this.familyCode = familyCode;
         this.userName = userName;
@@ -123,7 +121,6 @@ public class PersonalDetailDTO {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.isDelete = isDelete;
-        this.personSetting = personSetting;
     }
 
 

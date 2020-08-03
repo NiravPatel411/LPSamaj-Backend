@@ -21,7 +21,7 @@ public class FilterUserDTO {
     private Long greaterThanBOD;
     private Long lessThanBOD;
     private String maritalStatus;
-    private boolean bloodDonor;
+    private Boolean bloodDonor;
     private String[] bloodGroup;
     private String[] DegreeIds;
 

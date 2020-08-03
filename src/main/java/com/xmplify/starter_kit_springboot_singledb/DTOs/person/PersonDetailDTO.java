@@ -1,6 +1,7 @@
 package com.xmplify.starter_kit_springboot_singledb.DTOs.person;
 
 import com.xmplify.starter_kit_springboot_singledb.DTOs.Address.AddressDTO;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.Setting.PersonSettingDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.education.EducationDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,10 +18,12 @@ import java.util.List;
 public class PersonDetailDTO {
 
     PersonalDetailDTO personalDetails;
+    PersonSettingDTO personSetting;
+    List<PersonListDTO> familyPersons;
     List<AddressDTO> addressDetails;
     List<EducationDTO> educationDetails;
 
-    public static PersonDetailDTO create(PersonalDetailDTO personalDetailDTO, List<AddressDTO> returnAddressDTO, List<EducationDTO> educationDTOList) {
-        return new PersonDetailDTO(personalDetailDTO,returnAddressDTO,educationDTOList);
+    public static PersonDetailDTO create(PersonalDetailDTO personalDetailDTO, PersonSettingDTO personSettingDTO, List<AddressDTO> returnAddressDTO, List<EducationDTO> educationDTOList, List<PersonListDTO> familyUsers) {
+        return new PersonDetailDTO(personalDetailDTO,personSettingDTO,familyUsers,returnAddressDTO,educationDTOList);
     }
 }

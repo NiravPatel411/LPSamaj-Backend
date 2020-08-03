@@ -1,16 +1,14 @@
 package com.xmplify.starter_kit_springboot_singledb.service;
 
 import com.xmplify.starter_kit_springboot_singledb.DTOs.Address.AddressDTO;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.Setting.PersonSettingDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.education.EducationDTO;
-import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonBasicDetailDTO;
-import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonDetailDTO;
-import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetailDTO;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.person.*;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
 import com.xmplify.starter_kit_springboot_singledb.mapper.EducationMapper;
 import com.xmplify.starter_kit_springboot_singledb.mapper.UserMapper;
 import com.xmplify.starter_kit_springboot_singledb.model.*;
 import com.xmplify.starter_kit_springboot_singledb.payload.ApiResponse;
-import com.xmplify.starter_kit_springboot_singledb.DTOs.person.FilterUserDTO;
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,7 +141,7 @@ public class UserService {
                     predicates.add(bloodGroupIn);
                 }
 
-                if(Objects.nonNull(filterUser.isBloodDonor()) && filterUser.isBloodDonor()){
+                if(Objects.nonNull(filterUser.getBloodDonor()) && Boolean.TRUE.equals(filterUser.getBloodDonor())){
                     Predicate bloodDonate = cb.equal(root.join("personSetting").get(GlobalConstants.BLOOD_DONATE_FIELD), 1);
                     predicates.add(bloodDonate);
                 }
@@ -170,12 +168,13 @@ public class UserService {
         }
         List<Address> savedAddress = addressRepository.saveAll(addressList);
         PersonalDetailDTO personalDetailDTO1 = PersonalDetailDTO.create(savedUser);
+        PersonSettingDTO personSettingDTO = PersonSettingDTO.create(savedUser.getPersonSetting());
         List<AddressDTO> returnAddressDTO = new ArrayList<>();
         for (Address address : addressList) {
             returnAddressDTO.add(AddressDTO.create(address));
         }
 
-        PersonBasicDetailDTO personBasicDetailDTO = PersonBasicDetailDTO.create(personalDetailDTO1, returnAddressDTO);
+        PersonBasicDetailDTO personBasicDetailDTO = PersonBasicDetailDTO.create(personalDetailDTO1, returnAddressDTO,personSettingDTO);
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", personBasicDetailDTO), HttpStatus.OK);
     }
 
@@ -188,12 +187,13 @@ public class UserService {
         }
         addressRepository.saveAll(addressList);
         PersonalDetailDTO personalDetailDTO1 = PersonalDetailDTO.create(savedUser);
+        PersonSettingDTO personSettingDTO = PersonSettingDTO.create(savedUser.getPersonSetting());
         List<AddressDTO> returnAddressDTO = new ArrayList<>();
         for (Address address : addressList) {
             returnAddressDTO.add(AddressDTO.create(address));
         }
 
-        PersonBasicDetailDTO personBasicDetailDTO = PersonBasicDetailDTO.create(personalDetailDTO1, returnAddressDTO);
+        PersonBasicDetailDTO personBasicDetailDTO = PersonBasicDetailDTO.create(personalDetailDTO1, returnAddressDTO, personSettingDTO);
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", personBasicDetailDTO), HttpStatus.OK);
     }
 
@@ -201,20 +201,27 @@ public class UserService {
         Optional<User> user = userRepository.findById(personId);
         Optional<List<Address>> addresses = Optional.empty();
         Optional<List<PersonEducation>> educations = Optional.empty();
+        Optional<List<User>> familyUsers = Optional.empty();
         if (user.isPresent()) {
+            familyUsers = userRepository.findAllByFamilyCode(user.get().getFamilyCode());
             addresses = addressRepository.findByPersonIdId(personId);
             educations = educationRepository.findAllByPersonId(personId);
         }
         List<AddressDTO> addressDTOList = null;
         List<EducationDTO> educationDTO = null;
+        List<PersonListDTO> familyUsersDTO = null;
         PersonalDetailDTO personalDetailDTO = PersonalDetailDTO.create(user.get());
+        PersonSettingDTO personSettingDTO = PersonSettingDTO.create(user.get().getPersonSetting());
         if (addresses.isPresent()) {
             addressDTOList = AddressDTO.create(addresses.get());
         }
         if (educations.isPresent()) {
             educationDTO = EducationDTO.create(educations.get());
         }
-        PersonDetailDTO personDetailDTO = PersonDetailDTO.create(personalDetailDTO, addressDTOList, educationDTO);
+        if(familyUsers.isPresent()){
+            familyUsersDTO = PersonListDTO.create(familyUsers.get());
+        }
+        PersonDetailDTO personDetailDTO = PersonDetailDTO.create(personalDetailDTO,personSettingDTO, addressDTOList, educationDTO,familyUsersDTO);
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", personDetailDTO), HttpStatus.OK);
     }
 }
