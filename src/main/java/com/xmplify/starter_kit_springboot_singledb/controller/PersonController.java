@@ -264,7 +264,9 @@ public class PersonController {
             }
             personalDetailDTO.setProfileURL(fileStorePath);
         }else {
-            personalDetailDTO.setProfileURL(oldUser.get().getProfilePic());
+            if (oldUser.isPresent() && !Strings.isNullOrEmpty(oldUser.get().getProfilePic())) {
+                personalDetailDTO.setProfileURL(oldUser.get().getProfilePic());
+            }
         }
         if (oldUser.isPresent()) {
             return userService.updatePerson(personalDetailDTO, addressDTO, oldUser.get());
