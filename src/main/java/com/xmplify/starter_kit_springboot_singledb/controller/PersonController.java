@@ -34,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -131,7 +132,7 @@ public class PersonController {
     }
 
 
-    @PostMapping("/createAdmin")
+    @PostMapping("/admin/create")
     @Transactional
     public ResponseEntity<?> addAdmin(@Valid @RequestBody AddAdminRequest addAdminRequest) {
         Admin result = null;
@@ -168,7 +169,7 @@ public class PersonController {
     }
 
     @GetMapping("/byadmin/{adminId}")
-    public ResponseEntity<?> getPersonsByAdmin(@PathVariable String adminId) {
+        public ResponseEntity<?> getPersonsByAdmin(@PathVariable String adminId) {
         if (!validators.isExistAdmin(adminId)) {
             return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "Can not found admin", null), HttpStatus.OK);
         }
@@ -177,7 +178,7 @@ public class PersonController {
         return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Success", personListDTOS), HttpStatus.OK);
     }
 
-    @GetMapping("/getAdminsByType/{adminType}")
+    @GetMapping("/admin/type/{adminType}")
     public ResponseEntity<?> getAdminsByType(@PathVariable String adminType) {
         if (!adminRoleRepository.existsByName(adminType)) {
             return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Can not found admin type", null), HttpStatus.BAD_REQUEST);
@@ -324,5 +325,17 @@ public class PersonController {
         } else {
             return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "person Id and admin id can not be null or empty", null), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/family/{personId}")
+    public ResponseEntity<?> getAllFamilyMember(@PathVariable String personId){
+        List<String> messages = new ArrayList<>();
+        validators.validateUserId(personId,messages);
+        if (!messages.isEmpty()) {
+            return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid Requst Reason : ", messages), HttpStatus.BAD_REQUEST);
+        }
+
+        List<PersonListDTO> familyList = userService.getFamilyList(personId);
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", familyList), HttpStatus.OK);
     }
 }

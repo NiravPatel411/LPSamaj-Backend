@@ -60,7 +60,7 @@ public class EducationController {
 
     }
 
-    @GetMapping("/byPerson/{personId}")
+    @GetMapping("/person/{personId}")
     public ResponseEntity<?> getEducationListById (@PathVariable String personId){
         List<String> messages = new ArrayList<>();
         validators.validateUserId(personId,messages);
