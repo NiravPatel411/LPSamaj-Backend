@@ -219,9 +219,25 @@ public class UserService {
             educationDTO = EducationDTO.create(educations.get());
         }
         if(familyUsers.isPresent()){
+            familyUsers.get().removeIf((usr) ->  usr.getId().equalsIgnoreCase(personId));
             familyUsersDTO = PersonListDTO.create(familyUsers.get());
         }
         PersonDetailDTO personDetailDTO = PersonDetailDTO.create(personalDetailDTO,personSettingDTO, addressDTOList, educationDTO,familyUsersDTO);
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", personDetailDTO), HttpStatus.OK);
+    }
+
+    public List<PersonListDTO> getFamilyList(String personId) {
+        Optional<List<User>> familyUsers = Optional.empty();
+        Optional<User> user = userRepository.findById(personId);
+        if (user.isPresent()) {
+            familyUsers = userRepository.findAllByFamilyCode(user.get().getFamilyCode());
+        }
+        List<PersonListDTO> familyUsersDTO = null;
+        if(familyUsers.isPresent()){
+            familyUsers.get().removeIf((usr) ->  usr.getId().equalsIgnoreCase(personId));
+            familyUsersDTO = PersonListDTO.create(familyUsers.get());
+        }
+
+        return familyUsersDTO;
     }
 }
