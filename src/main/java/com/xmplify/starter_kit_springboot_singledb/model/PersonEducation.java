@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -41,15 +42,13 @@ public class PersonEducation extends AditableEntity {
     private String proofPhoto;
     private String medium;
 
-
-
     public static PersonEducation create(EducationDTO educationDTO) {
         return new PersonEducation(educationDTO.getId(),new User(educationDTO.getPersonId()),educationDTO.getDegreeId(),
                 educationDTO.getSchoolName(),
                 educationDTO.getResult(),
                 educationDTO.getStartYear(),
                 educationDTO.getEndYear(),
-                educationDTO.getProofPhoto(),
+                educationDTO.getProofUrl(),
                 educationDTO.getMedium());
     }
 

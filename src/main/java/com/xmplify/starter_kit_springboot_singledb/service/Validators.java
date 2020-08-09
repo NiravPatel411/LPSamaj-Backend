@@ -497,6 +497,15 @@ public class Validators {
        if(Objects.nonNull(educationDTO.getDegreeId()) && !validateDegreeId(educationDTO.getDegreeId())) {
            response.add("Invalid Degree Id : " + educationDTO.getDegreeId());
        }
+        if(Objects.nonNull(educationDTO.getDegreeId())) {
+            Optional<Degree> degree = degreeRepository.findById(educationDTO.getDegreeId());
+            if(degree.isPresent() && degree.get().isProofNedded()){
+                if(Objects.isNull(educationDTO.getProofPhoto()) && Objects.isNull(educationDTO.getId())){
+                    response.add("proof must be need for this Degree");
+                }
+            }
+        }
+
        return response;
     }
 

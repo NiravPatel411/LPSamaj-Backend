@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,8 @@ public class EducationDTO {
     private String result;
     private String startYear;
     private String endYear;
-    private String proofPhoto;
+    private MultipartFile proofPhoto;
+    private String proofUrl;
     private String medium;
     private String createdBy;
     private String CreatedByName;
@@ -41,6 +43,7 @@ public class EducationDTO {
                 personEducation.getResult(),
                 personEducation.getStartYear(),
                 personEducation.getEndYear(),
+                null,
                 personEducation.getProofPhoto(),
                 personEducation.getMedium(),
                 Objects.nonNull(personEducation.getCreatedBy()) ? personEducation.getCreatedBy().getId() : "",
