@@ -2,6 +2,7 @@ package com.xmplify.starter_kit_springboot_singledb.service;
 
 import com.xmplify.starter_kit_springboot_singledb.DTOs.Address.AddressDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.Setting.PersonSettingDTO;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.achievement.AchievementDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.education.EducationDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.*;
 import com.xmplify.starter_kit_springboot_singledb.constants.GlobalConstants;
@@ -57,6 +58,9 @@ public class UserService {
     private FileService fileService;
     @Autowired
     private PersonSettingsRepository personSettingsRepository;
+
+    @Autowired
+    PersonAchievementRepository personAchievementRepository;
 
 
     public List<User> findAll() {
@@ -199,19 +203,29 @@ public class UserService {
 
     public ResponseEntity<?> getPersonDetail(String personId) {
         Optional<User> user = userRepository.findById(personId);
+
+
         Optional<List<Address>> addresses = Optional.empty();
         Optional<List<PersonEducation>> educations = Optional.empty();
         Optional<List<User>> familyUsers = Optional.empty();
+        Optional<List<PersonAchievement>> personAchievements = Optional.empty();
+
+
         if (user.isPresent()) {
             familyUsers = userRepository.findAllByFamilyCode(user.get().getFamilyCode());
             addresses = addressRepository.findByPersonIdId(personId);
             educations = educationRepository.findAllByPersonId(personId);
+            personAchievements = personAchievementRepository.findAllByPersonId(personId);
         }
+
         List<AddressDTO> addressDTOList = null;
         List<EducationDTO> educationDTO = null;
         List<PersonListDTO> familyUsersDTO = null;
+        List<AchievementDTO> achievementDTOList = null;
+
         PersonalDetailDTO personalDetailDTO = PersonalDetailDTO.create(user.get());
         PersonSettingDTO personSettingDTO = PersonSettingDTO.create(user.get().getPersonSetting());
+
         if (addresses.isPresent()) {
             addressDTOList = AddressDTO.create(addresses.get());
         }
@@ -222,7 +236,11 @@ public class UserService {
             familyUsers.get().removeIf((usr) ->  usr.getId().equalsIgnoreCase(personId));
             familyUsersDTO = PersonListDTO.create(familyUsers.get());
         }
-        PersonDetailDTO personDetailDTO = PersonDetailDTO.create(personalDetailDTO,personSettingDTO, addressDTOList, educationDTO,familyUsersDTO);
+        if(personAchievements.isPresent()){
+            achievementDTOList = AchievementDTO.create(personAchievements.get());
+        }
+
+        PersonDetailDTO personDetailDTO = PersonDetailDTO.create(personalDetailDTO,personSettingDTO, addressDTOList, educationDTO,familyUsersDTO,achievementDTOList);
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", personDetailDTO), HttpStatus.OK);
     }
 

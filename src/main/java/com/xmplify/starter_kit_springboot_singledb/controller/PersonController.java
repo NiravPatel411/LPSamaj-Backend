@@ -246,7 +246,6 @@ public class PersonController {
             List<String> messages = validators.validateAddPersonBasicDetailDTO(personBasicDetailDTO);
             if (!messages.isEmpty()) {
                 return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, "Invalid Requst Reason : ", messages), HttpStatus.BAD_REQUEST);
-
             }
         }
         PersonalDetailDTO personalDetailDTO = personBasicDetailDTO.getPersonDetail();

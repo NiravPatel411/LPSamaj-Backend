@@ -1,13 +1,12 @@
 package com.xmplify.starter_kit_springboot_singledb.service;
 
+import com.google.common.base.Strings;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.Address.AddressDTO;
+import com.xmplify.starter_kit_springboot_singledb.DTOs.achievement.AchievementDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.education.EducationDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonBasicDetailDTO;
 import com.xmplify.starter_kit_springboot_singledb.DTOs.person.PersonalDetailDTO;
-import com.xmplify.starter_kit_springboot_singledb.model.Activity;
-import com.xmplify.starter_kit_springboot_singledb.model.Admin;
-import com.xmplify.starter_kit_springboot_singledb.model.CommitteeType;
-import com.xmplify.starter_kit_springboot_singledb.model.User;
+import com.xmplify.starter_kit_springboot_singledb.model.*;
 import com.xmplify.starter_kit_springboot_singledb.payload.AddEditMedia;
 import com.xmplify.starter_kit_springboot_singledb.payload.CommitteeDTO;
 import com.xmplify.starter_kit_springboot_singledb.payload.PersonPayload.AddPersonPayload.AddAddressFromUserDTO;
@@ -18,6 +17,7 @@ import com.xmplify.starter_kit_springboot_singledb.payload.activity.AddActivityR
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -66,6 +66,12 @@ public class Validators {
 
     @Autowired
     EducationRepository educationRepository;
+
+    @Autowired
+    AchievementRepository achievementRepository;
+
+    @Autowired
+    PersonAchievementRepository personAchievementRepository;
 
 
     public List<String> validateAddPersonDTO(AddPersonDTO addPersonDTO) {
@@ -504,5 +510,59 @@ public class Validators {
             response.addAll(validateAddEducationDTO(educationDTO));
         }
         return response;
+    }
+
+    public boolean validateAchievementName(String name) {
+        if(Strings.isNullOrEmpty(name)){
+            return false;
+        }
+        return achievementRepository.existsByName(name);
+    }
+
+    public boolean validateAchievementId(String id) {
+        if(Strings.isNullOrEmpty(id)){
+            return false;
+        }
+        return achievementRepository.existsById(id);
+    }
+
+    public boolean validateAchievementNameWithId(String id, String name) {
+        if(Strings.isNullOrEmpty(name)){
+            return false;
+        }
+        Optional<Achievement> achievement = achievementRepository.findByName(name);
+        if(achievement.isPresent() && !id.equalsIgnoreCase(achievement.get().getId())){
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public List<String> validateAchievementDto(AchievementDTO achievementDTO) {
+        List<String> response = new ArrayList<>();
+        if(Objects.isNull(achievementDTO)){
+            response.add("request can not be null or empty");
+        }
+
+        if(Objects.nonNull(achievementDTO.getId()) && !validatePersonAchievementId(achievementDTO.getId())){
+            response.add("InValid id");
+        }
+        validateUserId(achievementDTO.getPersonId(),response);
+        Optional<Achievement> achievement = achievementRepository.findById(achievementDTO.getAchievementTypeId());
+        if(achievement.isPresent()){
+            if(achievement.get().isProofNedded() && Objects.isNull(achievementDTO.getProofPhoto())){
+               response.add("achievement proof must be required");
+            }
+        } else {
+            response.add("Invalid Achievement Type Id");
+        }
+        return response;
+    }
+
+    private boolean validatePersonAchievementId(String id) {
+        if(!Objects.nonNull(id)){
+            return false;
+        }
+        return personAchievementRepository.existsById(id);
     }
 }

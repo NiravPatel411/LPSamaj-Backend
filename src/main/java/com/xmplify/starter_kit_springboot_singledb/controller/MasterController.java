@@ -45,6 +45,9 @@ public class MasterController {
     UserService userService;
 
     @Autowired
+    AchievementRepository achievementRepository;
+
+    @Autowired
 
     @GetMapping("/")
     public ResponseEntity<?> getAllData() {
@@ -56,6 +59,7 @@ public class MasterController {
         returnMasterObject.put("State", stateRepository.getAllStates());
         returnMasterObject.put("Country", countryRepository.findAll());
         returnMasterObject.put("hobbies",userService.getAllHobbies());
+        returnMasterObject.put("achievements",achievementRepository.findAll());
 
         return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", returnMasterObject), HttpStatus.OK);
     }
