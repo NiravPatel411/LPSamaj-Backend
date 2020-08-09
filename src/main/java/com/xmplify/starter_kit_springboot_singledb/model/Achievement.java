@@ -19,9 +19,13 @@ public class Achievement {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
-    @Column(length = 60)
+    @Column(length = 2000)
     private String name;
 
     @Column
     private boolean isProofNedded = false;
+
+    public Achievement(String id) {
+        this.id = id;
+    }
 }

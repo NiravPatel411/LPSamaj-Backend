@@ -21,6 +21,8 @@ public class GlobalConstants {
     public static final String EDUCATION = "EducationDTO";
     public static final String NEWS_EVENT = "news";
     public static final String PROFILE_EVENT = "profile";
+    public static final String EDUCATION_EVENT = "education";
+    public static final String ACHIEVEMENT_EVENT = "achievement";
     public static final String ACTIVITY_EVENT = "activity";
     public static final String UPLOAD_DIR = "/WEB-INF/";
     public static final String UPLOAD_NEWS_MEDIA_FULL_PATH = UPLOAD_DIR + "image/news/";
