@@ -127,7 +127,8 @@ public class PersonController {
         }
         Admin adminNew = admin.get();
         adminNew.setPerson(user.get());
-        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "SUCCESS", adminRepository.save(adminNew)),
+        adminRepository.save(adminNew);
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), false, "SUCCESS", null),
                 HttpStatus.OK);
     }
 
@@ -157,8 +158,8 @@ public class PersonController {
         newAdmin.setName(person.get().getFirstName() + " " + person.get().getLastName());
         newAdmin.setPerson(person.get());
         newAdmin.setAdminRole(adminRole.get());
-        result = adminRepository.save(newAdmin);
-        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Admin Created", result), HttpStatus.OK);
+        adminRepository.save(newAdmin);
+        return new ResponseEntity<>(new ApiResponse(HttpStatus.OK.value(), true, "Admin Created", null), HttpStatus.OK);
     }
 
     @GetMapping("/admin/")

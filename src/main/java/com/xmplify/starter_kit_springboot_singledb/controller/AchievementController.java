@@ -115,7 +115,8 @@ public class AchievementController {
         }
 
         achievementService.addPersonAchievement(personAchievement);
-        return userService.getPersonDetail(personAchievement.getPerson().getId());
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK.value(), true, "SUCCESS", null), HttpStatus.OK);
+        //return userService.getPersonDetail(personAchievement.getPerson().getId());
     }
 
     @GetMapping("/person/{personId}")
