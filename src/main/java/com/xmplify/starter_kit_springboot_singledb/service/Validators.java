@@ -17,7 +17,6 @@ import com.xmplify.starter_kit_springboot_singledb.payload.activity.AddActivityR
 import com.xmplify.starter_kit_springboot_singledb.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -559,7 +558,7 @@ public class Validators {
         validateUserId(achievementDTO.getPersonId(),response);
         Optional<Achievement> achievement = achievementRepository.findById(achievementDTO.getAchievementTypeId());
         if(achievement.isPresent()){
-            if(achievement.get().isProofNedded() && Objects.isNull(achievementDTO.getProofPhoto())){
+            if (!Objects.nonNull(achievementDTO.getId()) && achievement.get().isProofNedded() && Objects.isNull(achievementDTO.getProofPhoto())) {
                response.add("achievement proof must be required");
             }
         } else {
